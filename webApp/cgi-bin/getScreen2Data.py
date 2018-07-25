@@ -1,6 +1,19 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""
+This CGI script returns data to the client necessary for it to set up the second screen.
+There are a number of commented out options used for testing (e.g. uploading a zip file with the necessary data bundled)
+However the main option (option 4) goes to the TF server to get the data specific to the images passed.
+
+CGI args:
+	JSON.  {'fg_url': url of foreground image from imageUpload.py call,
+			'bg_url': url of background image from imageUpload.py call}
+CGI return:
+	JSON.	As specified in P8010-S-001
+			Keys: 'BG_segment_URLs', 'FG_cutout_URL', 'layer', 'position', 'scale'
+"""
+
 import cgi, os
 import cgitb; cgitb.enable() # Traceback enable
 import json
@@ -30,9 +43,7 @@ else:
 	prefix = "Resources/patrick_json_static/"
 	# prefix = "Resources/patrick_json_dynamic/"
 
-# === Option 2 === #
-# Ignore the above URLs for the minute, and return a list of URLs to the background images
-# Package up some JSON stuff
+# === Option 2 Package up JSON from a file (either uploade from option 1 or from a different, specified, file === #
 # prefix = "Resources/patrick_json/"
 f = open(prefix + "patrick.json", "r")
 importedJSON = json.loads(f.read())
@@ -51,9 +62,6 @@ scale = importedJSON['scale']
 # position = (0.0, 0.5)
 # scale = (0.5, 0.5)
 
-# === Option 4 Ask the TF server to give us the data === #
-# returnJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
-
 # === Create the dictionary to return === #
 returnDict = {
 	"BG_segment_URLs": BG_segment_URLs,
@@ -62,6 +70,9 @@ returnDict = {
 	"position": position,
 	"scale": scale
 }
+
+# === Option 4 Ask the TF server to give us the data === #
+# returnJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
 
 returnJSON = json.dumps(returnDict)
 

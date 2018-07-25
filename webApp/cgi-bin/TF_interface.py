@@ -1,16 +1,34 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""
+This script provides an interface between the CGI scripts in cgi-bin and the Python 'server' script running the loaded TensorFlow (TF) model
+and providing predictions from it (i.e. TF_server.py)
+"""
+
 import os
 import sys
 import socket
 import json
 
 def sendData(data, command):
-	# Data format is:
-	# 	Length: 5 bytes (= len(command) + len(data) = 4 + len(data)
-	# 	Command: 4 bytes
-	# 	Data: variable
+	"""
+	Sends 'data' and 'command' to the TF server along with necessary data such as the length of the transmission
+	The transfer protocol is:
+		Length: 5 bytes (= len(command) + len(data) = 4 + len(data)
+		Command: 4 bytes
+		Data: variable length
+
+	Args:
+		data (str): the data to send
+		command (str):  one of 'sgtF', 'sgtB', 'gump', 'post' (for 'segment foreground', 'segment background', 'Gumpify', 'post process').
+						The command we want the TF server to perform
+	Returns:
+		str: the response from teh TF server
+
+	"""
+
+	# === Marshall the overall string to send
 	length = "{:0>5}".format(len(command) + len(data)) # Left align the length by padding zeros to 5 characters long
 	toSend = length + command + data
 
@@ -53,6 +71,8 @@ def sendData(data, command):
 			break
 		chunks.append(chunk.decode())
 		bytes_recd += len(chunk)
+
+	s.close()
 
 	response = ''.join(chunks)
 
