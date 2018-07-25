@@ -352,7 +352,7 @@ function postProcessButton() {
 	// Bundle up data
 	var BG_segment_URLs = new Array();
 	$('.backgroundImage').each(function(index) {
-		BG_segment_URLs.push(this.src); // 'this' refers to the current element
+		BG_segment_URLs.push($(this).attr('src')); // 'this' refers to the current element.  We use $(this).attr('src') instead of this.src to give relative, not absolute, paths
 	});
 	var FG_cutout_URL = $('#foregroundImage').attr('src');
 	var layer = $(".resultBackground, #resultForeground").index($('#resultForeground')) - 1;
@@ -370,7 +370,7 @@ function postProcessButton() {
 	// Send the data to the server
 	$.ajax({
 		type: "POST",
-		url: "cgi-bin/TF_client_test.py",
+		url: "cgi-bin/getFinalImage.py",
 		data: JSON.stringify(toSend),
 		success: function(data) {
 			console.log("Success");

@@ -4,6 +4,7 @@
 import cgi, os
 import cgitb; cgitb.enable() # Traceback enable
 import json
+from TF_interface import sendData
 
 form = cgi.FieldStorage()
 
@@ -49,6 +50,9 @@ scale = importedJSON['scale']
 # layer = 2
 # position = (0.0, 0.5)
 # scale = (0.5, 0.5)
+
+# === Option 4 Ask the TF server to give us the data === #
+# returnJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
 
 # === Create the dictionary to return === #
 returnDict = {
