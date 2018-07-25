@@ -95,20 +95,20 @@ class TF_Socket():
 				-> 'post' - post process the user-tweaker parameters and return a reference to the final image
 			socket (socket): the socket to send reply data along.
 		"""
-		if command in ['smgF', 'smgB'] :
+		if command in ['sgtF', 'sgtB'] :
 			# Signal that there is no return data to receive
 			totalsent = 0
-				while totalsent < 5:
-					sent = socket.send("00000".encode())
-					if sent == 0:break
-					totalsent = totalsent + sent	
+			while totalsent < 5:
+				sent = socket.send("00000".encode())
+				if sent == 0:break
+				totalsent = totalsent + sent	
 			socket.close()
 
-		if command == 'smgF':
+		if command == 'sgtF':
 			# Set the foreround segmenting
 			# self.api.load_foreground(data)
 			return
-		elif command == 'smgB':
+		elif command == 'sgtB':
 			# Set the background segmenting
 			# self.api.load_background(data)
 			return

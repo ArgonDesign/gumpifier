@@ -18,6 +18,8 @@ CGI return:
 import cgi, os
 import cgitb; cgitb.enable() # Traceback enable
 from TF_interface import sendData
+import threading
+import hashlib, time, random
 
 form = cgi.FieldStorage()
 
@@ -33,12 +35,13 @@ elif 'bgimage' in form:
 # Test if the file was uploaded
 if fileitem.filename: # fileitem.filename is actually a path
 	# Save the photo
-	name = os.path.basename(fileitem.filename)
-	savedPath = 'storage/{}'.format(name)
+	prename, extension = os.path.basename(fileitem.filename).split('.')
+	hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
+	savedPath = 'storage/{}'.format(hashName)
 	open(savedPath, 'wb').write(fileitem.file.read())
 
-	# Set the TF server segmenting the image
-	sendData(savedPath, command)
+	# Set the TF server segmenting the image.  We're not waiting for a response from this one so use threading
+	threading.Thread(target=sendData, args=(savedPath, command)).start()
 
 	# Return the file where the image is stored
 	message = savedPath
