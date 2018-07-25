@@ -1,2 +1,5 @@
 /webApp/Resources
-/webApp/storage
+/webApp/storage/
+/API/API_caller.py
+/API/Mask_RCNN
+/venv
