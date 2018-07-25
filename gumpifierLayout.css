@@ -1,0 +1,209 @@
+/* === Main layout === */
+* {
+	box-sizing: border-box;
+}
+
+html, body {
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+	margin: 0;
+	overflow: hidden; /* Makes the window not horizontally scroll when the container box for the draggable image overflows */
+}
+
+.content {
+	/* Child properties*/
+	flex-grow: 1;
+
+	/* Parent properties*/
+	display: flex;
+	flex-flow: row;
+	flex-wrap: wrap;
+}
+
+#circlePaneLeft {
+	flex-grow: 3;
+}
+
+#circlePaneRight {
+	flex-grow: 7;
+}
+
+/* === Initial overlay === */
+#initOverlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 3;
+	justify-content: center;
+}
+
+.initLogoContainer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+}
+
+#initArgonLogoContainer {width: 60%;}
+#initDovetailedContainer {width: 30%;}
+#initGumpifierContainer	{width: 60%;}
+
+.initLogo {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+}
+
+
+/* === Corner circles and overlapping content pane === */
+.circlePane {
+	position: relative; /* Needed so 'position: absolute' works for the circle divs */
+	margin: 5px;
+}
+
+.posRel {
+	position: relative;
+	width: 100%;
+}
+
+.cornerCircleTL {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.cornerCircleTR {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.cornerCircleBL {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+.cornerCircleBR {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+.overlapPane {
+	/* Overlap the circles */
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	background-color: white;
+}
+
+/* === Center text in content panes vertically */
+.vCenterPane {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+/* === Images should not overflow, or grow larger than they are in reality === */
+.vCenterPane {
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
+#option2Left,#option2Right {
+	display: none;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+
+#opt2ImageLeft,#opt2ImageRight {
+	max-height: calc(100% - 6em);
+	max-width: 100%;
+}
+
+#opt2vLeft,#opt2vRight {
+	height: 100%;
+	width: 100%;
+}
+
+/* === Vertical split between Step 2 and Step 3 === */
+#bgUploadPane {
+	position: relative;
+}
+
+.outerContent {
+	display: flex;
+	flex-direction: column;
+}
+
+#bgUploadPane {flex-grow: 9;}
+#gumpifyPane {flex-grow: 1;}
+
+/* === Gumpify pane style === */
+#gumpifyPane {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+}
+
+/* === Border lines positions and initial widths === */
+.borderLine {
+	position: absolute;
+}
+
+.borderLineB, .borderLineT {width: 0%;}
+.borderLineL, .borderLineR {height: 0%;}
+
+.borderLineB {bottom: 0;}
+.borderLineT {top: 0;}
+.borderLineL {left: 0; bottom: 0;}
+.borderLineR {right: 0; bottom: 0;}
+
+/* === Gumpify button === */
+#gumpifyButton {
+	margin: auto;
+}
+
+/* === Responsive Design === */
+/* For desktop: */
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+
+@media only screen and (max-width: 768px) {
+    /*
+    For mobile phones
+    This even works with flex.  When not mobile, col-mobile is undefined so flex ratio dominates,
+    when in mobile mode, width is 100%
+    */
+    [class*="col-"] {
+        width: 100%;
+    }
+}
+
+.footerElement {
+	float: left;
+}

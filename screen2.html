@@ -1,0 +1,73 @@
+<div class="col-mobile circlePane" id="circlePaneLeft">
+	<div class="cornerCircle cornerCircleTL cornerCircleLeft"></div>
+	<div class="cornerCircle cornerCircleTR cornerCircleLeft"></div>
+	<div class="cornerCircle cornerCircleBL cornerCircleLeft"></div>
+	<div class="cornerCircle cornerCircleBR cornerCircleLeft"></div>
+
+	<div class="overlapPane">
+		<div class="vCenterPane" id="vCenterPaneLeft">
+			Your Gumpified Image<br>
+			<div id="resultPane">
+				<div id="containerForeground"></div>
+				<!-- === Images of the following form will be inserted here using JS === -->
+				<!-- <div class="resultBackground">
+					<img class="backgroundImage">
+				</div> -->
+				<!-- <div id="resultForeground">
+					<img id="foregroundImage">
+				</div> -->
+
+				<!-- === This won't be inserted yet but could be for when a rendered composite needs to be shown when the user is
+				not hovering, and only refreshed when they edit something === -->
+				<!-- <div id="resultComposite">
+					<img id="compositeImage">
+				</div> -->
+			</div>
+		</div>
+	</div>
+</div>
+<div class="col-mobile circlePane" id="circlePaneRight">
+	<div class="cornerCircle cornerCircleTL cornerCircleRight"></div>
+	<div class="cornerCircle cornerCircleTR cornerCircleRight"></div>
+	<div class="cornerCircle cornerCircleBL cornerCircleRight"></div>
+	<div class="cornerCircle cornerCircleBR cornerCircleRight"></div>
+
+	<div class="overlapPane">
+		<div class="vCenterPane" id="vCenterPaneRight">
+			Commands Pane<br>
+			<div id="commandsPane">
+				<div id="commands" class="subCommandsPane">
+					<div id="commandsUpper">
+						Picture Settings<br>
+						x: <input type="number" step=0.01 max=1 id="xPosSpinner" oninput="changePositionSpinner()"> <!-- min must be dynamically set-->
+						y: <input type="number" step=0.01 max=1 id="yPosSpinner" oninput="changePositionSpinner()"> <!-- min must be dynamically set-->
+						<input type="button" value="Reset position" onclick="resetPositionButton()"><br>
+						x: <input type="number" step=0.01 id="xScaleSpinner" oninput="changeScaleSpinnerX()">
+						y: <input type="number" step=0.01 id="yScaleSpinner" oninput="changeScaleSpinnerY()">
+						<input type="button" value="Reset size" onclick="resetScaleButton()"><br>
+						<input type="checkbox" id="scaleLink" checked="true">Preserve aspect ratio<br>
+						Selected Layer:
+					</div>
+					<div id="currentLayerPreviewContainer">
+					</div>
+					<div id="commandsLower">
+						<input type="button" value="Send behind you" onclick="sendBehindButton()">
+						<input type="button" value="Bring in front of you" onclick="bringToFrontButton()">
+					</div>
+				</div>
+				<div id="meta-commands" class="subCommandsPane">
+					Save and Share<br>
+					<input type="button" value="Start again by uploading new photos" onclick="newButton()"><br>
+					<input type="button" value="Post process" onclick="postProcessButton()">
+				</div>
+				<div id="help" class="subCommandsPane">
+					Help<br>
+					<ul style="font-size: 80%">
+						<li>You can change your position in the Gumpified image to the right by dragging and dropping on the image of yourself.</li>
+						<li>You can also change your position, and also your size, using the controls above.</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

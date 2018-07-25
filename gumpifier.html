@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+<head>
+	<title>The Gumpifier</title>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
+	<link rel="stylesheet" href="gumpifierStyle.css">
+	<link rel="stylesheet" href="gumpifierLayout.css">
+	<link rel="stylesheet" href="screen2.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="http://malsup.github.com/jquery.form.js"></script> <!-- Form submission library -->
+	<script src="jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+	<script src="animations.js"></script>
+	<script src="eventHandlers.js"></script>
+	<script src="stateTracker.js"></script>
+	<link href="jquery-ui-1.12.1.custom/jquery-ui.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- 	<div id='initOverlay'>
+		<div id="initArgonLogoContainer" class="initLogoContainer">
+			<div id="initArgonLogo" class="initLogo"></div>
+		</div>
+		<div id="initDovetailedContainer" class="initLogoContainer">
+			<div id="initDovetailedLogo" class="initLogo"></div>
+		</div>
+		<div id="initGumpifierContainer" class="initLogoContainer">
+			<div id="initGumpifierLogo" class="initLogo"></div>
+		</div>
+	</div> -->
+
+	<header><h1>The Gumpifier</h1></header>
+
+	<div class="content">
+		<div class="col-mobile circlePane outerContent" id="circlePaneLeft">
+			<div class="cornerCircle cornerCircleTL cornerCircleLeft"></div>
+			<div class="cornerCircle cornerCircleTR cornerCircleLeft"></div>
+			<div class="cornerCircle cornerCircleBL cornerCircleLeft"></div>
+			<div class="cornerCircle cornerCircleBR cornerCircleLeft"></div>
+
+			<div class="overlapPane">
+				<div class="borderLine borderLineB borderLineLeft"></div>
+				<div class="borderLine borderLineL borderLineLeft"></div>
+				<div class="borderLine borderLineR borderLineLeft"></div>
+				<div class="borderLine borderLineT borderLineLeft"></div>
+
+				<div class="vCenterPane" id="vCenterPaneLeft">
+
+					<div id="option1Left">
+						Step 1: Upload a picture of you<br>
+						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
+							<!-- <input type="file" name="image" accept="image/*" id="foregroundUploadButton"><br> -->
+							<input type="file" name="image" id="foregroundUploadButton"><br>
+						</form>
+					</div>
+
+					<div id="option2Left">
+						<div id="opt2vLeft">
+							Currently selected picture<br><br>
+							<img id="opt2ImageLeft">
+							<br>
+							You can change your picture here
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="col-mobile outerContent" id="circlePaneRight">
+			<div id="bgUploadPane" class="circlePane">
+				<div class="cornerCircle cornerCircleTL cornerCircleRight"></div>
+				<div class="cornerCircle cornerCircleTR cornerCircleRight"></div>
+				<div class="cornerCircle cornerCircleBL cornerCircleRight"></div>
+				<div class="cornerCircle cornerCircleBR cornerCircleRight"></div>
+
+				<div class="overlapPane">
+					<div class="borderLine borderLineB borderLineRight"></div>
+					<div class="borderLine borderLineL borderLineRight"></div>
+					<div class="borderLine borderLineR borderLineRight"></div>
+					<div class="borderLine borderLineT borderLineRight"></div>
+
+					<div class="vCenterPane" id="vCenterPaneRight">
+
+						<div id="option1Right">
+							Step 2: Upload a background picture<br>
+							<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="backgroundForm">
+								<!-- <input type="file" name="image" accept="image/*" id="backgroundUploadButton"><br> -->
+								<input type="file" name="image" id="backgroundUploadButton"><br>
+							</form>
+						</div>
+
+						<div id="option2Right">
+							<div id="opt2vRight">
+								Currently selected picture<br><br>
+								<img id="opt2ImageRight">
+								<br>
+								You can change your picture here
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div id="gumpifyPane" class="circlePane">
+				<div class="cornerCircle cornerCircleTL cornerCircleStep3"></div>
+				<div class="cornerCircle cornerCircleTR cornerCircleStep3"></div>
+				<div class="cornerCircle cornerCircleBL cornerCircleStep3"></div>
+				<div class="cornerCircle cornerCircleBR cornerCircleStep3"></div>
+
+				<div class="overlapPane">
+					<div class="borderLine borderLineB borderLineStep3"></div>
+					<div class="borderLine borderLineL borderLineStep3"></div>
+					<div class="borderLine borderLineR borderLineStep3"></div>
+					<div class="borderLine borderLineT borderLineStep3"></div>
+
+					<div class="vCenterPane">
+						Step 3...<br>
+						<input type="Button" disabled id="gumpifyButton" value="Gumpify">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class=footer>
+		<div class="col-6 footerElement" id="argonLogo">Argon Design</div>
+		<div class="col-6 footerElement" id="dovetailedLogo">Dovetailed</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+/* === Main Header font and delimiter === */
+h1 {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 100;
+	text-align: center;
+}
+
+header {
+	border-bottom: 1px solid; /* Width, style, color */
+}
+
+/* === Initial overlay === */
+#initOverlay {
+	background-color: white;
+}
+
+.initLogo {
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+}
+
+#initArgonLogo {background-image: url("Resources/argonLogo.jpg");}
+#initDovetailedLogo {background-image: url("Resources/dovetailedLogo.jpg");}
+#initGumpifierLogo {background-image: url("Resources/gumpifierLogo.png");}
+
+#initArgonLogo {opacity: 1.0;}
+#initDovetailedLogo	{opacity: 0.0;}
+#initGumpifierLogo	{opacity: 0.0;}
+
+/* === Circles at corners of main boxes and overlapping content pane === */
+.cornerCircle {
+	/* Size */
+	width: 2vw;
+	height: 2vw;
+	border-radius: 1vw;
+}
+
+.overlapPane {
+	margin: 1vw;
+}
+
+.cornerCircleLeft {
+	background-color: rgb(165,75,255);
+}
+
+.cornerCircleRight {
+	background-color: rgb(130,91,232);
+}
+
+.cornerCircleStep3 {
+	background-color: rgb(141,135,255);
+}
+
+/* === Border lines at edges of main boxes === */
+.borderLineB, .borderLineT {height: 1px;}
+.borderLineL, .borderLineR {width: 1px;}
+
+.borderLineLeft {
+	background-color: rgb(165,75,255);
+}
+
+.borderLineRight {
+	background-color: rgb(130,91,232);
+}
+
+.borderLineStep3 {
+		background-color: rgb(141,135,255);	
+}
+
+/* === Style the instruction text: font, size, colour, alignment, etc*/
+.vCenterPane {
+	text-align: center;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 130%;
+}
+
+#vCenterPaneLeft {
+	color: rgb(165,75,255);	
+}
+
+#vCenterPaneRight {
+	color: rgb(130,91,232);
+}
+
+#gumpifyPane {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 130%;
+	color: rgb(135,135,135);
+}
+
+/* === Footer delimiter, padding, font, colour === */
+.footer {
+	border-top: 1px solid; /* Width, style, color */
+	padding-top: 0.5%;
+	padding-bottom: 0.5%;
+}
+
+.footerElement {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 400;
+	text-align: center;
+	font-size: 150%;
+}
+
+#argonLogo {
+	color: rgb(165,75,255);
+}
+
+#dovetailedLogo {
+	color: rgb(130,91,232);
+}
