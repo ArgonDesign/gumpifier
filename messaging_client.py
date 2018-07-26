@@ -3,8 +3,10 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import tkinter
-
-
+from win10toast import ToastNotifier
+first_msg = True
+name = ""
+toaster = ToastNotifier()
 def receive():
     """Handles receiving of messages."""
     while True:
@@ -15,14 +17,22 @@ def receive():
                 msg_list.itemconfig(msg_list.size() - 1, {'fg': 'red'})
             else:
                 msg_list.itemconfig(msg_list.size() - 1, {'fg': 'green'})
-            msg_list.yview(tkinter.END)    
+            msg_list.yview(tkinter.END) 
+
+            if not msg.startswith(name):
+                fname = msg.split(":")[0]
+                toaster.show_toast(fname, msg, duration=5)
         except OSError:  # Possibly client has left the chat.
             break
 
 
 def send(event=None):  # event is passed by binders.
+    global first_msg, name
     """Handles sending of messages."""
     msg = my_msg.get()
+    if first_msg:
+        name = msg
+        first_msg = False
     my_msg.set("")  # Clears input field.
     client_socket.send(bytes(msg, "utf8"))
     if msg == "{quit}":
