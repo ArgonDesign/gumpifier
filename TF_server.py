@@ -85,6 +85,8 @@ class TF_Socket():
 	def dispatcher(self, data, command, socket):
 		"""
 		Decide what to do with the data depending on the command; do it and return a result along the socket before destroying the socket.
+		For 'sgtF' and 'sgtB' we send the null response, close the socket then start TF processing.
+		For 'gump' and 'post' we do the processing then send the response.
 
 		Args:
 			data (str): data sent from the client
@@ -95,6 +97,8 @@ class TF_Socket():
 				-> 'post' - post process the user-tweaker parameters and return a reference to the final image
 			socket (socket): the socket to send reply data along.
 		"""
+		prefix = "webApp"
+
 		if command in ['sgtF', 'sgtB'] :
 			# Signal that there is no return data to receive
 			totalsent = 0
@@ -106,23 +110,24 @@ class TF_Socket():
 
 		if command == 'sgtF':
 			# Set the foreround segmenting
-			# self.api.load_foreground(data)
+			# self.api.load_foreground(os.path.join(prefix, data))
 			return
 		elif command == 'sgtB':
 			# Set the background segmenting
-			# self.api.load_background(data)
+			# self.api.load_background(os.path.join(prefix, data))
 			return
 		elif command == 'gump':
 			data = json.loads(data)
-			toSend = self.api.build_response(data['fg_url'], data['bg_url'])
+			
+			toSend = self.api.build_response(os.path.join(prefix, data['fg_url']), os.path.join(prefix, data['bg_url']))
 		elif command == 'post':
 			data = json.loads(data)
 			print(data.keys())
 			# Marshall data
-			cutout = data['FG_cutout_URL']
+			cutout = os.path.join(prefix, data['FG_cutout_URL'])
 			layer = data['layer']
-			foreground = data['BG_segment_URLs'][layer:]
-			background = data['BG_segment_URLs'][:layer]
+			foreground = [os.path.join(prefix, postfix) for postfix in data['BG_segment_URLs'][layer:]]
+			background = [os.path.join(prefix, postfix) for postfix in data['BG_segment_URLs'][:layer]]
 			position = data['position']
 			scale = data['scale']
 			# Get response
@@ -137,6 +142,12 @@ class TF_Socket():
 			totalsent = totalsent + sent
 
 		socket.close()
+
+	def cleanUp():
+		"""
+		This function is run as a thread each time the a connection is accepted.  It checks for files in the uploads
+		folder that are greater than 30 days old and deletes them.
+		"""
 
 if __name__ == "__main__":
 	tfs = TF_Socket()
