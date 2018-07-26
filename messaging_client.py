@@ -11,6 +11,10 @@ def receive():
         try:
             msg = client_socket.recv(BUFSIZ).decode("utf8")
             msg_list.insert(tkinter.END, msg)
+            if msg.lower().startswith("patrick"):
+                msg_list.itemconfig(msg_list.size() - 1, {'fg': 'red'})
+            else:
+                msg_list.itemconfig(msg_list.size() - 1, {'fg': 'green'})
         except OSError:  # Possibly client has left the chat.
             break
 
