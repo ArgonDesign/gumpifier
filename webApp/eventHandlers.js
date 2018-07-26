@@ -56,7 +56,7 @@ var fg_img_pos;
 var fg_img_scale;
 var bg_loaded = false;
 var fg_loaded = false;
-var selectedLayer;
+// var selectedLayer;
 var selectedLayerDiv;
 $(document).ready(function() {
 	$('#gumpifyButton').click(function() {

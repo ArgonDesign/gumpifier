@@ -21,7 +21,7 @@ from TF_interface import sendData
 
 form = cgi.FieldStorage()
 
-# Get the URLs for the foreground and background images
+# Get the URLs for the foreground and background image URLs
 fg_url = form['fg_url'].value
 bg_url = form['bg_url'].value
 

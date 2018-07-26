@@ -35,7 +35,11 @@ elif 'bgimage' in form:
 # Test if the file was uploaded
 if fileitem.filename: # fileitem.filename is actually a path
 	# Save the photo
-	prename, extension = os.path.basename(fileitem.filename).split('.')
+	extension = os.path.basename(fileitem.filename).split('.')[-1]
+	# Try to guard against an insertion attack by testing that the extension is correct
+	# E.g. extension might be "/../....../etc/passwd"
+	if extension.lower() not in ['bmp', 'gif', 'ico', 'jpg', 'jpeg', 'png', 'svg', 'tif', 'tiff', 'webp']: # https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
+		extension = ""
 	hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
 	savedPath = 'storage/{}'.format(hashName)
 	open(savedPath, 'wb').write(fileitem.file.read())
