@@ -3,3 +3,7 @@
 /API/API_caller.py
 /API/Mask_RCNN
 /venv
+/.idea
+/API/test_url
+/API/Help.png
+/API/__pycache__
