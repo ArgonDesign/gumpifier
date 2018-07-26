@@ -10,12 +10,12 @@ before it starts listening on localhost:1475 for commands.  The two levels of da
 	We use the command to decide how to process the data and what to send back to the client at the other end of the socket.
 """
 
-
 import socket
 import json
-# import API
+import API
 import threading
 import traceback
+import os
 
 class TF_Socket():
 	def __init__(self):
@@ -28,10 +28,7 @@ class TF_Socket():
 		self.serversocket.bind(('localhost', 1475))
 
 		# Initialize the TF model
-		# TF_init()
-
-	# def TF_init():
-		# self.api = API.API()
+		self.api = API.API.API()		
 
 	def startListening(self):
 		"""
@@ -40,6 +37,8 @@ class TF_Socket():
 
 		# Start listening
 		self.serversocket.listen(5)
+
+		print("Ready accept connections")
 
 		# Main loop
 		while 1:
@@ -101,6 +100,8 @@ class TF_Socket():
 		prefix = "webApp"
 		response = None
 
+		print("Received command: {}".format(command))
+
 		if command in ['sgtF', 'sgtB'] :
 			# Signal that there is no return data to receive
 			totalsent = 0
@@ -112,11 +113,22 @@ class TF_Socket():
 
 		if command == 'sgtF':
 			# Set the foreround segmenting
-			# self.api.load_foreground(os.path.join(prefix, data))
+			try:
+				print(os.path.join(prefix, data))
+				self.api.load_foreground(os.path.join(prefix, data))
+				print("Segmented foreground successfully")
+			except:
+				traceback.print_exc()
+				print("Error in segmenting foreground")
 			return
 		elif command == 'sgtB':
 			# Set the background segmenting
-			# self.api.load_background(os.path.join(prefix, data))
+			try:
+				self.api.load_background(os.path.join(prefix, data))
+				print("Segmented background successfully")
+			except:
+				traceback.print_exc()
+				print("Error in segmenting background")
 			return
 		elif command == 'gump':
 			data = json.loads(data)
