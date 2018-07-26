@@ -76,8 +76,9 @@ $(document).ready(function() {
 				data: {	"fg_url": fg_url,
 						"bg_url": bg_url},
 				success: function(data) {
-					if (data.startsWith("ERROR")){
+					if (data.hasOwnProperty("ERROR")) {
 						$('#resultPane').text("Something went wrong!");
+						console.log(data.ERROR);
 					}
 					else {
 						fg_img_pos = data.position;
@@ -88,7 +89,7 @@ $(document).ready(function() {
 						loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer);
 					}
 				},
-				// dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
+				dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
 				error: function(xhr, status, error) {
 					console.log(status);
 					console.log(error);
@@ -380,14 +381,15 @@ function postProcessButton() {
 		url: "cgi-bin/getFinalImage.py",
 		data: JSON.stringify(toSend),
 		success: function(data) {
-			if (data.startsWith("ERROR")) {
-				console.log("ERROR")
+			if (data.hasOwnProperty("ERROR")) {
+				$('#resultPane').text("Something went wrong!");
+				console.log(data.ERROR);
 			}
 			else {
 				console.log("Success");
 			}
 		},
-		// dataType: "json",
+		dataType: "json",
 		error: function(xhr, status, error) {
 			console.log(status);
 			console.log(error);

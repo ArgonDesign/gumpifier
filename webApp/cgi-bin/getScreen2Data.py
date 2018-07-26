@@ -77,20 +77,17 @@ returnJSON = None
 returnType = None
 
 returnJSON = json.dumps(returnDict) # Remove this in production
-returnType = "application/json" # Remove this in production
+dataType = "application/json" # Keep this in production
 
 try:
 	returnJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
 	dataType = "application/json"
 except ConnectionAbortedError as err:
-	returnJSON = "ERROR\n{}".format(traceback.format_exc())
-	dataType = "text/plain"
+	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ValueError as err:
-	returnJSON = "ERROR\n{}".format(traceback.format_exc())
-	dataType = "text/plain"
+	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ConnectionRefusedError:
-	returnJSON = "ERROR\n{}".format(traceback.format_exc())
-	dataType = "text/plain"
+	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 
 # Return stuff to server
 print("""Content-type: {}
