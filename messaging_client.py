@@ -15,6 +15,7 @@ def receive():
                 msg_list.itemconfig(msg_list.size() - 1, {'fg': 'red'})
             else:
                 msg_list.itemconfig(msg_list.size() - 1, {'fg': 'green'})
+            msg_list.yview(tkinter.END)    
         except OSError:  # Possibly client has left the chat.
             break
 
