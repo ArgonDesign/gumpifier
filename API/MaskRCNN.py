@@ -202,7 +202,8 @@ class MaskRCNN():
         return self.predict_from_array(image)
 
     def predict_from_array(self, image):
-        results = self.model.detect([image[:, :, :3]])
+        image = image[:, :, :3]
+        results = self.model.detect([image])
         r = results[0]
         boxes = r['rois']
         masks = r['masks']
