@@ -1,7 +1,6 @@
 /webApp/Resources
 /webApp/storage/
 /API/API_caller.py
-/API/Mask_RCNN
 /venv
 /.idea
 /API/test_url
