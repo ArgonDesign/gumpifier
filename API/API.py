@@ -81,7 +81,7 @@ class API:
         return_image = shadows.add_shadows(bg_image_person_img.astype("uint8"), bg_image_array, bg_image_person_mask, (top_left_y, top_left_x, bottom_right_y, bottom_right_x))
 
         # Test
-        Image.fromarray(return_image).save("Help.png")  # ! It kinda works? A little bit weird....
+        return self.save_img_get_url(return_image)  # ! It kinda works? A little bit weird....
 
     def build_response(self, foreground, background):
         """Creates and returns a json string containing the parameters required for the front end UI
