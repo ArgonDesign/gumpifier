@@ -24,8 +24,11 @@ class TF_Socket():
 		"""
 
 		# Create the socket and bind to a port
+		f = open('portConfig.txt', 'r')
+		port = int(f.read())
+		f.close()
 		self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.serversocket.bind(('localhost', 1475))
+		self.serversocket.bind(('localhost', port))
 
 		# Initialize the TF model
 		self.api = API.API.API()		
