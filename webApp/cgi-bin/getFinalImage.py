@@ -15,14 +15,29 @@ CGI return:
 import os
 import sys
 from TF_interface import sendData
+import traceback
 
 # === Receive the data from the webpage === #
 content_len = int(os.environ["CONTENT_LENGTH"]) # https://stackoverflow.com/questions/10718572/post-json-to-python-cgi
 data = sys.stdin.read(content_len)
 
 # === Send to the TF server === #
-message = sendData(data, command='post')
+message = None
+dataType = None
 
-print("""Content-type: application/json
+try:
+	message = sendData(data, command='post')
+	dataType = "application/json"
+except ConnectionAbortedError:
+	message = "ERROR\n{}".format(traceback.format_exc())
+	dataType = "text/plain"
+except ValueError:
+	message = "ERROR\n{}".format(traceback.format_exc())
+	dataType = "text/plain"
+except ConnectionRefusedError:
+	message = "ERROR\n{}".format(traceback.format_exc())
+	dataType = "text/plain"
 
-{}""".format(message))
+print("""Content-type: {}
+
+{}""".format(dataType, message))

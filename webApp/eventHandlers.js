@@ -60,6 +60,8 @@ var fg_loaded = false;
 var selectedLayerDiv;
 $(document).ready(function() {
 	$('#gumpifyButton').click(function() {
+		// Provide a loading message
+		$('#Step3').text("Loading...");
 		// Load the new UI
 		$('.content').load('screen2.html', function() {
 			// Change the title location to the top of the rectangles
@@ -74,14 +76,19 @@ $(document).ready(function() {
 				data: {	"fg_url": fg_url,
 						"bg_url": bg_url},
 				success: function(data) {
-					fg_img_pos = data.position;
-					fg_img_scale = data.scale;
-					// We must create copies
-					fg_original_pos = data.position.slice();
-					fg_original_scale = data.scale.slice();
-					loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer);
+					if (data.startsWith("ERROR")){
+						$('#resultPane').text("Something went wrong!");
+					}
+					else {
+						fg_img_pos = data.position;
+						fg_img_scale = data.scale;
+						// We must create copies
+						fg_original_pos = data.position.slice();
+						fg_original_scale = data.scale.slice();
+						loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer);
+					}
 				},
-				dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
+				// dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
 				error: function(xhr, status, error) {
 					console.log(status);
 					console.log(error);
@@ -373,9 +380,14 @@ function postProcessButton() {
 		url: "cgi-bin/getFinalImage.py",
 		data: JSON.stringify(toSend),
 		success: function(data) {
-			console.log("Success");
+			if (data.startsWith("ERROR")) {
+				console.log("ERROR")
+			}
+			else {
+				console.log("Success");
+			}
 		},
-		dataType: "json",
+		// dataType: "json",
 		error: function(xhr, status, error) {
 			console.log(status);
 			console.log(error);

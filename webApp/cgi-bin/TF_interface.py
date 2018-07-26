@@ -26,6 +26,11 @@ def sendData(data, command):
 	Returns:
 		str: the response from teh TF server
 
+	Raises:
+		ConnectionAbortedError: Either data failed to send or be received because the socket is closed
+		ValueError: something went wrong at the TensorFlow end of things
+
+		ConnectionRefusedError: probably the TF server not started
 	"""
 
 	# === Marshall the overall string to send
@@ -44,7 +49,7 @@ def sendData(data, command):
 	while totalsent < len(toSend):
 		sent = s.send(toSend[totalsent:].encode())
 		if sent == 0:
-			break
+			raise ConnectionAbortedError("Failed to send the data")
 		totalsent = totalsent + sent
 
 	# === Reveive response data === #
@@ -53,7 +58,7 @@ def sendData(data, command):
 	while bytes_recd < 5:
 		chunk = s.recv(5 - bytes_recd)
 		if chunk == '':
-			break
+			raise ConnectionAbortedError("Failed to receive length data")
 		chunks.append(chunk.decode())
 		bytes_recd += len(chunk)
 
@@ -68,12 +73,16 @@ def sendData(data, command):
 	while bytes_recd < length:
 		chunk = s.recv(min(length - bytes_recd, 2048))
 		if chunk == '':
-			break
+			raise ConnectionAbortedError("Failed to receive payload data")
 		chunks.append(chunk.decode())
 		bytes_recd += len(chunk)
 
 	s.close()
 
 	response = ''.join(chunks)
+
+	# Check for errors
+	if response == "ERROR":
+		raise ValueError("TF Server produced an exception")
 
 	return response

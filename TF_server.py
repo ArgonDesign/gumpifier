@@ -15,6 +15,7 @@ import socket
 import json
 # import API
 import threading
+import traceback
 
 class TF_Socket():
 	def __init__(self):
@@ -98,13 +99,14 @@ class TF_Socket():
 			socket (socket): the socket to send reply data along.
 		"""
 		prefix = "webApp"
+		response = None
 
 		if command in ['sgtF', 'sgtB'] :
 			# Signal that there is no return data to receive
 			totalsent = 0
 			while totalsent < 5:
 				sent = socket.send("00000".encode())
-				if sent == 0:break
+				if sent == 0: break
 				totalsent = totalsent + sent	
 			socket.close()
 
@@ -118,8 +120,11 @@ class TF_Socket():
 			return
 		elif command == 'gump':
 			data = json.loads(data)
-			
-			toSend = self.api.build_response(os.path.join(prefix, data['fg_url']), os.path.join(prefix, data['bg_url']))
+			try:
+				response = self.api.build_response(os.path.join(prefix, data['fg_url']), os.path.join(prefix, data['bg_url']))
+			except Exception as err:
+				traceback.print_exc()
+				response = "ERROR"
 		elif command == 'post':
 			data = json.loads(data)
 			print(data.keys())
@@ -131,9 +136,16 @@ class TF_Socket():
 			position = data['position']
 			scale = data['scale']
 			# Get response
-			toSend = self.api.create_image(cutout, foreground, background, position, scale)
+			try:
+				response = self.api.create_image(cutout, foreground, background, position, scale)
+			except Exception as err:
+				traceback.print_exc()
+				response = "ERROR"
+		else:
+			response = "ERROR"
 
 		# === Send the response if needed === #
+		toSend = "{:0>5}".format(len(response)) + response
 		totalsent = 0
 		while totalsent < len(toSend):
 			sent = socket.send(toSend[totalsent:].encode())

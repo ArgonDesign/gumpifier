@@ -18,6 +18,7 @@ import cgi, os
 import cgitb; cgitb.enable() # Traceback enable
 import json
 from TF_interface import sendData
+import traceback
 
 form = cgi.FieldStorage()
 
@@ -72,14 +73,26 @@ returnDict = {
 }
 
 # === Option 4 Ask the TF server to give us the data === #
-# returnJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
+returnJSON = None
+returnType = None
 
-returnJSON = json.dumps(returnDict)
+returnJSON = json.dumps(returnDict) # Remove this in production
+returnType = "application/json" # Remove this in production
+
+try:
+	returnJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
+	dataType = "application/json"
+except ConnectionAbortedError as err:
+	returnJSON = "ERROR\n{}".format(traceback.format_exc())
+	dataType = "text/plain"
+except ValueError as err:
+	returnJSON = "ERROR\n{}".format(traceback.format_exc())
+	dataType = "text/plain"
+except ConnectionRefusedError:
+	returnJSON = "ERROR\n{}".format(traceback.format_exc())
+	dataType = "text/plain"
 
 # Return stuff to server
-dataType = "application/json"
-# dataType = "text/plain"
-
 print("""Content-type: {}
 
 {}""".format(dataType, returnJSON))
