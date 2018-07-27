@@ -28,6 +28,7 @@ dataType = "application/json"
 
 try:
 	message = sendData(data, command='post')
+	message = json.dumps(message)
 except ConnectionAbortedError:
 	message = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ValueError:

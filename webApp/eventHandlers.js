@@ -314,15 +314,15 @@ function resetScaleButton() {
 }
 
 function changePositionSpinner() {
-	fg_img_pos[0] = document.getElementById('xPosSpinner').value;
-	fg_img_pos[1] = document.getElementById('yPosSpinner').value;
+	fg_img_pos[0] = parseFloat(document.getElementById('xPosSpinner').value);
+	fg_img_pos[1] = parseFloat(document.getElementById('yPosSpinner').value);
 	windowScale();
 }
 
 function changeScaleSpinnerX() {
 	if (document.getElementById('scaleLink').checked){
-		var newX = document.getElementById('xScaleSpinner').value;
-		var newY = document.getElementById('xScaleSpinner').value * (fg_img_scale[1]/fg_img_scale[0]) // newY = newX * (oldY/oldX)
+		var newX = parseFloat(document.getElementById('xScaleSpinner').value);
+		var newY = parseFloat(document.getElementById('xScaleSpinner').value) * (fg_img_scale[1]/fg_img_scale[0]) // newY = newX * (oldY/oldX)
 		fg_img_scale[0] = newX;
 		fg_img_scale[1] = newY;
 	}
@@ -335,8 +335,8 @@ function changeScaleSpinnerX() {
 
 function changeScaleSpinnerY() {
 	if (document.getElementById('scaleLink').checked){
-		var newY = document.getElementById('yScaleSpinner').value;
-		var newX = document.getElementById('yScaleSpinner').value * (fg_img_scale[0]/fg_img_scale[1]) // newX = newY * (oldX/oldY)
+		var newY = parseFloat(document.getElementById('yScaleSpinner').value);
+		var newX = parseFloat(document.getElementById('yScaleSpinner').value) * (fg_img_scale[0]/fg_img_scale[1]) // newX = newY * (oldX/oldY)
 		fg_img_scale[0] = newX;
 		fg_img_scale[1] = newY;	
 	}
@@ -371,13 +371,15 @@ function postProcessButton() {
 	var layer = $(".resultBackground, #resultForeground").index($('#resultForeground')) - 1;
 	var position = fg_img_pos;
 	var scale = fg_img_scale;
+	var original_BG_URL = bg_url
 
 	var toSend = {
 		"BG_segment_URLs": BG_segment_URLs,
 		"FG_cutout_URL": FG_cutout_URL,
 		"layer" : layer,
 		"position": position,
-		"scale" : scale
+		"scale" : scale,
+		"original_BG_URL": original_BG_URL
 	};
 
 	// Send the data to the server
@@ -391,7 +393,21 @@ function postProcessButton() {
 				console.log(data.ERROR);
 			}
 			else {
-				console.log("Success");
+				console.log(data);
+				// Generate a new image
+				var tmpImg = new Image()
+				// Add the src and class
+				tmpImg.src = data;
+				$(tmpImg).addClass('backgroundImage');
+
+				// Create the containing div
+				var div = $("<div />", {"class": 'resultBackground'});
+
+				// Add image to div
+				div.append(tmpImg);
+
+				// Add div to pane
+				$('#resultPane').append(div);
 			}
 		},
 		dataType: "json",

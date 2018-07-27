@@ -163,9 +163,14 @@ class TF_Socket():
 			background = [os.path.join(prefix, postfix) for postfix in data['BG_segment_URLs'][:layer]]
 			position = data['position']
 			scale = data['scale']
+			original_BG_URL = os.path.join(prefix, data['original_BG_URL'])
+
+			print(cutout, foreground, background, position, scale, original_BG_URL)
+
 			# Get response
 			try:
-				response = self.api.create_image(cutout, foreground, background, position, scale)
+				response = self.api.create_image(cutout, foreground, background, position, scale, original_BG_URL)
+				response = os.path.relpath(response, prefix)
 			except Exception as err:
 				traceback.print_exc()
 				response = "ERROR"
