@@ -31,7 +31,7 @@ class TF_Socket():
 		self.serversocket.bind(('localhost', port))
 
 		# Initialize the TF model
-		self.api = API.API.API()		
+		self.api = API.API.API()
 
 	def startListening(self):
 		"""
@@ -83,7 +83,8 @@ class TF_Socket():
 			command = data[:4]
 			data = data[4:]
 
-			threading.Thread(target=self.dispatcher, args=(data, command, clientsocket)).start()
+			# threading.Thread(target=self.dispatcher, args=(data, command, clientsocket)).start()
+			self.dispatcher(data, command, clientsocket)
 
 	def dispatcher(self, data, command, socket):
 		"""
@@ -122,7 +123,7 @@ class TF_Socket():
 				print("Segmented foreground successfully")
 			except:
 				traceback.print_exc()
-				print("Error in segmenting foreground")
+				print("Error segmenting foreground")
 			return
 		elif command == 'sgtB':
 			# Set the background segmenting
@@ -131,18 +132,24 @@ class TF_Socket():
 				print("Segmented background successfully")
 			except:
 				traceback.print_exc()
-				print("Error in segmenting background")
+				print("Error segmenting background")
 			return
 		elif command == 'gump':
 			data = json.loads(data)
 			try:
 				response = self.api.build_response(os.path.join(prefix, data['fg_url']), os.path.join(prefix, data['bg_url']))
+				# Remove the leading 'webApp/'
+				print(response["cutout"], os.path.relpath(response["cutout"], prefix))
+				response["foreground"] = [os.path.relpath(path, prefix) for path in response["foreground"]]
+				response["background"] = [os.path.relpath(path, prefix) for path in response["background"]]
+				response["cutout"] = os.path.relpath(response["cutout"], prefix)
+
+				response = json.dumps(response)
 			except Exception as err:
 				traceback.print_exc()
 				response = "ERROR"
 		elif command == 'post':
 			data = json.loads(data)
-			print(data.keys())
 			# Marshall data
 			cutout = os.path.join(prefix, data['FG_cutout_URL'])
 			layer = data['layer']
@@ -159,8 +166,10 @@ class TF_Socket():
 		else:
 			response = "ERROR"
 
+
 		# === Send the response if needed === #
 		toSend = "{:0>5}".format(len(response)) + response
+		print("Sending this: {}".format(toSend))
 		totalsent = 0
 		while totalsent < len(toSend):
 			sent = socket.send(toSend[totalsent:].encode())

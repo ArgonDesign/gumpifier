@@ -6,6 +6,7 @@ $(document).ready(function() {
 		$(this).ajaxSubmit(function(data) {
 			// We can't get the path to the local file via the form because of security limitations
 			// so we download the uploaded file to the server.
+			data = data.slice(0,-1); // Remove the training \n character
 			if (data.slice(0,-1) != "ERROR") {
 				set_fg_true(data);
 			}
@@ -31,6 +32,7 @@ $(document).ready(function() {
 		$(this).ajaxSubmit(function(data) {
 			// We can't get the path to the local file via the form because of security limitations
 			// so we download the uploaded file to the server.
+			data = data.slice(0,-1); // Remove the training \n character
 			if (data.slice(0,-1) != 'ERROR') {
 				set_bg_true(data);
 			}
@@ -60,8 +62,6 @@ var fg_loaded = false;
 var selectedLayerDiv;
 $(document).ready(function() {
 	$('#gumpifyButton').click(function() {
-		// Provide a loading message
-		$('#Step3').text("Loading...");
 		// Load the new UI
 		$('.content').load('screen2.html', function() {
 			// Change the title location to the top of the rectangles
@@ -69,6 +69,8 @@ $(document).ready(function() {
 			// Switch the flex-grow properties for the viewing and command pane
 			$('#circlePaneLeft').css({"flex-grow": 7});
 			$('#circlePaneRight').css({"flex-grow": 3});
+			// Provide a loading message
+			$('#vCenterPaneLeftTitle').text("Loading...");
 			// Once UI is loaded it's now safe to send the AJAX request to the server and load the images
 			$.ajax({
 				type: "POST",
@@ -81,6 +83,7 @@ $(document).ready(function() {
 						console.log(data.ERROR);
 					}
 					else {
+						$('#vCenterPaneLeftTitle').text("Your Gumpified Image");
 						fg_img_pos = data.position;
 						fg_img_scale = data.scale;
 						// We must create copies

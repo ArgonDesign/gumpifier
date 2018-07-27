@@ -91,7 +91,8 @@ class API:
             background (image_url -> str): A url to the cutout of the person - using it as a key
 
         Returns:
-            json str: A json string containing the parameters
+            dict: a dict representing the json values
+            (NOT: json str: A json string containing the parameters)
         """
 
         response = {}
@@ -103,7 +104,7 @@ class API:
         response["position"], response["scale"] = self.get_optimal_position(fg_pred, bg_pred)
         # response["scale"] = self.get_optimal_scale()
 
-        return json.dumps(response)
+        return response
 
     def get_cutout(self, fg_pred):
         img = fg_pred.get_primary_human_image()
@@ -125,7 +126,7 @@ class API:
         return foreground, background
 
     def save_img_get_url(self, img):
-        filepath = "test_url"
+        filepath = "webApp/storage/"
         os.makedirs(filepath, exist_ok=True)
         fname = os.path.join(filepath, hashlib.md5(str(time.time() + random.random()).encode("utf8")).hexdigest() + ".png")
         Image.fromarray(img.astype("uint8")).save(fname)

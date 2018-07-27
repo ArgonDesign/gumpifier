@@ -33,28 +33,28 @@ bg_url = form['bg_url'].value
 
 # {}""".format(fg_url))
 # sys.exit()
-if fg_url != 'storage/Poirot_cutout_256x256.PNG':
-	import zipfile
-	zip_ref = zipfile.ZipFile(fg_url[:-1])
-	zip_ref.extractall("Resources/patrick_json_dynamic")
-	zip_ref.close()
+# if fg_url != 'storage/Poirot_cutout_256x256.PNG':
+# 	import zipfile
+# 	zip_ref = zipfile.ZipFile(fg_url[:-1])
+# 	zip_ref.extractall("Resources/patrick_json_dynamic")
+# 	zip_ref.close()
 
-	prefix = "Resources/patrick_json_dynamic/"
-else:
-	prefix = "Resources/patrick_json_static/"
+# 	prefix = "Resources/patrick_json_dynamic/"
+# else:
+# 	prefix = "Resources/patrick_json_static/"
 	# prefix = "Resources/patrick_json_dynamic/"
 
 # === Option 2 Package up JSON from a file (either uploade from option 1 or from a different, specified, file === #
 # prefix = "Resources/patrick_json/"
-f = open(prefix + "patrick.json", "r")
-importedJSON = json.loads(f.read())
-f.close()
+# f = open(prefix + "patrick.json", "r")
+# importedJSON = json.loads(f.read())
+# f.close()
 
-BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
-FG_cutout_URL = prefix + importedJSON['cutout']
-layer = len(importedJSON['background']) - 1
-position = importedJSON['position']
-scale = importedJSON['scale']
+# BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
+# FG_cutout_URL = prefix + importedJSON['cutout']
+# layer = len(importedJSON['background']) - 1
+# position = importedJSON['position']
+# scale = importedJSON['scale']
 
 # === Option 3 Make up some data === #
 # BG_segment_URLs = ['Resources/BGTest1.png', 'Resources/BGTest2.png', 'Resources/BGTest3.png', 'Resources/BGTest4.png']
@@ -63,26 +63,44 @@ scale = importedJSON['scale']
 # position = (0.0, 0.5)
 # scale = (0.5, 0.5)
 
-# === Create the dictionary to return === #
-returnDict = {
-	"BG_segment_URLs": BG_segment_URLs,
-	"FG_cutout_URL": FG_cutout_URL,
-	"layer": layer,
-	"position": position,
-	"scale": scale
-}
+# === Create the dictionary to return for the above options === #
+# returnDict = {
+# 	"BG_segment_URLs": BG_segment_URLs,
+# 	"FG_cutout_URL": FG_cutout_URL,
+# 	"layer": layer,
+# 	"position": position,
+# 	"scale": scale
+# }
+
+# returnJSON = json.dumps(returnDict) # Remove this in production
 
 # === Option 4 Ask the TF server to give us the data === #
+def jsonConverter(importedJSON):
+	importedJSON = json.loads(importedJSON)
+	""" From combinations of the commented out code above """
+	BG_segment_URLs = importedJSON['background'] + importedJSON['foreground']
+	FG_cutout_URL = importedJSON['cutout']
+	layer = len(importedJSON['background']) - 1
+	position = importedJSON['position']
+	scale = importedJSON['scale']
+
+	returnDict = {
+		"BG_segment_URLs": BG_segment_URLs,
+		"FG_cutout_URL": FG_cutout_URL,
+		"layer": layer,
+		"position": position,
+		"scale": scale
+	}
+
+	return json.dumps(returnDict) # Remove this in production
+
 returnJSON = None
-returnType = None
 
-returnJSON = json.dumps(returnDict) # Remove this in production
 dataType = "application/json" # Keep this in production
-
 try:
-	returnJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
-	dataType = "application/json"
-except ConnectionAbortedError as err:
+	importedJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
+	returnJSON = jsonConverter(importedJSON)
+except ConnectionAbortedError as err: # TODO: catch all in one like (ConnectionAbortedError, ValueError, ConnectionRefusedError)
 	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ValueError as err:
 	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
