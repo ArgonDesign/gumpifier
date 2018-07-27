@@ -193,6 +193,7 @@ class MaskRCNN():
         K.clear_session()
         self.model = modellib.MaskRCNN(mode="inference", model_dir="Logs", config=config)
         self.model.load_weights(COCO_MODEL_PATH, by_name=True)
+        self.model.keras_model._make_predict_function()
         
     def load_image(self, filename):
         return skimage.io.imread(filename)
