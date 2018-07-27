@@ -15,15 +15,16 @@ class API:
         self.background_map = {}
         self.objects_to_be_behind = [] # [2, 3, 4, 9, 11, 15, 16, 17, 18, 19, 20, 23, 57, 58, 59, 60, 61, 64]  # ! This is a personal choice and needs to be reconsidered in more depth
 
-    def load_foreground(self, foreground):
+    def load_foreground(self, foreground, fn):
         """Loads and segments the foreground
         
         Args:
             foreground (image_url -> str): A url to the foreground image
         """
         self.foreground_map[foreground] = self.nn.predict_from_file(foreground)
+        fn()
 
-    def load_background(self, background):
+    def load_background(self, background, fn):
         """Loads and segments the background
         
         Args:
@@ -31,6 +32,7 @@ class API:
         """
 
         self.background_map[background] = self.nn.predict_from_file(background)
+        fn()
 
 
     def create_image(self, cutout, foreground, background, position, scale, bg_image):
