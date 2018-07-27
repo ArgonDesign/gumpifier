@@ -15,12 +15,12 @@ function applyState(fg_changed, bg_changed, data) {
 		if (fg_changed) {
 			$('#option1Left').css({"display": "none"});
 			$('#option2Left').css({"display": "flex"});
-			var tmpImg = new Image();
-			tmpImg.onload = function() {checkSegmentation('fg_url', data)};
-			tmpImg.src = data;
-			$(tmpImg).addClass('opt2ImageLeft');
-			$('#opt2ImageLeftDiv').html(tmpImg);
-			// $('#opt2ImageLeft').attr("src", data);
+			// var tmpImg = new Image();
+			// tmpImg.onload = function() {checkSegmentation('fg_url', data)};
+			// tmpImg.src = data;
+			// $(tmpImg).addClass('opt2ImageLeft');
+			// $('#opt2ImageLeftDiv').html(tmpImg);
+			$('#opt2ImageLeft').attr("src", data);
 			$('#foregroundForm').appendTo('#opt2vLeft');
 			fg_url = data;
 			console.log(fg_url);
@@ -38,12 +38,12 @@ function applyState(fg_changed, bg_changed, data) {
 		if (bg_changed) {
 			$('#option1Right').css({"display": "none"});
 			$('#option2Right').css({"display": "flex"});
-			var tmpImg = new Image();
-			tmpImg.onload = function() {checkSegmentation('bg_url', data)};
-			tmpImg.src = data;
-			$(tmpImg).addClass('opt2ImageRight');
-			$('#opt2ImageRightDiv').html(tmpImg);
-			// $('#opt2ImageRight').attr("src", data);
+			// var tmpImg = new Image();
+			// tmpImg.onload = function() {checkSegmentation('bg_url', data)};
+			// tmpImg.src = data;
+			// $(tmpImg).addClass('opt2ImageRight');
+			// $('#opt2ImageRightDiv').html(tmpImg);
+			$('#opt2ImageRight').attr("src", data);
 			$('#backgroundForm').appendTo('#opt2vRight');
 			bg_url = data;
 		}
@@ -68,8 +68,11 @@ function applyState(fg_changed, bg_changed, data) {
 	if (bg_selected && fg_selected && fg_segmented && bg_segmented) {
 		// Enable the Gumpify button
 		$('#gumpifyButton').prop('disabled', false);
-		// Style the text to an appropriate colour
+		// Style the text and circles to an appropriate colour
 		$('#gumpifyPane').css({color: 'rgb(141,135,255)'});
+		$('.cornerCircleStep3').css({"background-color": 'rgb(141,135,255)'})
+		// Set text
+		$('#Step3').text("Step 3...");
 		// Set the gumpify animations going
 		sideSwoosh('.borderLineL', '.borderLineStep3');
 		topBottomSwoosh	('.borderLineB', '.borderLineStep3');
@@ -77,26 +80,30 @@ function applyState(fg_changed, bg_changed, data) {
 	else {
 		// Disable the Gumpify button
 		$('#gumpifyButton').prop('disabled', true); // TODO: replace false with true here to ensure button is disable when no images uploaded
-		// Style the text to grey
+		// Style the text and circles to grey
 		$('#gumpifyPane').css({color: 'rgb(135,135,135)'});
+		$('.cornerCircleStep3').css({"background-color": 'rgb(135,135,135)'});
+		// Set text
+		if (fg_selected && bg_selected) $('#Step3').text("Step 3... (just a sec, we're processing your images)");
 		// Stop the gumpify animations	
 		$('.borderLineL.borderLineStep3, .borderLineR.borderLineStep3, .borderLineT.borderLineStep3, .borderLineB.borderLineStep3').stop(true); // stopall=true
 		resetAnimationState(".borderLineStep3");
 	}
 }
 
-function checkSegmentation(what, imgURL) {
+function checkSegmentation(what) {
+	console.log("Check Segmentation called")
 	// what is either 'fg_url' or 'bg_url'
 	// We now make another AJAX call with returns when the FG image has finished segmenting
 	var toSend;
-	if (what == 'fg_url') toSend = {'fg_url': imgURL}
-	else if (what == 'bg_url') toSend = {'bg_url': imgURL}
+	if (what == 'fg_url') toSend = {'fg_url': $('#opt2ImageLeft').attr('src')}
+	else if (what == 'bg_url') toSend = {'bg_url': $('#opt2ImageRight').attr('src')}
 	$.ajax({
 		type: "POST",
 		url: "cgi-bin/segCheck.py",
 		data: toSend,
 		success: function(data) {
-				console.log(data);	
+				console.log(data);
 				if (what == 'fg_url') fg_segmented = true;
 				else if (what == 'bg_url') bg_segmented = true;
 				applyState(false, false, null);

@@ -49,7 +49,8 @@ header {
 }
 
 .cornerCircleStep3 {
-	background-color: rgb(141,135,255);
+	/*background-color: rgb(141,135,255);*/
+	background-color: rgb(135,135,135);
 }
 
 /* === Border lines at edges of main boxes === */
