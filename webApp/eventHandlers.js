@@ -6,6 +6,7 @@ $(document).ready(function() {
 		$(this).ajaxSubmit(function(data) {
 			// We can't get the path to the local file via the form because of security limitations
 			// so we download the uploaded file to the server.
+			fg_segmented = false;
 			data = data.slice(0,-1); // Remove the training \n character
 			if (data.slice(0,-1) != "ERROR") {
 				set_fg_true(data);
@@ -32,6 +33,7 @@ $(document).ready(function() {
 		$(this).ajaxSubmit(function(data) {
 			// We can't get the path to the local file via the form because of security limitations
 			// so we download the uploaded file to the server.
+			bg_segmented = false;
 			data = data.slice(0,-1); // Remove the training \n character
 			if (data.slice(0,-1) != 'ERROR') {
 				set_bg_true(data);

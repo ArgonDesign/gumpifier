@@ -1,9 +1,11 @@
 var fg_selected = false;
 var bg_selected = false;
+var fg_segmented = false;
+var bg_segmented = false;
 var fg_url = "storage/Poirot_cutout_256x256.PNG";
 var bg_url = "storage/Street_256x256.JPG";
 
-function applyState(fg_changed, data) {
+function applyState(fg_changed, bg_changed, data) {
 	// Deal with fg selected state
 	if (fg_selected) {
 		// Stop animations
@@ -13,7 +15,12 @@ function applyState(fg_changed, data) {
 		if (fg_changed) {
 			$('#option1Left').css({"display": "none"});
 			$('#option2Left').css({"display": "flex"});
-			$('#opt2ImageLeft').attr("src", data);
+			var tmpImg = new Image();
+			tmpImg.onload = function() {checkSegmentation('fg_url', data)};
+			tmpImg.src = data;
+			$(tmpImg).addClass('opt2ImageLeft');
+			$('#opt2ImageLeftDiv').html(tmpImg);
+			// $('#opt2ImageLeft').attr("src", data);
 			$('#foregroundForm').appendTo('#opt2vLeft');
 			fg_url = data;
 			console.log(fg_url);
@@ -28,10 +35,15 @@ function applyState(fg_changed, data) {
 	// Deal with bg selected state
 	if (bg_selected) {
 		// Set the image to display if necessary
-		if (!fg_changed) {
+		if (bg_changed) {
 			$('#option1Right').css({"display": "none"});
 			$('#option2Right').css({"display": "flex"});
-			$('#opt2ImageRight').attr("src", data);
+			var tmpImg = new Image();
+			tmpImg.onload = function() {checkSegmentation('bg_url', data)};
+			tmpImg.src = data;
+			$(tmpImg).addClass('opt2ImageRight');
+			$('#opt2ImageRightDiv').html(tmpImg);
+			// $('#opt2ImageRight').attr("src", data);
 			$('#backgroundForm').appendTo('#opt2vRight');
 			bg_url = data;
 		}
@@ -52,8 +64,8 @@ function applyState(fg_changed, data) {
 		resetAnimationState(".borderLineRight");
 	}
 
-	// Deal with both being true or either being false
-	if (bg_selected && fg_selected) {
+	// Check if we can enable the Gumpify button
+	if (bg_selected && fg_selected && fg_segmented && bg_segmented) {
 		// Enable the Gumpify button
 		$('#gumpifyButton').prop('disabled', false);
 		// Style the text to an appropriate colour
@@ -64,7 +76,7 @@ function applyState(fg_changed, data) {
 	}
 	else {
 		// Disable the Gumpify button
-		$('#gumpifyButton').prop('disabled', false); // TODO: replace false with true here to ensure button is disable when no images uploaded
+		$('#gumpifyButton').prop('disabled', true); // TODO: replace false with true here to ensure button is disable when no images uploaded
 		// Style the text to grey
 		$('#gumpifyPane').css({color: 'rgb(135,135,135)'});
 		// Stop the gumpify animations	
@@ -73,9 +85,33 @@ function applyState(fg_changed, data) {
 	}
 }
 
-function set_fg_false(data) {fg_selected = false; applyState(true, data);}
-function set_fg_true(data) {fg_selected = true; applyState(true, data);}
-function set_bg_false(data) {bg_selected = false; applyState(false, data);}
-function set_bg_true(data) {bg_selected = true; applyState(false, data);}
+function checkSegmentation(what, imgURL) {
+	// what is either 'fg_url' or 'bg_url'
+	// We now make another AJAX call with returns when the FG image has finished segmenting
+	var toSend;
+	if (what == 'fg_url') toSend = {'fg_url': imgURL}
+	else if (what == 'bg_url') toSend = {'bg_url': imgURL}
+	$.ajax({
+		type: "POST",
+		url: "cgi-bin/segCheck.py",
+		data: toSend,
+		success: function(data) {
+				console.log(data);	
+				if (what == 'fg_url') fg_segmented = true;
+				else if (what == 'bg_url') bg_segmented = true;
+				applyState(false, false, null);
+			},
+		dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
+		error: function(xhr, status, error) {
+			console.log(status);
+			console.log(error);
+		}
+	});
+}
+
+function set_fg_false(data) {fg_selected = false; applyState(true, false, data);}
+function set_fg_true(data) {fg_selected = true; applyState(true, false, data);}
+function set_bg_false(data) {bg_selected = false; applyState(false, true, data);}
+function set_bg_true(data) {bg_selected = true; applyState(false, true, data);}
 
 $(document).ready(applyState);

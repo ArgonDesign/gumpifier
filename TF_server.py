@@ -30,6 +30,9 @@ class TF_Socket():
 		self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.serversocket.bind(('localhost', port))
 
+		# Initialise the observer pattern for segmenting completion callback registering
+		self.segObs = SegmentObserver()
+
 		# Initialize the TF model
 		self.api = API.API.API()
 
@@ -40,8 +43,7 @@ class TF_Socket():
 
 		# Start listening
 		self.serversocket.listen(5)
-
-		print("Ready accept connections")
+		print("Ready to accept connections")
 
 		# Main loop
 		while 1:
@@ -83,8 +85,8 @@ class TF_Socket():
 			command = data[:4]
 			data = data[4:]
 
-			# threading.Thread(target=self.dispatcher, args=(data, command, clientsocket)).start()
-			self.dispatcher(data, command, clientsocket)
+			threading.Thread(target=self.dispatcher, args=(data, command, clientsocket)).start()
+			# self.dispatcher(data, command, clientsocket)
 
 	def dispatcher(self, data, command, socket):
 		"""
@@ -118,8 +120,8 @@ class TF_Socket():
 		if command == 'sgtF':
 			# Set the foreround segmenting
 			try:
-				print(os.path.join(prefix, data))
-				self.api.load_foreground(os.path.join(prefix, data))
+				url = os.path.join(prefix, data)
+				self.api.load_foreground(url, fn=lambda: self.segObs.addStatus(url=url))
 				print("Segmented foreground successfully")
 			except:
 				traceback.print_exc()
@@ -128,11 +130,15 @@ class TF_Socket():
 		elif command == 'sgtB':
 			# Set the background segmenting
 			try:
-				self.api.load_background(os.path.join(prefix, data))
+				url = os.path.join(prefix, data)
+				self.api.load_background(url, fn=lambda: self.segObs.addStatus(url=url))
 				print("Segmented background successfully")
 			except:
 				traceback.print_exc()
 				print("Error segmenting background")
+			return
+		elif command in ['chkF', 'chkB']:
+			self.segObs.addFn(url=os.path.join(prefix, data), fn=lambda: self.sendResponse(json.dumps({"done": True}), socket))
 			return
 		elif command == 'gump':
 			data = json.loads(data)
@@ -168,6 +174,15 @@ class TF_Socket():
 
 
 		# === Send the response if needed === #
+		self.sendResponse(response, socket)
+
+	def cleanUp():
+		"""
+		This function is run as a thread each time the a connection is accepted.  It checks for files in the uploads
+		folder that are greater than 30 days old and deletes them.
+		"""
+
+	def sendResponse(self, response, socket):
 		toSend = "{:0>5}".format(len(response)) + response
 		print("Sending this: {}".format(toSend))
 		totalsent = 0
@@ -179,11 +194,66 @@ class TF_Socket():
 
 		socket.close()
 
-	def cleanUp():
-		"""
-		This function is run as a thread each time the a connection is accepted.  It checks for files in the uploads
-		folder that are greater than 30 days old and deletes them.
-		"""
+class SegmentObserver():
+	def __init__(self):
+		# Create a map of {url: status}
+		self.statusMap = {}
+		self.statusMapLock = threading.Lock()
+		# Create a map of {url: fn}
+		self.fnMap = {}
+		self.fnMapLock = threading.Lock()
+
+	def addFn(self, url, fn):
+		print("addFn acquiring locks")
+		self.statusMapLock.acquire()
+		self.fnMapLock.acquire()
+		print("addFn acquired locks")
+		print(self.statusMap)
+		print(self.fnMap)
+
+		if url in self.statusMap:
+			print("url is already present, deleting from statusMap")
+			del self.statusMap[url]
+			print(self.statusMap)
+			self.fnMapLock.release()
+			self.statusMapLock.release()
+			print("locks released")
+			fn()
+		else:
+			print("url not already present, registering fn")
+			print(url)
+			self.fnMap[url] = fn
+			print(self.fnMap)
+			self.fnMapLock.release()
+			self.statusMapLock.release()
+			print("locks released")
+
+	def addStatus(self, url):
+		print("addStatus acquiring locks")
+		self.statusMapLock.acquire()
+		self.fnMapLock.acquire()
+
+		print("addStatus acquired locks")
+		print(self.statusMap)
+		print(self.fnMap)
+
+		if url in self.fnMap:
+			print("Fn is already present, deleting from fnMap")
+			toRun = self.fnMap[url]
+			del self.fnMap[url]
+			print(self.fnMap)
+			self.fnMapLock.release()
+			self.statusMapLock.release()
+			print("locks released")
+			toRun()
+		else:
+			print("fn not already present, registering status")
+			self.statusMap[url] = True
+			print(self.statusMap)
+			self.fnMapLock.release()
+			self.statusMapLock.release()
+			print("locks released")
+
 
 if __name__ == "__main__":
 	tfs = TF_Socket()
