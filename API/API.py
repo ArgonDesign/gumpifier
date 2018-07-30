@@ -77,24 +77,28 @@ class API:
         # * Add shadows
         bg_image_person_img = np.zeros(bg_image_array.shape)
 
-        # # ! Only add the part of the image that's visible
-        # print(top_left_y, )
-        # indices = [0, cutout_array.shape[0], 0, cutout_array.shape[1]]
-        # if top_left_y < 0:
-        #     indices[0] = abs(top_left_y)
-        #     top_left_y = 0
-        # if bottom_right_y > bg_image_size[1]:
-        #     indices[1] = bg_image_size[1] - bottom_right_y
-        #     bottom_right_y = bg_image_size[1]
-        # if top_left_x < 0:
-        #     indices[2] = abs(top_left_x)
-        #     top_left_x = 0
-        # if bottom_right_x > bg_image_size[0]:
-        #     indices[3] = bg_image_size[0] - bottom_right_x
-        #     bottom_right_y = bg_image_size[0]
-
-        # print(indices, cutout_array.shape, (top_left_y, top_left_x, bottom_right_y, bottom_right_x), bg_image_person_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x].shape, cutout_array[indices[0]:indices[1], indices[2]:indices[3]].shape)
-        bg_image_person_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x] = cutout_array
+        # ! Only add the part of the image that's visible
+        print(bg_image_size)
+        print(top_left_y, top_left_x, bottom_right_y, bottom_right_x)
+        indices = [0, cutout_array.shape[0], 0, cutout_array.shape[1]]
+        if top_left_y < 0:
+            indices[0] = abs(top_left_y)
+            top_left_y = 0
+            print("Too high")
+        if bottom_right_y > bg_image_size[1]:
+            indices[1] = bg_image_size[1] - bottom_right_y
+            bottom_right_y = bg_image_size[1]
+            print("too low")
+        if top_left_x < 0:
+            indices[2] = abs(top_left_x)
+            top_left_x = 0
+            print("Too left")
+        if bottom_right_x > bg_image_size[0]:
+            indices[3] = bg_image_size[0] - bottom_right_x
+            bottom_right_x = bg_image_size[0]
+            print("Too right")
+        print(indices, cutout_array.shape, (top_left_y, top_left_x, bottom_right_y, bottom_right_x), bg_image_person_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x].shape, cutout_array[indices[0]:indices[1], indices[2]:indices[3]].shape)
+        bg_image_person_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x] = cutout_array[indices[0]:indices[1], indices[2]:indices[3]]
 
         bg_image_person_mask = np.zeros(bg_image_array.shape[:2], dtype=np.bool)
         bg_image_person_mask[np.any(bg_image_person_img[:, :, :3], axis=2)] = True
