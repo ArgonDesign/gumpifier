@@ -7,7 +7,7 @@
 	width: 100%;
 }
 
-.resultBackground {
+.resultBackground, #resultFinal {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -33,6 +33,13 @@
 
 #foregroundImage {
 	position: absolute;
+}
+
+
+/* === CSS for the final result pane === */
+#finalImage {
+	position: absolute;
+	pointer-events: none;
 }
 
 /* === CSS for the RHS commands pane === */

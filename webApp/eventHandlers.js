@@ -125,7 +125,14 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer) {
 		$(tmpImg).on("mousedown", function(event) {getClickedImage(event, this);});
 
 		// Create the containing div
-		var div = $("<div />", {"class": 'resultBackground'});
+		var div = $("<div />", {"class": "resultBackground result"});
+		div.hover(
+			function() {
+				hideFinalImage();
+			},
+			function() {
+				showFinalImage();
+			});
 
 		// Add image to div
 		div.append(tmpImg);
@@ -173,7 +180,14 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer) {
 	
 
 	// Create the containing div
-	var div = $("<div />", {"id": "resultForeground"});
+	var div = $("<div />", {"id": "resultForeground", "class": "result"});
+	div.hover(
+		function() {
+			hideFinalImage();
+		},
+		function() {
+			showFinalImage();
+		});
 
 	// The image must have pointer events for dragging but the containing div must not to allow click through to background layers
 	$(tmpImgJQobject).css({"pointer-events": "auto"});
@@ -299,6 +313,13 @@ function windowScale() {
 
 	scaleAndPositionForeground();
 	setForegroundPane();
+
+	// Size the finalResult image
+	var resultForeground = $('#resultForeground');
+	$('#finalImage').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
+						left: resultForeground.position().left,
+						width: resultForeground.width(),
+						height: resultForeground.height()});
 }
 window.onresize = windowScale;
 
@@ -393,21 +414,28 @@ function postProcessButton() {
 				console.log(data.ERROR);
 			}
 			else {
-				console.log(data);
+				$('#finalImage').remove()
 				// Generate a new image
 				var tmpImg = new Image()
 				// Add the src and class
+				tmpImg.onload = function() {
+					windowScale();
+				}
 				tmpImg.src = data;
-				$(tmpImg).addClass('backgroundImage');
+				tmpImg.id = 'finalImage';
 
 				// Create the containing div
-				var div = $("<div />", {"class": 'resultBackground'});
+				// var div = $("<div />", {"id": 'resultFinal', "onmouseover": "hideFinalImage()", "onmouseout": "showFinalImage()"});
+				// var div = $("<div />", {"id": 'resultFinal'});
 
 				// Add image to div
-				div.append(tmpImg);
+				// div.append(tmpImg);
 
 				// Add div to pane
-				$('#resultPane').append(div);
+				// $('#resultPane').append(div);
+
+				// Add image
+				$('#vCenterPaneLeft').append(tmpImg);
 			}
 		},
 		dataType: "json",
@@ -416,4 +444,14 @@ function postProcessButton() {
 			console.log(error);
 		}
 	});	
+}
+
+function hideFinalImage() {
+	console.log("Hiding");
+	document.getElementById('finalImage').style.visibility = "hidden";
+}
+
+function showFinalImage() {
+	console.log("Showing");
+	document.getElementById('finalImage').style.visibility = "visible";
 }
