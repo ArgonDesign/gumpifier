@@ -286,6 +286,10 @@ function setForegroundPane() {
 				left: bgX - fgWidth,
 				width: bgWidth + 2*fgWidth,
 				height: bgHeight + 2*fgHeight});
+	// fgPane.css({top: bgY,
+	// 			left: bgX,
+	// 			width: bgWidth,
+	// 			height: bgHeight});
 
 	// Set the minimum and maximum position values for the number spinners.  Use the same values as for the draggable area
 	var xPosSpinner = document.getElementById('xPosSpinner');
@@ -411,6 +415,7 @@ function postProcessButton() {
 		success: function(data) {
 			if (data.hasOwnProperty("ERROR")) {
 				$('#resultPane').text("Something went wrong!");
+				$('#finalImage').remove();
 				console.log(data.ERROR);
 			}
 			else {
@@ -423,16 +428,6 @@ function postProcessButton() {
 				}
 				tmpImg.src = data;
 				tmpImg.id = 'finalImage';
-
-				// Create the containing div
-				// var div = $("<div />", {"id": 'resultFinal', "onmouseover": "hideFinalImage()", "onmouseout": "showFinalImage()"});
-				// var div = $("<div />", {"id": 'resultFinal'});
-
-				// Add image to div
-				// div.append(tmpImg);
-
-				// Add div to pane
-				// $('#resultPane').append(div);
 
 				// Add image
 				$('#vCenterPaneLeft').append(tmpImg);
