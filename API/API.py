@@ -238,7 +238,7 @@ class API:
 
         # ! Check whether this will actually terminate, and generate probabilities!
         softmax = []
-        im_h = bg_pred.image[0]
+        im_h = bg_pred.image.shape[0]
         for ind, x in enumerate(bg_pred.class_ids):
             scale = self.get_optimal_scale(x)
             bb = bg_pred.boxes[ind]
