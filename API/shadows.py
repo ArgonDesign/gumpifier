@@ -95,8 +95,8 @@ def add_shadows(foreground_array, background_array, mask, box):
 
     # 4 points in new plane 
     # ! The shifts, stretches and angles are all hyper-parameters, fiddle with as necessary
-    shifted_tl = tuple_map(sum, diagonal_stretch(1.2, *rotate_point(math.pi/6, top_left_x, top_left_y)), (-100, -50))
-    shifted_tr = tuple_map(sum, diagonal_stretch(1.2, *rotate_point(math.pi/8, bottom_right_x, top_left_y)), (-100, -50))
+    shifted_tl = tuple_map(sum, diagonal_stretch(1, *rotate_point(math.pi, top_left_x, top_left_y)), (0, 0))
+    shifted_tr = tuple_map(sum, diagonal_stretch(1, *rotate_point(math.pi, bottom_right_x, top_left_y)), (0, 0))
     pa = [shifted_tl, shifted_tr,  (bottom_right_x, bottom_right_y), (top_left_x, bottom_right_y)]
 
     coeffs = find_coeffs(pa, pb)

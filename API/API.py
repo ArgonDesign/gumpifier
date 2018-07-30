@@ -15,7 +15,7 @@ class API:
         self.background_map = {}
         self.objects_to_be_behind = [] # [2, 3, 4, 9, 11, 15, 16, 17, 18, 19, 20, 23, 57, 58, 59, 60, 61, 64]  # ! This is a personal choice and needs to be reconsidered in more depth
 
-    def load_foreground(self, foreground, fn):
+    def load_foreground(self, foreground, fn=lambda: None):
         """Loads and segments the foreground
         
         Args:
@@ -24,7 +24,7 @@ class API:
         self.foreground_map[foreground] = self.nn.predict_from_file(foreground)
         fn()
 
-    def load_background(self, background, fn):
+    def load_background(self, background, fn=lambda: None):
         """Loads and segments the background
         
         Args:
@@ -32,6 +32,7 @@ class API:
         """
 
         self.background_map[background] = self.nn.predict_from_file(background)
+        print(self.background_map[background].get_all_data()[2])
         fn()
 
 
@@ -75,6 +76,24 @@ class API:
 
         # * Add shadows
         bg_image_person_img = np.zeros(bg_image_array.shape)
+
+        # # ! Only add the part of the image that's visible
+        # print(top_left_y, )
+        # indices = [0, cutout_array.shape[0], 0, cutout_array.shape[1]]
+        # if top_left_y < 0:
+        #     indices[0] = abs(top_left_y)
+        #     top_left_y = 0
+        # if bottom_right_y > bg_image_size[1]:
+        #     indices[1] = bg_image_size[1] - bottom_right_y
+        #     bottom_right_y = bg_image_size[1]
+        # if top_left_x < 0:
+        #     indices[2] = abs(top_left_x)
+        #     top_left_x = 0
+        # if bottom_right_x > bg_image_size[0]:
+        #     indices[3] = bg_image_size[0] - bottom_right_x
+        #     bottom_right_y = bg_image_size[0]
+
+        # print(indices, cutout_array.shape, (top_left_y, top_left_x, bottom_right_y, bottom_right_x), bg_image_person_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x].shape, cutout_array[indices[0]:indices[1], indices[2]:indices[3]].shape)
         bg_image_person_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x] = cutout_array
 
         bg_image_person_mask = np.zeros(bg_image_array.shape[:2], dtype=np.bool)
@@ -161,7 +180,6 @@ class API:
         object_height = bottom_right_y - top_left_y
         new_person_height = object_height * scale_compared_object
 
-
         mask, person_bb = fg_pred.get_primary_human()
         person_width = person_bb[3] - person_bb[1]
         person_height = person_bb[2] - person_bb[0] 
@@ -193,7 +211,7 @@ class API:
         height_multiplier = [
             0.0, 1.0, 1.5, 1.4, 
             1.5, 0.2, 0.6, 0.9, 
-            0.6, 0.5, 0.6, 3.0, 
+            0.6, 0.5, 0.6, 1.5, 
             0.6, 1.8, 1.7, 0.0, 
             0.0, 0.0, 1.4, 2.0, 
             1.5, 0.7, 1.8, 1.4,
@@ -217,7 +235,26 @@ class API:
     def get_random_object(self, bg_pred):
         # ! Return the required bb, mask and stuff 
         # ! This is so you can limit which objects to actually use
-        random_object = np.random.choice(len(bg_pred.class_ids))
+
+        # ! Check whether this will actually terminate, and generate probabilities!
+        softmax = []
+        im_h = bg_pred.image[0]
+        for ind, x in enumerate(bg_pred.class_ids):
+            scale = self.get_optimal_scale(x)
+            bb = bg_pred.boxes[ind]
+            top_left_y, top_left_x, bottom_right_y, bottom_right_x = bb
+            object_height = bottom_right_y - top_left_y
+            new_person_height = object_height * scale
+            softmax.append(new_person_height / (im_h * 0.1))
+        
+        if all(x < 1 for x in softmax):
+            raise ValueError()
+
+        softmax = np.array(softmax)
+        probs = np.exp(softmax) / np.sum(np.exp(softmax), axis=0)
+
+        random_object = np.random.choice(len(bg_pred.class_ids), p=probs)
+
         while self.get_optimal_scale(bg_pred.class_ids[random_object]) == 0:
-            random_object = np.random.choice(len(bg_pred.class_ids))
+            random_object = np.random.choice(len(bg_pred.class_ids), p=probs)
         return random_object
