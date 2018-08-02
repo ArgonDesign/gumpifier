@@ -13,10 +13,17 @@
 				<div id="containerForeground"></div>
 				<!-- === Images of the following form will be inserted here using JS === -->
 				<!-- <div class="resultBackground">
-					<img class="backgroundImage">
+					<div class="resultBackground">
+						<img class="backgroundImage">
+					</div>
+					<div class="resultBackground">
+						<img class="backgroundImage">
+					</div>
 				</div> -->
 				<!-- <div id="resultForeground">
-					<img id="foregroundImage">
+					<div id="resultForegroundInner">
+						<img id="foregroundImage">
+					</div>
 				</div> -->
 			</div>
 			<img id="finalImage" pointer-events="none">
@@ -50,6 +57,9 @@
 					<div id="commandsLower">
 						<input type="button" value="Send behind you" onclick="sendBehindButton()">
 						<input type="button" value="Bring in front of you" onclick="bringToFrontButton()">
+						Brightness
+						<input type="range" min="-100" max="100" step="1" value="0" id="brightnessSlider" onchange="brightnessSliderFn()">
+						Temperature <input type="range" min="0" max="16000" step="1" value="8000" id="whiteBalanceSlider" onchange="whiteBalanceSliderFn()">
 					</div>
 				</div>
 				<div id="meta-commands" class="subCommandsPane">

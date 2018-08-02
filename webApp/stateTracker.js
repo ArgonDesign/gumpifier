@@ -79,7 +79,7 @@ function applyState(fg_changed, bg_changed, data) {
 	}
 	else {
 		// Disable the Gumpify button
-		$('#gumpifyButton').prop('disabled', true); // TODO: replace false with true here to ensure button is disable when no images uploaded
+		$('#gumpifyButton').prop('disabled', false); // TODO: replace false with true here to ensure button is disable when no images uploaded
 		// Style the text and circles to grey
 		$('#gumpifyPane').css({color: 'rgb(135,135,135)'});
 		$('.cornerCircleStep3').css({"background-color": 'rgb(135,135,135)'});
