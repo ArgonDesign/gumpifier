@@ -49,9 +49,10 @@ class API:
         Returns:
             (image_url -> str): A url to the final image
         """
-
+        print(cutout, foreground, background, position, scale)
         cutout_array = self.nn.load_image(cutout)
         foreground_array = list(map(self.nn.load_image, foreground))
+        print("fg shape:", foreground_array[0].shape)
         background_array = map(self.nn.load_image, background)
         bg_image_array = self.background_map[bg_image].get_all_data()[0]
         bg_image_array = self.background_map[bg_image].make_image_transparent(bg_image_array)
@@ -103,10 +104,17 @@ class API:
         bg_image_person_mask = np.zeros(bg_image_array.shape[:2], dtype=np.bool)
         bg_image_person_mask[np.any(bg_image_person_img[:, :, :3], axis=2)] = True
         print(np.where(bg_image_person_img != 0))
-        return_image = shadows.add_shadows(bg_image_person_img.astype("uint8"), bg_image_array, bg_image_person_mask, (top_left_y, top_left_x, bottom_right_y, bottom_right_x))
+        # return_image = shadows.add_shadows(bg_image_person_img.astype("uint8"), bg_image_array, bg_image_person_mask, (top_left_y, top_left_x, bottom_right_y, bottom_right_x))
 
+        paste_img = Image.fromarray(bg_image_person_mask)
+        for im in foreground_array:
+            im = Image.fromarray(im)
+            paste_img = paste_img.paste(im, mask=im)
+
+        return self.save_img_get_url(np.array(paste_img))
         # Test
         return self.save_img_get_url(return_image)  # ! It kinda works? A little bit weird....
+
 
     def build_response(self, foreground, background):
         """Creates and returns a json string containing the parameters required for the front end UI
@@ -127,6 +135,7 @@ class API:
         response["cutout"] = self.get_cutout(fg_pred)
         response["foreground"], response["background"] = self.get_segments(bg_pred)
         response["position"], response["scale"] = self.get_optimal_position(fg_pred, bg_pred)
+        response["background_masks"] = self.get_mask_fill(bg_pred)
         # response["scale"] = self.get_optimal_scale()
 
         return response
@@ -262,3 +271,16 @@ class API:
         while self.get_optimal_scale(bg_pred.class_ids[random_object]) == 0:
             random_object = np.random.choice(len(bg_pred.class_ids), p=probs)
         return random_object
+
+    def get_mask_fill(self, bg_pred): 
+        image, masks, classes = bg_pred.get_all_data()[:3]
+        image = bg_pred.make_image_transparent(image)
+        image[:, :, 3] = 255
+        mask_fill = []
+        for n in range(masks.shape[2]):
+            mask = masks[:, :, n]
+            img = bg_pred._apply_mask(image, mask)
+            indices = (mask==1)
+            img[indices] = 255
+            mask_fill.append(self.save_img_get_url(img))
+        return mask_fill
