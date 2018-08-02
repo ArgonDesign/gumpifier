@@ -102,9 +102,9 @@ returnJSON = None
 
 dataType = "application/json" # Keep this in production
 try:
-	# importedJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
-	# returnJSON = jsonConverter(importedJSON)
-	returnJSON = json.dumps(returnDict)
+	importedJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
+	returnJSON = jsonConverter(importedJSON)
+	# returnJSON = json.dumps(returnDict)
 except ConnectionAbortedError as err: # TODO: catch all in one like (ConnectionAbortedError, ValueError, ConnectionRefusedError)
 	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ValueError as err:
