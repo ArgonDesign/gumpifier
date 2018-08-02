@@ -1,13 +1,13 @@
 // Event handler binding
 $(document).ready(function() {
 	// Foreground button
-	$('#foregroundForm').submit({data: this, fg: true}, uploadPictureFn);
+	$('#foregroundForm').submit(function() {return uploadPictureFn($('#foregroundForm'), true);});
 
 	// Auto-submit when a file is chosen
 	$('#foregroundUploadButton').change(function() {$('#foregroundForm').submit();});
 
 	// Background button
-	$('#backgroundForm').submit({data: this, fg: false}, uploadPictureFn);
+	$('#backgroundForm').submit(function() {return uploadPictureFn($('#backgroundForm'), false);});
 
 	// Auto-submit when a file is chosen
 	$('#backgroundUploadButton').change(function() {$('#backgroundForm').submit();});

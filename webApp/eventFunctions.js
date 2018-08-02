@@ -6,16 +6,25 @@ var bg_loaded = false;
 var fg_loaded = false;
 var selectedLayerDiv;
 
-function uploadPictureFn(form) {
+function uploadPictureFn(form, fg) {
 	// Submit the form
-	form.ajaxSubmit(function(data, fg) {
+	form.ajaxSubmit(function(data) {
 		// We can't get the path to the local file via the form because of security limitations
 		// so we download the uploaded file to the server.
-		fg_segmented = false;
+		if (fg) fg_segmented = false;
+		else	bg_segmented = false;
 		data = data.slice(0,-1); // Remove the training \n character
 		if (data.slice(0,-1) != "ERROR") {
-			if (fg) set_fg_true(data);
-			else	set_bg_true(data);
+			if (fg) {
+				console.log("fg")
+				set_fg_true(data);
+			}
+			else {
+				console.log("bg");
+				set_bg_true(data);
+			}
+			// if (fg) set_fg_true(data);
+			// else	set_bg_true(data);
 		}
 		else {
 			if (fg) set_fg_false();
