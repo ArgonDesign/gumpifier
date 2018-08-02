@@ -45,17 +45,17 @@ bg_url = form['bg_url'].value
 	# prefix = "Resources/patrick_json_dynamic/"
 
 # === Option 2 Package up JSON from a file (either uploade from option 1 or from a different, specified, file === #
-prefix = "Resources/Eg2/"
-f = open(prefix + "patrick.json", "r")
-importedJSON = json.loads(f.read())
-f.close()
+# prefix = "Resources/Eg2/"
+# f = open(prefix + "patrick.json", "r")
+# importedJSON = json.loads(f.read())
+# f.close()
 
-BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
-FG_cutout_URL = prefix + importedJSON['cutout']
-layer = len(importedJSON['background']) - 1
-position = importedJSON['position']
-scale = importedJSON['scale']
-BG_mask_URLs = [prefix + path for path in importedJSON['background_masks']]
+# BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
+# FG_cutout_URL = prefix + importedJSON['cutout']
+# layer = len(importedJSON['background']) - 1
+# position = importedJSON['position']
+# scale = importedJSON['scale']
+# BG_mask_URLs = [prefix + path for path in importedJSON['background_masks']]
 
 # === Option 3 Make up some data === #
 # BG_segment_URLs = ['Resources/BGTest1.png', 'Resources/BGTest2.png', 'Resources/BGTest3.png', 'Resources/BGTest4.png']
@@ -65,14 +65,14 @@ BG_mask_URLs = [prefix + path for path in importedJSON['background_masks']]
 # scale = (0.5, 0.5)
 
 # === Create the dictionary to return for the above options === #
-returnDict = {
-	"BG_segment_URLs": BG_segment_URLs,
-	"FG_cutout_URL": FG_cutout_URL,
-	"layer": layer,
-	"position": position,
-	"scale": scale,
-	"BG_mask_URLs": BG_mask_URLs
-}
+# returnDict = {
+# 	"BG_segment_URLs": BG_segment_URLs,
+# 	"FG_cutout_URL": FG_cutout_URL,
+# 	"layer": layer,
+# 	"position": position,
+# 	"scale": scale,
+# 	"BG_mask_URLs": BG_mask_URLs
+# }
 
 # returnJSON = json.dumps(returnDict) # Remove this in production
 
