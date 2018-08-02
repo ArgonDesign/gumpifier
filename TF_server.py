@@ -149,7 +149,7 @@ class TF_Socket():
 				response["foreground"] = [os.path.relpath(path, prefix) for path in response["foreground"]]
 				response["background"] = [os.path.relpath(path, prefix) for path in response["background"]]
 				response["cutout"] = os.path.relpath(response["cutout"], prefix)
-				response["background_masks"] = os.path.relpath(response["background_masks"], prefix)
+				response["background_masks"] = [os.path.relpath(path, prefix) for path in response["background_masks"]]
 
 				response = json.dumps(response)
 			except Exception as err:
