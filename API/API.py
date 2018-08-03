@@ -110,14 +110,9 @@ class API:
 
         paste_img = Image.fromarray(bg_image_person_img.astype("uint8"))
         for im in foreground_array:
-            print("count", np.count_nonzero(im[:, :, 3]), im.shape, im.dtype)
             im = Image.fromarray(im)
-            im.save("test.png")
             paste_img.paste(im, mask=im)
-        t = np.array(paste_img)
-        print("count:", np.count_nonzero(t), t.dtype)
-        paste_img.save("webApp/storage/test.png")
-        return self.save_img_get_url(t)
+        return self.save_img_get_url(np.array(paste_img))
         # Test
         return self.save_img_get_url(return_image)  # ! It kinda works? A little bit weird....
 
@@ -163,6 +158,7 @@ class API:
         print("bg made transparent", time.time() - start_time)
         image[:, :, 3] = 255
         foreground = []
+        print("bg made un-transparent", time.time() - start_time)
         background = [self.save_img_get_url(image)]
         print("bg saved", time.time() - start_time)
         for n in range(masks.shape[2]):
@@ -176,10 +172,14 @@ class API:
         return foreground, background
 
     def save_img_get_url(self, img):
+        start_time = time.time()
         filepath = "webApp/storage/"
         os.makedirs(filepath, exist_ok=True)
+        print("makedirs", time.time() - start_time)
         fname = os.path.join(filepath, hashlib.md5(str(time.time() + random.random()).encode("utf8")).hexdigest() + ".png")
-        Image.fromarray(img.astype("uint8")).save(fname)
+        print("hash", time.time() - start_time)
+        Image.fromarray(img.astype("uint8")).save(fname, compress_level=1)
+        print("saved", time.time() - start_time)
         return fname
 
     def get_optimal_position(self, fg_pred, bg_pred):
