@@ -6,6 +6,24 @@ var bg_loaded = false;
 var fg_loaded = false;
 var selectedLayerDiv;
 
+var colourState = (function() {
+	var brightness = 0;
+	var whiteBalance = 8000;
+	function applyState() {
+		Caman(document.getElementById('foregroundImage'), function() {
+			this.revert(false);
+			this.brightness(brightness);
+			this.whiteBalance(whiteBalance);
+			this.render();
+		})
+	}
+	return {
+		setBrightness: function(newBrightness) {brightness = newBrightness; applyState()},
+		setWhiteBalance: function(newWhiteBalance) {whiteBalance = newWhiteBalance; applyState();},
+		applyState: applyState
+	}
+})();
+
 function uploadPictureFn(form, fg) {
 	// Submit the form
 	form.ajaxSubmit(function(data) {
@@ -45,6 +63,7 @@ function gumpifyFn() {
 		$('#circlePaneRight').css({"flex-grow": 3});
 		// Provide a loading message
 		$('#vCenterPaneLeftTitle').text("Loading...");
+		bindScreen2Functions();
 		// Once UI is loaded it's now safe to send the AJAX request to the server and load the images
 		$.ajax({
 			type: "POST",
@@ -109,18 +128,18 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 		var div = packageImageInDiv(function() {bg_loaded = true; windowScale();},	// onLoadFn
 												BG_segment_URLs[i],					// src
 												"backgroundImage",					// classes
-												getAndTriggerClickedImage,					// onMouseDownFn
-												"resultBackground");				// divClasses
+												getAndTriggerClickedImage,			// onMouseDownFn
+												"resultBackgroundInner");			// divClasses
 		// Add image div to outer div
 		bigusDivus.append(div);
 
 		// === Mask
 		if (i != 0) {
-			var div = packageImageInDiv(function() {},				// onLoadFn
-										BG_mask_URLs[i-1],			// src
-										'backgroundImage mask',		// classes
-										function() {},				// onMouseDownfn
-										'resultBackground maskDiv')	// divClasses
+			var div = packageImageInDiv(function() {},						// onLoadFn
+										BG_mask_URLs[i-1],					// src
+										'backgroundImage mask',				// classes
+										function() {},						// onMouseDownfn
+										'resultBackgroundInner maskDiv')	// divClasses
 			// Add mask div to outer div
 			bigusDivus.append(div);
 		}
@@ -144,13 +163,13 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 		fg_loaded = true;
 		windowScale();
 		// Some test Caman things
-		Caman(c, function(){
-			this.brightness(10);
-			this.contrast(30);
-			this.sepia(60);
-			this.saturation(-38);
-			this.render();
-		});
+		// Caman(c, function(){
+		// 	this.brightness(10);
+		// 	this.contrast(30);
+		// 	this.sepia(60);
+		// 	this.saturation(-38);
+		// 	this.render();
+		// });
 	}
 	hiddenImg.src = FG_cutout_URL;
 
@@ -352,6 +371,7 @@ function windowScale() {
 	var h = document.getElementById('foregroundImage').height;
 	var ctx = document.getElementById('foregroundImage').getContext("2d");
 	ctx.drawImage(hiddenImg, 0, 0, w, h);
+	colourState.applyState();
 
 	// Size the finalResult image
 	var resultForeground = $('#resultForeground');
@@ -373,17 +393,17 @@ function bringToFrontButton() {
 	$('#first').parent().parent().insertAfter($('#containerForeground'));
 }
 
-function postProcessButton() {
-	// Bundle up data
+function postProcessFn() {
+	// Marshall the data
 	var BG_segment_URLs = new Array();
-	$('.backgroundImage').each(function(index) {
+	$('.backgroundImage').not('.mask').each(function(index) {
 		BG_segment_URLs.push($(this).attr('src')); // 'this' refers to the current element.  We use $(this).attr('src') instead of this.src to give relative, not absolute, paths
 	});
-	var FG_cutout_URL = $('#foregroundImage').attr('src');
-	var layer = $(".resultBackground, #resultForeground").index($('#resultForeground')) - 1;
+	var FG_cutout_URL = $(hiddenImg).attr('src');
+	var layer = $(".resultBackground, #resultForeground").index($('#resultForeground'));
 	var position = fg_img_pos;
 	var scale = fg_img_scale;
-	var original_BG_URL = bg_url
+	var original_BG_URL = bg_url;
 
 	var toSend = {
 		"BG_segment_URLs": BG_segment_URLs,
@@ -393,6 +413,8 @@ function postProcessButton() {
 		"scale" : scale,
 		"original_BG_URL": original_BG_URL
 	};
+
+	console.log(toSend);
 
 	// Send the data to the server
 	$.ajax({
@@ -440,20 +462,23 @@ function showFinalImage() {
 
 function brightnessSliderFn() {
 	newBrightness = $('#brightnessSlider').val();
-	Caman(document.getElementById('foregroundImage'), function() {
-		this.revert(false);
-		this.brightness(newBrightness).render();
-	})
+	colourState.setBrightness(newBrightness);
 };
 
 function whiteBalanceSliderFn() {
 	newWhiteBalance = $('#whiteBalanceSlider').val();
-	Caman(document.getElementById('foregroundImage'), function() {
-		this.revert(false);
-		this.whiteBalance(newWhiteBalance);
-		this.render();
-	});
+	colourState.setWhiteBalance(newWhiteBalance);
 };
+
+function resetPositionButton() {
+	fg_img_pos = fg_original_pos.slice();
+	windowScale();
+}
+
+function resetScaleButton() {
+	fg_img_scale = fg_original_scale.slice();
+	windowScale();
+}
 
 /* === Potentially old functions which may be removed === */
 function changePositionSpinner() {

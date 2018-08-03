@@ -52,7 +52,8 @@ class API:
         print(cutout, foreground, background, position, scale)
         cutout_array = self.nn.load_image(cutout)
         foreground_array = list(map(self.nn.load_image, foreground))
-        print("fg shape:", foreground_array[0].shape)
+        if foreground_array: # Only print if foreground_array has elements!
+            print("fg shape:", foreground_array[0].shape)
         background_array = map(self.nn.load_image, background)
         bg_image_array = self.background_map[bg_image].get_all_data()[0]
         bg_image_array = self.background_map[bg_image].make_image_transparent(bg_image_array)

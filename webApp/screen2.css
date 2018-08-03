@@ -7,7 +7,7 @@
 	width: 100%;
 }
 
-.resultBackground, #resultFinal {
+.resultBackground, .resultBackgroundInner, #resultFinal {
 	position: absolute;
 	top: 0;
 	bottom: 0;

@@ -14,15 +14,9 @@ $(document).ready(function() {
 
 	// Gumpify button
 	$('#gumpifyButton').click(gumpifyFn);
-
-	/* === Event handlers for the commands pane === */
-	function resetPositionButton() {
-		fg_img_pos = fg_original_pos.slice();
-		windowScale();
-	}
-
-	function resetScaleButton() {
-		fg_img_scale = fg_original_scale.slice();
-		windowScale();
-	}
 });
+
+function bindScreen2Functions() {
+	// Post Process button
+	$('#postProcessButton').click(postProcessFn);
+}
