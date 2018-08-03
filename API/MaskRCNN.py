@@ -29,11 +29,8 @@ import matplotlib.pyplot as plt
 from matplotlib import patches,  lines
 from matplotlib.patches import Polygon
 
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
-from pycocotools import mask as maskUtils
 
-from PIL import Image
+from PIL import Image, ImageFilter
 import cv2
 
 import warnings
@@ -139,6 +136,37 @@ class Prediction():
         with_alpha = self.make_image_transparent(cut_down_img)
         merged_indices = np.any(mask, axis=2)[top_left_y:bottom_right_y + 1, top_left_x:bottom_right_x + 1]
         with_alpha[merged_indices, 3] = 255
+
+        return with_alpha
+
+        refined_boundary = np.array(Image.fromarray(with_alpha).filter(ImageFilter.FIND_EDGES))
+        Image.fromarray(refined_boundary).save("test.png")
+        print("COUNT", np.count_nonzero(refined_boundary[:, :, 3]), "SIZE", refined_boundary.shape)
+        # ! GOAL: Find out whether a given point is inside the refined boundary
+        # TODO: Take a point, and extend it right
+        # TODO: count the number of intersections
+        # TODO: if odd, it's inside the shape, otherwise it's outside
+
+        # * Take a point
+        for y in range(with_alpha.shape[0]):
+            for x in range(with_alpha.shape[1]):
+                # * See if it's in the boundary
+                if refined_boundary[y, x, 3] == 255:
+                    with_alpha[y, x, 3] = 255
+                else:
+                    # * Extend it right in the polygon
+                    right_line = refined_boundary[y, x:, 3]
+
+                    # * If it's odd, it's inside
+                    n =np.count_nonzero(right_line)
+                    if n > 2:
+                        print(n, y, x)
+                    if np.count_nonzero(right_line) % 2:
+                        with_alpha[y, x, 3] = 255
+                    else:
+                        # * Otherwise it's outside
+                        with_alpha[y, x, 3] = 0
+
         return with_alpha
 
     def make_image_transparent(self, img):

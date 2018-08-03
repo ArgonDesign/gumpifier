@@ -1,11 +1,12 @@
 """The API for the Gumpifier project
 """
 from MaskRCNN import MaskRCNN
-from PIL import Image
+from PIL import Image, ImageFilter
 import numpy as np
 import json
 import hashlib
 import time, random, os, shadows
+from scipy.spatial import ConvexHull
 
 # TODO: Do some clever processing to see what images are actually in front and which are behind?
 class API:
@@ -107,12 +108,16 @@ class API:
         print(np.where(bg_image_person_img != 0))
         # return_image = shadows.add_shadows(bg_image_person_img.astype("uint8"), bg_image_array, bg_image_person_mask, (top_left_y, top_left_x, bottom_right_y, bottom_right_x))
 
-        paste_img = Image.fromarray(bg_image_person_mask)
+        paste_img = Image.fromarray(bg_image_person_img.astype("uint8"))
         for im in foreground_array:
+            print("count", np.count_nonzero(im[:, :, 3]), im.shape, im.dtype)
             im = Image.fromarray(im)
-            paste_img = paste_img.paste(im, mask=im)
-
-        return self.save_img_get_url(np.array(paste_img))
+            im.save("test.png")
+            paste_img.paste(im, mask=im)
+        t = np.array(paste_img)
+        print("count:", np.count_nonzero(t), t.dtype)
+        paste_img.save("webApp/storage/test.png")
+        return self.save_img_get_url(t)
         # Test
         return self.save_img_get_url(return_image)  # ! It kinda works? A little bit weird....
 
@@ -128,15 +133,21 @@ class API:
             dict: a dict representing the json values
             (NOT: json str: A json string containing the parameters)
         """
-
+        
         response = {}
         fg_pred = self.foreground_map[foreground]
         bg_pred = self.background_map[background]
-    
+        
+        start_time = time.time()
+        print("start")
         response["cutout"] = self.get_cutout(fg_pred)
+        print("cutout done", time.time() - start_time)
         response["foreground"], response["background"] = self.get_segments(bg_pred)
+        print("foreground done", time.time() - start_time)
         response["position"], response["scale"] = self.get_optimal_position(fg_pred, bg_pred)
+        print("position and scale done", time.time() - start_time)
         response["background_masks"] = self.get_mask_fill(bg_pred)
+        print("done", time.time() - start_time)
         # response["scale"] = self.get_optimal_scale()
 
         return response
@@ -146,11 +157,14 @@ class API:
         return self.save_img_get_url(img)
 
     def get_segments(self, bg_pred):
+        start_time = time.time()
         image, masks, classes = bg_pred.get_all_data()[:3]
         image = bg_pred.make_image_transparent(image)
+        print("bg made transparent", time.time() - start_time)
         image[:, :, 3] = 255
         foreground = []
         background = [self.save_img_get_url(image)]
+        print("bg saved", time.time() - start_time)
         for n in range(masks.shape[2]):
             mask = masks[:, :, n]
             img = bg_pred._apply_mask(image, mask)
@@ -158,6 +172,7 @@ class API:
                 foreground.append(self.save_img_get_url(img))
             else:
                 background.append(self.save_img_get_url(img))
+            print(n, time.time() - start_time)
         return foreground, background
 
     def save_img_get_url(self, img):
@@ -285,3 +300,32 @@ class API:
             img[indices] = 255
             mask_fill.append(self.save_img_get_url(img))
         return mask_fill
+
+    def get_mask_outline(self, bg_pred):
+        image, masks, classes = bg_pred.get_all_data()[:3]
+        image = bg_pred.make_image_transparent(image)
+        image[:, :, 3] = 255
+        mask_outline = []
+        for n in range(masks.shape[2]):
+            mask = masks[:, :, n]
+            img = bg_pred._apply_mask(image, mask)
+            img = Image.fromarray(img.astype("uint8")).filter(ImageFilter.FIND_EDGES)
+            img = np.array(img)
+            img[img[:, :, 3]==255, :] = 255
+
+            # ! border expansion
+            img_2 = img.copy()
+            for y in range(img.shape[0]):
+                for x in range(img.shape[1]):
+                    if img[y, x, 3] == 255:
+                        img_2[y-5:y+5, x-5:x+5, :] = 255
+            img = img_2
+            # ii = np.argwhere(mask==1)[:, ::-1]
+            # hull = ConvexHull(ii)
+            # print(hull.simplices.shape)
+            # for simplex in hull.simplices:
+            #     #print("Simplex", simplex, ii[simplex], ii.shape, hull.simplices.shape)
+            #     img[ii[simplex, 1], ii[simplex, 0], :] = 255
+            # # print(np.where(img==255))
+            mask_outline.append(self.save_img_get_url(img))
+        return mask_outline
