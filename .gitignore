@@ -7,6 +7,10 @@
 /API/Help.png
 /API/__pycache__
 /API/Logs
+/API/webApp
+test_url/
+API/WhatObjectIsThis.py
+API/Mask_RCNN/samples/
 portConfig.txt
 /webApp/cgi-bin/__pycache__/
 *.pyc
