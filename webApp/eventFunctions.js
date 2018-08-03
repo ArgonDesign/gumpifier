@@ -6,6 +6,7 @@ var bg_loaded = false;
 var fg_loaded = false;
 var selectedLayerDiv;
 
+// This closure represents the state for the colour sliders.
 var colourState = (function() {
 	var brightness = 0;
 	var whiteBalance = 8000;
@@ -32,17 +33,9 @@ function uploadPictureFn(form, fg) {
 		if (fg) fg_segmented = false;
 		else	bg_segmented = false;
 		data = data.slice(0,-1); // Remove the training \n character
-		if (data.slice(0,-1) != "ERROR") {
-			if (fg) {
-				console.log("fg")
-				set_fg_true(data);
-			}
-			else {
-				console.log("bg");
-				set_bg_true(data);
-			}
-			// if (fg) set_fg_true(data);
-			// else	set_bg_true(data);
+		if (data != "ERROR") {
+			if (fg) set_fg_true(data);
+			else	set_bg_true(data);
 		}
 		else {
 			if (fg) set_fg_false();

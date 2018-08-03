@@ -16,6 +16,9 @@ import API
 import threading
 import traceback
 import os
+import time
+
+PREFIX = "webApp"
 
 class TF_Socket():
 	def __init__(self):
@@ -86,7 +89,8 @@ class TF_Socket():
 			data = data[4:]
 
 			threading.Thread(target=self.dispatcher, args=(data, command, clientsocket)).start()
-			# self.dispatcher(data, command, clientsocket)
+
+			self.cleanUp()
 
 	def dispatcher(self, data, command, socket):
 		"""
@@ -103,7 +107,6 @@ class TF_Socket():
 				-> 'post' - post process the user-tweaker parameters and return a reference to the final image
 			socket (socket): the socket to send reply data along.
 		"""
-		prefix = "webApp"
 		response = None
 
 		print("Received command: {}".format(command))
@@ -120,7 +123,7 @@ class TF_Socket():
 		if command == 'sgtF':
 			# Set the foreround segmenting
 			try:
-				url = os.path.join(prefix, data)
+				url = os.path.join(PREFIX, data)
 				self.api.load_foreground(url, fn=lambda: self.segObs.addStatus(url=url))
 				print("Segmented foreground successfully")
 			except:
@@ -130,7 +133,7 @@ class TF_Socket():
 		elif command == 'sgtB':
 			# Set the background segmenting
 			try:
-				url = os.path.join(prefix, data)
+				url = os.path.join(PREFIX, data)
 				self.api.load_background(url, fn=lambda: self.segObs.addStatus(url=url))
 				print("Segmented background successfully")
 			except:
@@ -138,18 +141,18 @@ class TF_Socket():
 				print("Error segmenting background")
 			return
 		elif command in ['chkF', 'chkB']:
-			self.segObs.addFn(url=os.path.join(prefix, data), fn=lambda: self.sendResponse(json.dumps({"done": True}), socket))
+			self.segObs.addFn(url=os.path.join(PREFIX, data), fn=lambda: self.sendResponse(json.dumps({"done": True}), socket))
 			return
 		elif command == 'gump':
 			data = json.loads(data)
 			try:
-				response = self.api.build_response(os.path.join(prefix, data['fg_url']), os.path.join(prefix, data['bg_url']))
+				response = self.api.build_response(os.path.join(PREFIX, data['fg_url']), os.path.join(PREFIX, data['bg_url']))
 				# Remove the leading 'webApp/'
-				print(response["cutout"], os.path.relpath(response["cutout"], prefix))
-				response["foreground"] = [os.path.relpath(path, prefix) for path in response["foreground"]]
-				response["background"] = [os.path.relpath(path, prefix) for path in response["background"]]
-				response["cutout"] = os.path.relpath(response["cutout"], prefix)
-				response["background_masks"] = [os.path.relpath(path, prefix) for path in response["background_masks"]]
+				print(response["cutout"], os.path.relpath(response["cutout"], PREFIX))
+				response["foreground"] = [os.path.relpath(path, PREFIX) for path in response["foreground"]]
+				response["background"] = [os.path.relpath(path, PREFIX) for path in response["background"]]
+				response["cutout"] = os.path.relpath(response["cutout"], PREFIX)
+				response["background_masks"] = [os.path.relpath(path, PREFIX) for path in response["background_masks"]]
 
 				response = json.dumps(response)
 			except Exception as err:
@@ -158,20 +161,20 @@ class TF_Socket():
 		elif command == 'post':
 			data = json.loads(data)
 			# Marshall data
-			cutout = os.path.join(prefix, data['FG_cutout_URL'])
+			cutout = os.path.join(PREFIX, data['FG_cutout_URL'])
 			layer = data['layer']
-			foreground = [os.path.join(prefix, postfix) for postfix in data['BG_segment_URLs'][layer:]]
-			background = [os.path.join(prefix, postfix) for postfix in data['BG_segment_URLs'][:layer]]
+			foreground = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][layer:]]
+			background = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][:layer]]
 			position = data['position']
 			scale = data['scale']
-			original_BG_URL = os.path.join(prefix, data['original_BG_URL'])
+			original_BG_URL = os.path.join(PREFIX, data['original_BG_URL'])
 
 			print(cutout, foreground, background, position, scale, original_BG_URL)
 
 			# Get response
 			try:
 				response = self.api.create_image(cutout, foreground, background, position, scale, original_BG_URL)
-				response = os.path.relpath(response, prefix)
+				response = os.path.relpath(response, PREFIX)
 			except Exception as err:
 				traceback.print_exc()
 				response = "ERROR"
@@ -182,13 +185,25 @@ class TF_Socket():
 		# === Send the response if needed === #
 		self.sendResponse(response, socket)
 
-	def cleanUp():
+	def cleanUp(self):
 		"""
-		This function is run as a thread each time the a connection is accepted.  It checks for files in the uploads
-		folder that are greater than 30 days old and deletes them.
+		This function is run each time a connection is accepted.  It checks for files in the uploads
+		folder for which the modification time is greater than 30 days old and deletes them.
 		"""
+		for file in os.listdir(os.path.join(PREFIX, "storage")):
+			thirtyDaysInSeconds = 15*24*60*60
+			path = os.path.join(PREFIX, "storage", file)
+			timeDifference = time.time() - os.path.getmtime(path)
+			if timeDifference > thirtyDaysInSeconds:
+				try: # Concurrency means the file might have already been deleted
+					os.remove(path)
+				except:
+					traceback.print_exc()
 
 	def sendResponse(self, response, socket):
+		"""
+		Sends response to socket, with a 5 byte length field at the start.
+		"""
 		toSend = "{:0>5}".format(len(response)) + response
 		print("Sending this: {}".format(toSend))
 		totalsent = 0
@@ -201,6 +216,22 @@ class TF_Socket():
 		socket.close()
 
 class SegmentObserver():
+	"""
+	We associate a SegmentObserver instance with the TF_Socket object to track which images have been segmented.
+	Implements the Observer patter.
+
+	The client needs to asynchronously know when an image has finishe segmenting.  To this end, it sends a request to 
+	the TF_server with the url of the image is was given asking if the image has been segmented yet.  When the TF_server
+	reveives this request, the segmenting may, or may not, be complete.  Thus, we use a callback function with the open
+	socket from the request, which is called immediately if the segmenting has finished, or is registered to this
+	observer if not.  When the segmentation has finished, the segmentation method calls the Observer and the callback
+	function is called.
+
+	Note the use of locks to avoid race conditions between the reqest and the segmentation methods, and the ordering of
+	lock acquisition to prevent deadlock.
+
+	Most of this function, admittedly, consists of print statements to aid debugging.
+	"""
 	def __init__(self):
 		# Create a map of {url: status}
 		self.statusMap = {}
