@@ -398,9 +398,12 @@ class API:
         sampled_area_brightness = lum_bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x]
 
         sampled_area_b_mean = np.mean(sampled_area_brightness)
-        fg_img_b_mean = np.mean(lum_fg_img[mask==1])
+        indices = mask==255
+        print(np.count_nonzero(indices))
+        fg_img_b_mean = np.mean(lum_fg_img[mask==255])
 
         avg_b = (sampled_area_b_mean + fg_img_b_mean) / 2
+        print(avg_b, sampled_area_b_mean, fg_img_b_mean)
         response["brightness"] = (avg_b - fg_img_b_mean) / 2.55
 
 
