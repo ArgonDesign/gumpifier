@@ -7,6 +7,7 @@ import json
 import hashlib
 import time, random, os, shadows
 from scipy.spatial import ConvexHull
+from scipy.ndimage.morphology import binary_erosion
 
 # TODO: Do some clever processing to see what images are actually in front and which are behind?
 class API:
@@ -143,6 +144,7 @@ class API:
         print("position and scale done", time.time() - start_time)
         response["background_masks"] = self.get_mask_fill(bg_pred)
         print("done", time.time() - start_time)
+        response["background_outlines"] = self.get_mask_outline_from_fill(bg_pred)
         # response["scale"] = self.get_optimal_scale()
 
         return response
@@ -300,6 +302,32 @@ class API:
             img[indices] = 255
             mask_fill.append(self.save_img_get_url(img))
         return mask_fill
+
+    def get_mask_outline_from_fill(self, bg_pred):
+        """
+        This function starts off by recomputing the values from get_mask_fill to form a mask.
+        An erode is then performed, before the two are subtracted, forming an outline.
+        """
+        image, masks, classes = bg_pred.get_all_data()[:3]
+        image = bg_pred.make_image_transparent(image)
+        image[:, :, 3] = 255
+        mask_outline = []
+        for n in range(masks.shape[2]):
+            # Generate original filled mask
+            mask = masks[:, :, n]
+            img = bg_pred._apply_mask(image, mask)
+            indices = (mask==1)
+            img[indices] = 255
+            # Generate an eroded version of the mask
+            eroded_mask = binary_erosion(mask, iterations=5)
+            eroded_img = bg_pred._apply_mask(image, eroded_mask)
+            eroded_indices = (eroded_mask==1)
+            img[eroded_indices] = 255
+            # Subtract the eroded image from the original image
+            return_img = img - eroded_img
+            # Continue as before
+            mask_outline.append(self.save_img_get_url(return_img))
+        return mask_outline
 
     def get_mask_outline(self, bg_pred):
         image, masks, classes = bg_pred.get_all_data()[:3]
