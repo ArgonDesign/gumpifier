@@ -375,6 +375,7 @@ class API:
         return mask_outline
 
     def get_colour_correction(self, bg_pred, fg_img, position, scale):
+        fg_img = self.nn.load_image(fg_img)
         bg_img = bg_pred.get_all_data()[0]
         mask = np.full(fg_img.shape[:2], 255)
 
@@ -396,7 +397,7 @@ class API:
 
         sampled_area_brightness = lum_bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x]
 
-        sampled_area_b_mean = np.mean(sampled_area_brightness[mask==1])
+        sampled_area_b_mean = np.mean(sampled_area_brightness)
         fg_img_b_mean = np.mean(lum_fg_img[mask==1])
 
         avg_b = (sampled_area_b_mean + fg_img_b_mean) / 2
@@ -407,6 +408,6 @@ class API:
         # ! Temporarily just return the background_img colour
         sampled_area_temp = bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x, :3]
         sampled_area_temp_mean = np.mean(sampled_area_temp, axis=2)
-        response["white_balance"] = sampled_area_temp_mean.tolist()
+        response["white_balance"] = 0 #sampled_area_temp_mean.tolist()
         
         return response
