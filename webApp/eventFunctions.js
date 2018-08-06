@@ -113,7 +113,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 		// === Overall containing div
 		if (i <= layer) var bigusDivus = $("<div />", {"class": "resultBackground behind"});
 		else			var bigusDivus = $("<div />", {"class": "resultBackground"});
-		bigusDivus.hover(hideFinalImage, showFinalImage);
+		bigusDivus.hover(showMasks, hideMasks);
 
 		if (i == 0) var onLoadFn = function() {bg_loaded = true; windowScale()}
 		else		var onLoadFn = function() {}
@@ -158,7 +158,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	// ===Insert the foreground image (do in 'reverse': add divs first, then image)
 	// Create the containing divs
 	var outerDiv = $("<div />", {"id": "resultForeground", "class": "result"});
-	outerDiv.hover(hideFinalImage, showFinalImage);
+	outerDiv.hover(showMasks, hideMasks);
 	var innerDiv = $("<div />", {"id": "resultForegroundInner"});
 
 	// The image must have pointer events for dragging but the containing div must not to allow click through to background layers
@@ -410,7 +410,11 @@ function postProcessFn() {
 		"layer" : layer,
 		"position": position,
 		"scale" : scale,
-		"original_BG_URL": original_BG_URL
+		"original_BG_URL": original_BG_URL,
+		"colour_correction": {
+			"brightness": colourState.brightness,
+			"whiteBalance": colourState.whiteBalance
+		}
 	};
 
 	console.log(toSend);
@@ -449,16 +453,20 @@ function postProcessFn() {
 	});
 }
 
-function hideFinalImage() {
-	document.getElementById('finalImage').style.visibility = "hidden";
+function showMasks() {
 	if (showMask) 	$('.mask').css('visibility', 'visible');
 	else			$('.outline').css('visibility', 'visible');
 }
 
-function showFinalImage() {
-	document.getElementById('finalImage').style.visibility = "visible";
+function hideMasks() {
 	if (showMask) 	$('.mask').css('visibility', 'hidden');
 	else			$('.outline').css('visibility', 'hidden');
+}
+
+function toggleFinalImage() {
+	checked = document.getElementById('finalImageCheckbox').checked;
+	if (checked)	finalImage.style.visibility = "visible";
+	else			finalImage.style.visibility = "hidden";
 }
 
 function brightnessSliderFn() {
