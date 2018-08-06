@@ -53,7 +53,6 @@ class API:
         print(self.background_map[background].get_all_data()[2])
         fn()
 
-
     def create_image(self, cutout, foreground, background, position, scale, bg_image):
         """Creates and returns a complete image from the data provided by the frontend UI
         
@@ -133,7 +132,6 @@ class API:
         # Test
         return self.save_img_get_url(return_image)  # ! It kinda works? A little bit weird....
 
-
     def build_response(self, foreground, background):
         """Creates and returns a json string containing the parameters required for the front end UI
         
@@ -161,6 +159,8 @@ class API:
         response["background_masks"] = self.get_mask_fill(bg_pred)
         print("done", time.time() - start_time)
         response["background_outlines"] = self.get_mask_outline_from_fill(bg_pred)
+
+        response["colour_correction"] = self.get_colour_correction(bg_pred, response["cutout"], response["position"], response["scale"])
         # response["scale"] = self.get_optimal_scale()
 
         return response
@@ -373,3 +373,40 @@ class API:
             # # print(np.where(img==255))
             mask_outline.append(self.save_img_get_url(img))
         return mask_outline
+
+    def get_colour_correction(self, bg_pred, fg_img, position, scale):
+        bg_img = bg_pred.get_all_data()[0]
+        mask = np.full(fg_img.shape[:2], 255)
+
+        response = {}
+
+        if fg_img.shape[2] == 4:
+            mask = fg_img[:, :, 3]
+            fg_img = fg_img[:, :, :3]
+        
+        # ! Get the new brightness value
+        lum_vec = np.array([0.299, 0.587, 0.114])
+        lum_bg_img = np.dot(bg_img, lum_vec)
+        lum_fg_img = np.dot(fg_img, lum_vec)
+
+        bg_image_size = bg_img.shape[:2][::-1]
+        new_dims = int(bg_image_size[0] * scale[0]), int(bg_image_size[1] * scale[1])
+        top_left_x, top_left_y = int(bg_image_size[0] * position[0]), int(bg_image_size[1] * position[1])
+        bottom_right_x, bottom_right_y = int(top_left_x + new_dims[0]), int(top_left_y + new_dims[1])
+
+        sampled_area_brightness = lum_bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x]
+
+        sampled_area_b_mean = np.mean(sampled_area_brightness[mask==1])
+        fg_img_b_mean = np.mean(lum_fg_img[mask==1])
+
+        avg_b = (sampled_area_b_mean + fg_img_b_mean) / 2
+        response["brightness"] = (avg_b - fg_img_b_mean) / 2.55
+
+
+        # ! Get the new temperature
+        # ! Temporarily just return the background_img colour
+        sampled_area_temp = bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x, :3]
+        sampled_area_temp_mean = np.mean(sampled_area_temp, axis=2)
+        response["white_balance"] = sampled_area_temp_mean.tolist()
+        
+        return response
