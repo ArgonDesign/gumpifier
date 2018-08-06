@@ -410,7 +410,7 @@ class API:
         # ! Get the new temperature
         # ! Temporarily just return the background_img colour
         sampled_area_temp = bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x, :3]
-        sampled_area_temp_mean = np.mean(sampled_area_temp, axis=2)
-        response["white_balance"] = 0 #sampled_area_temp_mean.tolist()
+        sampled_area_temp_mean = np.mean(sampled_area_temp, axis=(0, 1))
+        response["white_balance"] = sampled_area_temp_mean.tolist()
         
         return response
