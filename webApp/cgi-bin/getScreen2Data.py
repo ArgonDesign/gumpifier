@@ -86,6 +86,7 @@ def jsonConverter(importedJSON):
 	position = importedJSON['position']
 	scale = importedJSON['scale']
 	BG_mask_URLs = importedJSON['background_masks']
+	BG_outline_URLs = importedJSON['background_outlines']
 
 	returnDict = {
 		"BG_segment_URLs": BG_segment_URLs,
@@ -93,7 +94,8 @@ def jsonConverter(importedJSON):
 		"layer": layer,
 		"position": position,
 		"scale": scale,
-		"BG_mask_URLs": BG_mask_URLs
+		"BG_mask_URLs": BG_mask_URLs,
+		"BG_outline_URLs": BG_outline_URLs
 	}
 
 	return json.dumps(returnDict) # Remove this in production

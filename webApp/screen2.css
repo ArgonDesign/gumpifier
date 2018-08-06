@@ -43,12 +43,16 @@
 	position: absolute;
 }
 
-/* === CSS for masks === */
-.mask {
+/* === CSS for masks and outlines === */
+.mask, .outline {
 	opacity: 0.7;
 }
 
-.maskDiv {
+.outline {
+	visibility: hidden;
+}
+
+.maskDiv, .outlineDiv {
 	pointer-events: none;
 }
 

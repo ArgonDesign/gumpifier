@@ -12,12 +12,15 @@
 			<div id="resultPane">
 				<div id="containerForeground"></div>
 				<!-- === Images of the following form will be inserted here using JS === -->
-				<!-- <div class="resultBackground">
-					<div class="resultBackground">
+				<!-- <div class="resultBackground behind">
+					<div class="resultBackgroundInner">
 						<img class="backgroundImage">
 					</div>
-					<div class="resultBackground">
-						<img class="backgroundImage">
+					<div class="resultBackgroundInner maskDiv">
+						<img class="backgroundImage mask">
+					</div>
+					<div class="resultBackgroundInner outlineDiv">
+						<img class="backgroundImage outline">
 					</div>
 				</div> -->
 				<!-- <div id="resultForeground">
@@ -65,7 +68,8 @@
 				<div id="meta-commands" class="subCommandsPane">
 					Save and Share<br>
 					<input type="button" value="Start again by uploading new photos" onclick="newButton()"><br>
-					<input type="button" value="Post process" id="postProcessButton">
+					<input type="button" value="Post process" id="postProcessButton"><br>
+					<input type="checkbox" onchange="toggleOutline()">Toggle outline<br>
 				</div>
 				<div id="help" class="subCommandsPane">
 					Help<br>

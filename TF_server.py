@@ -153,6 +153,7 @@ class TF_Socket():
 				response["background"] = [os.path.relpath(path, PREFIX) for path in response["background"]]
 				response["cutout"] = os.path.relpath(response["cutout"], PREFIX)
 				response["background_masks"] = [os.path.relpath(path, PREFIX) for path in response["background_masks"]]
+				response["background_outlines"] = [os.path.relpath(path, PREFIX) for path in response["background_outlines"]]
 
 				response = json.dumps(response)
 			except Exception as err:
@@ -191,10 +192,10 @@ class TF_Socket():
 		folder for which the modification time is greater than 30 days old and deletes them.
 		"""
 		for file in os.listdir(os.path.join(PREFIX, "storage")):
-			thirtyDaysInSeconds = 15*24*60*60
+			fiveDaysInSeconds = 5*24*60*60
 			path = os.path.join(PREFIX, "storage", file)
 			timeDifference = time.time() - os.path.getmtime(path)
-			if timeDifference > thirtyDaysInSeconds:
+			if timeDifference > fiveDaysInSeconds:
 				try: # Concurrency means the file might have already been deleted
 					os.remove(path)
 				except:

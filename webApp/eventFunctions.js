@@ -5,6 +5,7 @@ var fg_img_scale;
 var bg_loaded = false;
 var fg_loaded = false;
 var selectedLayerDiv;
+var showMask = true;
 
 // This closure represents the state for the colour sliders.
 var colourState = (function() {
@@ -16,7 +17,7 @@ var colourState = (function() {
 			this.brightness(brightness);
 			this.whiteBalance(whiteBalance);
 			this.render();
-		})
+		});
 	}
 	return {
 		setBrightness: function(newBrightness) {brightness = newBrightness; applyState()},
@@ -75,7 +76,7 @@ function gumpifyFn() {
 					// We must create copies
 					fg_original_pos = data.position.slice();
 					fg_original_scale = data.scale.slice();
-					loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs);
+					loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs, data.BG_outline_URLs);
 				}
 			},
 			dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
@@ -104,10 +105,10 @@ function packageImageInDiv(onLoadFn, src, classes, onMouseDownFn, divClasses) {
 	// Return the div
 	return div;
 }
-function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) {
+function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, BG_outline_URLs) {
 	// Precondition: BG_segment_URLs.length = BG_mask_URLs.length + 1
 
-	// === Insert background images and masks
+	// === Insert background images, masks and outlines
 	for (i = 0; i<BG_segment_URLs.length; i++) {
 		// === Overall containing div
 		if (i <= layer) var bigusDivus = $("<div />", {"class": "resultBackground behind"});
@@ -136,13 +137,51 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 			// Add mask div to outer div
 			bigusDivus.append(div);
 		}
+
+		// === Outline
+		if (i != 0) {
+			var div = packageImageInDiv(function() {},						// onLoadFn
+										BG_outline_URLs[i-1],				// src
+										'backgroundImage outline',			// classes
+										function() {},						// onMouseDownfn
+										'resultBackgroundInner outlineDiv')	// divClasses)
+			// Add mask div to outer div
+			bigusDivus.append(div);
+		}
+
 		// === Add outer div to pane
 		$('#resultPane').append(bigusDivus);
 	}
 	// Set the id of the first background image
 	$('.backgroundImage:eq(0)').attr('id', 'first');
 
-	// ===Insert the foreground image
+	// ===Insert the foreground image (do in 'reverse': add divs first, then image)
+	// Create the containing divs
+	var outerDiv = $("<div />", {"id": "resultForeground", "class": "result"});
+	outerDiv.hover(hideFinalImage, showFinalImage);
+	var innerDiv = $("<div />", {"id": "resultForegroundInner"});
+
+	// The image must have pointer events for dragging but the containing div must not to allow click through to background layers
+	$(innerDiv).css({"pointer-events": "none"});
+	$(outerDiv).css({"pointer-events": "none"});
+
+	// Add image and scale icon icon to div
+	outerDiv.append(innerDiv);
+
+	// Add div in correct place in pane
+	var selector = '#resultPane>.resultBackground:eq('+layer+')';
+	$(outerDiv).insertAfter(selector);
+
+	// Load the image and call windowScale to convert it to a canvas and add to the appropriate div
+	hiddenImg = new Image(); // Yuck, global variable
+	hiddenImg.onload = function() {
+		fg_loaded = true;
+		windowScale();
+	}
+	hiddenImg.src = FG_cutout_URL;
+}
+
+function createForegroundCanvas() {
 	// Create a canvas
 	var c = document.createElement("canvas");
 
@@ -151,20 +190,6 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 
 	// Draw the image
 	var ctx = c.getContext("2d");
-	hiddenImg = new Image(); // Yuck, global variable
-	hiddenImg.onload = function() {
-		fg_loaded = true;
-		windowScale();
-		// Some test Caman things
-		// Caman(c, function(){
-		// 	this.brightness(10);
-		// 	this.contrast(30);
-		// 	this.sepia(60);
-		// 	this.saturation(-38);
-		// 	this.render();
-		// });
-	}
-	hiddenImg.src = FG_cutout_URL;
 
 	// Make draggable
 	cJQobject = $(c);
@@ -187,35 +212,11 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 
 		return true;
 	});
+	$(cJQobject).css({"pointer-events": "auto"});
 	cJQobject.css({"position": "absolute"});
 	cJQobject.on("mousedown", function(event) {getAndTriggerClickedImage(event, this);});
 
-	tmpImg = c;
-	tmpImgJQobject = cJQobject;
-
-	// Create the containing divs
-	var outerDiv = $("<div />", {"id": "resultForeground", "class": "result"});
-	outerDiv.hover(
-		function() {
-			hideFinalImage();
-		},
-		function() {
-			showFinalImage();
-		});
-	var innerDiv = $("<div />", {"id": "resultForegroundInner"});
-
-	// The image must have pointer events for dragging but the containing div must not to allow click through to background layers
-	$(tmpImgJQobject).css({"pointer-events": "auto"});
-	$(innerDiv).css({"pointer-events": "none"});
-	$(outerDiv).css({"pointer-events": "none"});
-
-	// Add image and scale icon icon to div
-	innerDiv.append(tmpImg);
-	outerDiv.append(innerDiv);
-
-	// Add div in correct place in pane
-	var selector = '#resultPane>.resultBackground:eq('+layer+')';
-	$(outerDiv).insertAfter(selector);
+	return c;
 }
 
 function getAndTriggerClickedImage(event, img) {
@@ -356,6 +357,10 @@ function windowScale() {
 		return;
 	}
 
+	// Reset the foreground canvas
+	$('#foregroundImage').remove();
+	$('#resultForegroundInner').append(createForegroundCanvas());
+
 	scaleAndPositionForeground();
 	setForegroundPane();
 
@@ -365,7 +370,7 @@ function windowScale() {
 	var ctx = document.getElementById('foregroundImage').getContext("2d");
 	ctx.drawImage(hiddenImg, 0, 0, w, h);
 	colourState.applyState();
-
+	
 	// Size the finalResult image
 	var resultForeground = $('#resultForeground');
 	$('#finalImage').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
@@ -389,7 +394,7 @@ function bringToFrontButton() {
 function postProcessFn() {
 	// Marshall the data
 	var BG_segment_URLs = new Array();
-	$('.backgroundImage').not('.mask').each(function(index) {
+	$('.backgroundImage').not('.mask, .outline').each(function(index) {
 		BG_segment_URLs.push($(this).attr('src')); // 'this' refers to the current element.  We use $(this).attr('src') instead of this.src to give relative, not absolute, paths
 	});
 	var FG_cutout_URL = $(hiddenImg).attr('src');
@@ -445,12 +450,14 @@ function postProcessFn() {
 
 function hideFinalImage() {
 	document.getElementById('finalImage').style.visibility = "hidden";
-	$('.mask').css('visibility', 'visible');
+	if (showMask) 	$('.mask').css('visibility', 'visible');
+	else			$('.outline').css('visibility', 'visible');
 }
 
 function showFinalImage() {
 	document.getElementById('finalImage').style.visibility = "visible";
-	$('.mask').css('visibility', 'hidden');
+	if (showMask) 	$('.mask').css('visibility', 'hidden');
+	else			$('.outline').css('visibility', 'hidden');
 }
 
 function brightnessSliderFn() {
@@ -471,6 +478,10 @@ function resetPositionButton() {
 function resetScaleButton() {
 	fg_img_scale = fg_original_scale.slice();
 	windowScale();
+}
+
+function toggleOutline() {
+	showMask = !showMask;
 }
 
 /* === Potentially old functions which may be removed === */
