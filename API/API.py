@@ -18,22 +18,38 @@ class API:
         self.objects_to_be_behind = [] # [2, 3, 4, 9, 11, 15, 16, 17, 18, 19, 20, 23, 57, 58, 59, 60, 61, 64]  # ! This is a personal choice and needs to be reconsidered in more depth
 
     def load_foreground(self, foreground, fn=lambda: None):
-        """Loads and segments the foreground
+        """Loads and segments the foreground. Currently resizes the image if it's above a threshold
+        # ! Keep the old image too.
         
         Args:
             foreground (image_url -> str): A url to the foreground image
         """
-        self.foreground_map[foreground] = self.nn.predict_from_file(foreground)
+
+        img = Image.fromarray(self.nn.load_image(foreground))
+        if img.width > 1920:
+            s = img.size
+            ratio = 1920/s[0]
+            img = img.resize((int(s[0]*ratio), int(s[1]*ratio)))
+            print("Resized to: ", s[0]*ratio, s[1]*ratio)
+
+        self.foreground_map[foreground] = self.nn.predict_from_array(np.array(img))
         fn()
 
     def load_background(self, background, fn=lambda: None):
-        """Loads and segments the background
+        """Loads and segments the background. Currently resizes the image if it's above a threshold
+        # ! Keep the old image too.
         
         Args:
             background (image_url -> str): A url to the background image
         """
+        img = Image.fromarray(self.nn.load_image(background))
+        if img.width > 1920:
+            s = img.size
+            ratio = 1920/s[0]
+            img = img.resize((int(s[0]*ratio), int(s[1]*ratio)))
+            print("Resized to: ", s[0]*ratio, s[1]*ratio)
 
-        self.background_map[background] = self.nn.predict_from_file(background)
+        self.background_map[background] = self.nn.predict_from_array(np.array(img))
         print(self.background_map[background].get_all_data()[2])
         fn()
 
