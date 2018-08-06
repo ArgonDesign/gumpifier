@@ -361,6 +361,7 @@ function windowScale() {
 	$('#foregroundImage').remove();
 	$('#resultForegroundInner').append(createForegroundCanvas());
 
+	// Position and scaling
 	scaleAndPositionForeground();
 	setForegroundPane();
 

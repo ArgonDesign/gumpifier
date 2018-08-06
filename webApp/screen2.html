@@ -61,8 +61,8 @@
 						<input type="button" value="Send behind you" onclick="sendBehindButton()">
 						<input type="button" value="Bring in front of you" onclick="bringToFrontButton()"><br>
 						Brightness
-						<input type="range" min="-100" max="100" step="1" value="0" id="brightnessSlider" onchange="brightnessSliderFn()"><br>
-						Temperature <input type="range" min="0" max="16000" step="1" value="8000" id="whiteBalanceSlider" onchange="whiteBalanceSliderFn()">
+						<input type="range" min="-100" max="100" step="1" value="0" id="brightnessSlider" oninput="brightnessSliderFn()"><br>
+						Temperature <input type="range" min="0" max="16000" step="1" value="8000" id="whiteBalanceSlider" oninput="whiteBalanceSliderFn()">
 					</div>
 				</div>
 				<div id="meta-commands" class="subCommandsPane">
