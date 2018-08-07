@@ -124,7 +124,9 @@ class API:
         print(np.where(bg_image_person_img != 0))
         # return_image = shadows.add_shadows(bg_image_person_img.astype("uint8"), bg_image_array, bg_image_person_mask, (top_left_y, top_left_x, bottom_right_y, bottom_right_x))
 
-        paste_img = Image.fromarray(bg_image_person_img.astype("uint8"))
+        paste_img = Image.fromarray(bg_image_array.astype("uint8"))
+        im = Image.fromarray(bg_image_person_img.astype("uint8"))
+        paste_img.paste(im, mask=im)
         for im in foreground_array:
             im = Image.fromarray(im)
             paste_img.paste(im, mask=im)
