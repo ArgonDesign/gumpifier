@@ -62,11 +62,12 @@ class CocoConfig(Config):
 class Prediction():
     """ Provides an interface to extract and operate on the masks given by a classifier
     """
-    def __init__(self, image, masks, class_ids, boxes):
+    def __init__(self, image, masks, class_ids, boxes, scores):
         self.image = image
         self.masks = masks
         self.class_ids = class_ids
         self.boxes = boxes
+        self.scores = scores
         self.coco_class_names = [
             'BG', 'person', 'bicycle', 'car', 
             'motorcycle', 'airplane', 'bus', 'train', 
@@ -116,7 +117,7 @@ class Prediction():
         return self.get_image_from_mask(human_masks)
 
     def get_all_data(self):
-        return self.image, self.masks, self.class_ids, self.boxes
+        return self.image, self.masks, self.class_ids, self.boxes, self.scores
 
     def get_primary_human(self):
         masks = self.get_human_masks()
@@ -237,9 +238,10 @@ class MaskRCNN():
         boxes = r['rois']
         masks = r['masks']
         class_ids = r['class_ids']
+        scores = r['scores']
 
         N = boxes.shape[0]
         if N == 0:
             raise ValueError("Nothing to detect")
 
-        return Prediction(image, masks, class_ids, boxes)       
+        return Prediction(image, masks, class_ids, boxes, scores)       

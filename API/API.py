@@ -152,16 +152,15 @@ class API:
         print("start")
         response["cutout"] = self.get_cutout(fg_pred)
         print("cutout done", time.time() - start_time)
-        response["foreground"], response["background"] = self.get_segments(bg_pred)
+        response["foreground"], response["background"], response["labels"] = self.get_segments_and_labels(bg_pred)
         print("foreground done", time.time() - start_time)
         response["position"], response["scale"] = self.get_optimal_position(fg_pred, bg_pred)
         print("position and scale done", time.time() - start_time)
         response["background_masks"] = self.get_mask_fill(bg_pred)
-        print("done", time.time() - start_time)
-        response["background_outlines"] = self.get_mask_outline_from_fill(bg_pred)
-
+        response["background_outlines"] = response["background_masks"]
+        print("masking done", time.time() - start_time)
         response["colour_correction"] = self.get_colour_correction(bg_pred, response["cutout"], response["position"], response["scale"])
-        # response["scale"] = self.get_optimal_scale()
+        print("done", time.time() - start_time)
 
         return response
 
@@ -169,25 +168,27 @@ class API:
         img = fg_pred.get_primary_human_image()
         return self.save_img_get_url(img)
 
-    def get_segments(self, bg_pred):
+    def get_segments_and_labels(self, bg_pred):
         start_time = time.time()
-        image, masks, classes = bg_pred.get_all_data()[:3]
+        image, masks, classes, _, scores = bg_pred.get_all_data()
         image = bg_pred.make_image_transparent(image)
         print("bg made transparent", time.time() - start_time)
         image[:, :, 3] = 255
         foreground = []
         print("bg made un-transparent", time.time() - start_time)
         background = [self.save_img_get_url(image)]
+        labels = {}
         print("bg saved", time.time() - start_time)
         for n in range(masks.shape[2]):
             mask = masks[:, :, n]
             img = bg_pred._apply_mask(image, mask)
+            url = self.save_img_get_url(img)
             if classes[n] in self.objects_to_be_behind:
-                foreground.append(self.save_img_get_url(img))
+                foreground.append(url)
             else:
-                background.append(self.save_img_get_url(img))
-            print(n, time.time() - start_time)
-        return foreground, background
+                background.append(url)
+            labels[url] = {"name": bg_pred.coco_class_names[classes[n]], "confidence": str(scores[n])}
+        return foreground, background, labels
 
     def save_img_get_url(self, img):
         start_time = time.time()
@@ -295,7 +296,7 @@ class API:
             softmax.append(new_person_height / (im_h * 0.1))
         
         if all(x < 1 for x in softmax):
-            raise ValueError()
+            raise ValueError("Everything is too small!")
 
         softmax = np.array(softmax)
         probs = np.exp(softmax) / np.sum(np.exp(softmax), axis=0)
@@ -397,9 +398,8 @@ class API:
 
         sampled_area_brightness = lum_bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x]
 
+        print(sampled_area_brightness.shape, mask.shape, bg_img.shape, fg_img.shape)
         sampled_area_b_mean = np.mean(sampled_area_brightness)
-        indices = mask==255
-        print(np.count_nonzero(indices))
         fg_img_b_mean = np.mean(lum_fg_img[mask==255])
 
         avg_b = (sampled_area_b_mean + fg_img_b_mean) / 2
@@ -414,3 +414,4 @@ class API:
         response["white_balance"] = sampled_area_temp_mean.tolist()
         
         return response
+        
