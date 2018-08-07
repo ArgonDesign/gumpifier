@@ -58,7 +58,7 @@ msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 messages_frame.pack()
 
-entry_field = tkinter.Entry(top, width=200, textvariable=my_msg)
+entry_field = tkinter.Entry(top, width=200, textvariable=my_msg, font=("Helvetica", 11))
 entry_field.bind("<Return>", send)
 entry_field.pack()
 send_button = tkinter.Button(top, text="Send", command=send)
