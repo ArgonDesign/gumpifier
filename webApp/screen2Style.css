@@ -1,0 +1,20 @@
+.mask {
+	opacity: 0.7;
+}
+
+#resultForegroundWidgets {
+	border-style: solid;
+	border-width: 2px;
+	border-image-source: url("Resources/border.png");
+	border-image-slice: 1 1 1 1;
+	border-image-repeat: repeat;
+	/*border-image-source: linear-gradient(white, white 50%, black 50%, black);*/	
+}
+
+/* Select elements with id containing subset of "CornerScaleDiv" */
+[id*="CornerScaleDiv"] {
+	width: 10px; /* If these change, update scaleHandleDim in JS to match */
+	height: 10px; /* If these change, update scaleHandleDim in JS to match */
+	background-color: blue;
+	border: 1px solid white;
+}

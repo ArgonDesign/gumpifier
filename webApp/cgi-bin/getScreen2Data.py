@@ -45,17 +45,19 @@ bg_url = form['bg_url'].value
 	# prefix = "Resources/patrick_json_dynamic/"
 
 # === Option 2 Package up JSON from a file (either uploade from option 1 or from a different, specified, file === #
-# prefix = "Resources/Eg2/"
-# f = open(prefix + "patrick.json", "r")
-# importedJSON = json.loads(f.read())
-# f.close()
+prefix = "Resources/Eg2/"
+f = open(prefix + "patrick.json", "r")
+importedJSON = json.loads(f.read())
+f.close()
 
-# BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
-# FG_cutout_URL = prefix + importedJSON['cutout']
-# layer = len(importedJSON['background']) - 1
-# position = importedJSON['position']
-# scale = importedJSON['scale']
-# BG_mask_URLs = [prefix + path for path in importedJSON['background_masks']]
+BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
+FG_cutout_URL = prefix + importedJSON['cutout']
+layer = len(importedJSON['background']) - 1
+position = importedJSON['position']
+scale = importedJSON['scale']
+BG_mask_URLs = [prefix + path for path in importedJSON['background_masks']]
+# BG_outline_URLs = [prefix + path for path in importedJSON['background_masks']]
+colour_correction = importedJSON["colour_correction"]
 
 # === Option 3 Make up some data === #
 # BG_segment_URLs = ['Resources/BGTest1.png', 'Resources/BGTest2.png', 'Resources/BGTest3.png', 'Resources/BGTest4.png']
@@ -65,14 +67,16 @@ bg_url = form['bg_url'].value
 # scale = (0.5, 0.5)
 
 # === Create the dictionary to return for the above options === #
-# returnDict = {
-# 	"BG_segment_URLs": BG_segment_URLs,
-# 	"FG_cutout_URL": FG_cutout_URL,
-# 	"layer": layer,
-# 	"position": position,
-# 	"scale": scale,
-# 	"BG_mask_URLs": BG_mask_URLs
-# }
+returnDict = {
+	"BG_segment_URLs": BG_segment_URLs,
+	"FG_cutout_URL": FG_cutout_URL,
+	"layer": layer,
+	"position": position,
+	"scale": scale,
+	"BG_mask_URLs": BG_mask_URLs,
+	"colour_correction": colour_correction,
+	"labels": None
+}
 
 # returnJSON = json.dumps(returnDict) # Remove this in production
 
@@ -86,7 +90,8 @@ def jsonConverter(importedJSON):
 	position = importedJSON['position']
 	scale = importedJSON['scale']
 	BG_mask_URLs = importedJSON['background_masks']
-	BG_outline_URLs = importedJSON['background_outlines']
+	colour_correction = importedJSON['colour_correction']
+	labels = importedJSON["labels"]
 
 	returnDict = {
 		"BG_segment_URLs": BG_segment_URLs,
@@ -95,7 +100,8 @@ def jsonConverter(importedJSON):
 		"position": position,
 		"scale": scale,
 		"BG_mask_URLs": BG_mask_URLs,
-		"BG_outline_URLs": BG_outline_URLs
+		"colour_correction": colour_correction,
+		"labels": labels
 	}
 
 	return json.dumps(returnDict) # Remove this in production

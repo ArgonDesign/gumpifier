@@ -338,7 +338,8 @@ class API:
             indices = (mask==1)
             img[indices] = 255
             # Generate an eroded version of the mask
-            eroded_mask = binary_erosion(mask, iterations=5)
+            iterations = max(1, int(mask.shape[1] * 0.005)) # Base the thickness of the line on the image width
+            eroded_mask = binary_erosion(mask, iterations=iterations)
             eroded_img = bg_pred._apply_mask(image, eroded_mask)
             eroded_indices = (eroded_mask==1)
             img[eroded_indices] = 255

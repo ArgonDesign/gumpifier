@@ -5,26 +5,6 @@ var fg_img_scale;
 var bg_loaded = false;
 var fg_loaded = false;
 var selectedLayerDiv;
-var showMask = true;
-
-// This closure represents the state for the colour sliders.
-var colourState = (function() {
-	var brightness = 0;
-	var whiteBalance = 8000;
-	function applyState() {
-		Caman(document.getElementById('foregroundImage'), function() {
-			this.revert(false);
-			this.brightness(brightness);
-			this.whiteBalance(whiteBalance);
-			this.render();
-		});
-	}
-	return {
-		setBrightness: function(newBrightness) {brightness = newBrightness; applyState()},
-		setWhiteBalance: function(newWhiteBalance) {whiteBalance = newWhiteBalance; applyState();},
-		applyState: applyState
-	}
-})();
 
 function uploadPictureFn(form, fg) {
 	// Submit the form
@@ -48,43 +28,44 @@ function uploadPictureFn(form, fg) {
 }
 
 function gumpifyFn() {
-	// Load the new UI
-	$('.content').load('screen2.html', function() {
-		// Change the title location to the top of the rectangles
-		$('.vCenterPane').css({"justify-content": 'flex-start'});
-		// Switch the flex-grow properties for the viewing and command pane
-		$('#circlePaneLeft').css({"flex-grow": 7});
-		$('#circlePaneRight').css({"flex-grow": 3});
-		// Provide a loading message
-		$('#vCenterPaneLeftTitle').text("Loading...");
-		bindScreen2Functions();
-		// Once UI is loaded it's now safe to send the AJAX request to the server and load the images
-		$.ajax({
-			type: "POST",
-			url: "cgi-bin/getScreen2Data.py",
-			data: {	"fg_url": fg_url,
-					"bg_url": bg_url},
-			success: function(data) {
-				if (data.hasOwnProperty("ERROR")) {
-					$('#resultPane').text("Something went wrong!");
-					console.log(data.ERROR);
-				}
-				else {
-					$('#vCenterPaneLeftTitle').text("Your Gumpified Image");
-					fg_img_pos = data.position;
-					fg_img_scale = data.scale;
-					// We must create copies
-					fg_original_pos = data.position.slice();
-					fg_original_scale = data.scale.slice();
-					loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs, data.BG_outline_URLs);
-				}
-			},
-			dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
-			error: function(xhr, status, error) {
-				console.log(status);
-				console.log(error);
+	// Hide screen 1; unhide screen 2
+	$('#content-screen1').hide();
+	$('#content-screen2').css("display", "flex");
+	// Change the title location to the top of the rectangles
+	$('.vCenterPane').css({"justify-content": 'flex-start'});
+	// Provide a loading message
+	$('#vCenterPaneLeftTitle').text("Loading...");
+	// Once UI is loaded it's now safe to send the AJAX request to the server and load the images
+	$.ajax({
+		type: "POST",
+		url: "cgi-bin/getScreen2Data.py",
+		data: {	"fg_url": fg_url,
+				"bg_url": bg_url},
+		success: function(data) {
+			if (data.hasOwnProperty("ERROR")) {
+				$('#resultPane').text("Something went wrong!");
+				console.log(data.ERROR);
 			}
-		});
+			else {
+				$('#vCenterPaneLeftTitle').text("Your Gumpified Image");
+				fg_img_pos = data.position;
+				fg_img_scale = data.scale;
+				// We must create copies
+				fg_original_pos = data.position.slice();
+				fg_original_scale = data.scale.slice();
+				// Force initialize colourState
+				colourState.initialize(data.colour_correction.brightness, data.colour_correction.white_balance, 6000);
+				$('#brightnessSlider').val(data.colour_correction.brightness);
+				$('#whiteBalanceSlider').val(6000);
+				// Load images
+				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs);
+			}
+		},
+		dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
+		error: function(xhr, status, error) {
+			console.log(status);
+			console.log(error);
+		}
 	});
 }
 
@@ -105,10 +86,11 @@ function packageImageInDiv(onLoadFn, src, classes, onMouseDownFn, divClasses) {
 	// Return the div
 	return div;
 }
-function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, BG_outline_URLs) {
+
+function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) {
 	// Precondition: BG_segment_URLs.length = BG_mask_URLs.length + 1
 
-	// === Insert background images, masks and outlines
+	// === Insert background images and masks
 	for (i = 0; i<BG_segment_URLs.length; i++) {
 		// === Overall containing div
 		if (i <= layer) var bigusDivus = $("<div />", {"class": "resultBackground behind"});
@@ -119,11 +101,11 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 		else		var onLoadFn = function() {}
 
 		// === Background image
-		var div = packageImageInDiv(function() {bg_loaded = true; windowScale();},	// onLoadFn
-												BG_segment_URLs[i],					// src
-												"backgroundImage",					// classes
-												getAndTriggerClickedImage,			// onMouseDownFn
-												"resultBackgroundInner");			// divClasses
+		var div = packageImageInDiv(onLoadFn,							// onLoadFn
+									BG_segment_URLs[i],					// src
+									"backgroundImage",					// classes
+									getAndTriggerClickedImage,			// onMouseDownFn
+									"resultBackgroundInner");			// divClasses
 		// Add image div to outer div
 		bigusDivus.append(div);
 
@@ -134,17 +116,6 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 										'backgroundImage mask',				// classes
 										function() {},						// onMouseDownfn
 										'resultBackgroundInner maskDiv')	// divClasses
-			// Add mask div to outer div
-			bigusDivus.append(div);
-		}
-
-		// === Outline
-		if (i != 0) {
-			var div = packageImageInDiv(function() {},						// onLoadFn
-										BG_outline_URLs[i-1],				// src
-										'backgroundImage outline',			// classes
-										function() {},						// onMouseDownfn
-										'resultBackgroundInner outlineDiv')	// divClasses)
 			// Add mask div to outer div
 			bigusDivus.append(div);
 		}
@@ -160,23 +131,100 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	var outerDiv = $("<div />", {"id": "resultForeground", "class": "result"});
 	outerDiv.hover(showMasks, hideMasks);
 	var innerDiv = $("<div />", {"id": "resultForegroundInner"});
+	var dragDiv = $("<div />", {"id": "resultForegroundDragDiv"});
+	var widgetDiv = $("<div />", {"id": "resultForegroundWidgets"});
 
 	// The image must have pointer events for dragging but the containing div must not to allow click through to background layers
-	$(innerDiv).css({"pointer-events": "none"});
-	$(outerDiv).css({"pointer-events": "none"});
+	innerDiv.css({"pointer-events": "none"});
+	outerDiv.css({"pointer-events": "none"});
+	widgetDiv.css({"pointer-events": "none"});
 
-	// Add image and scale icon icon to div
+	// Make the drag div draggable
+	dragDiv.draggable({scroll: false});
+	dragDiv.on("dragstop", function(event, ui) {
+		var bg = $('#first');
+		var bgWidth = bg.width();
+		var bgHeight = bg.height();
+		var bgX = bg.position().left;
+		var bgY = bg.position().top;
+		var offsetH = parseInt($('#resultForegroundDragDiv>.ui-wrapper').css("left"));
+		var offsetV = parseInt($('#resultForegroundDragDiv>.ui-wrapper').css("top"));
+
+		// ui.position.{top,left} is the current CSS position of the helper, according to API linked above
+		fg_img_pos = [(ui.position.left + offsetH)/bgWidth, (ui.position.top + offsetV)/bgHeight];
+
+		return true;
+	});
+	dragDiv.on("drag", function(event, ui) { // Drag the widgets at the same time
+		var offsetH = parseInt($('#resultForegroundDragDiv>.ui-wrapper').css("left"));
+		var offsetV = parseInt($('#resultForegroundDragDiv>.ui-wrapper').css("top"));
+		$('#resultForegroundWidgets').css({top: (ui.position.top + offsetV), left: (ui.position.left + offsetH)});
+	});
+	$(dragDiv).css({"pointer-events": "auto"});
+	// dragDiv.css({"position": "absolute"});
+
+	// Add image and wigets to div
+	innerDiv.append(dragDiv);
 	outerDiv.append(innerDiv);
+	outerDiv.append(widgetDiv);
 
 	// Add div in correct place in pane
 	var selector = '#resultPane>.resultBackground:eq('+layer+')';
 	$(outerDiv).insertAfter(selector);
 
+	// Add scale icons
+	widgetDiv.append($('<div />', {"id": "BRCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "RCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "TRCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "TCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "TLCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "LCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "BLCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "BCornerScaleDiv"}));
+
 	// Load the image and call windowScale to convert it to a canvas and add to the appropriate div
 	hiddenImg = new Image(); // Yuck, global variable
 	hiddenImg.onload = function() {
 		fg_loaded = true;
-		windowScale();
+		var c = createForegroundCanvas()
+		dragDiv.append(c);
+		cJQobject = $(c);
+		windowScale();  // Both this and the call below are necessary.
+		// Make canvas resizable
+		cJQobject.resizable({
+			alsoResize: "#resultForegroundWidgets",
+			handles: "all",
+			start: function(event, ui) {
+				// https://stackoverflow.com/questions/3699125/jquery-ui-resize-only-one-handle-with-aspect-ratio
+				if ($(event.originalEvent.target).attr('class').match(/\b(ui-resizable-se|ui-resizable-sw|ui-resizable-ne|ui-resizable-nw)\b/)) {
+					cJQobject.resizable("option", "aspectRatio", true).data('uiResizable')._aspectRatio = true;
+				}
+			},
+			resize: function(event, ui) {
+				// Se the intrinsic dimenstions of the canvas
+				document.getElementById('foregroundImage').width = ui.size.width;
+				document.getElementById('foregroundImage').height = ui.size.height;
+				// Set the new scale
+				var bg = $('#first');
+				var bgWidth = bg.width();
+				var bgHeight = bg.height();
+				fg_img_scale[0] = ui.size.width / bgWidth;
+				fg_img_scale[1] = ui.size.height / bgHeight;
+				// Set position
+				var dragLeft = parseInt($("#resultForegroundDragDiv").css("left"));
+				var dragTop = parseInt($('#resultForegroundDragDiv').css("top"));
+				fg_img_pos[0] = ((dragLeft + ui.position.left)/bgWidth);
+				fg_img_pos[1] = ((dragTop + ui.position.top)/bgHeight);
+				// Redraw
+				colourState.applyState();
+				scaleAndPositionWidgetDiv();
+			},
+			stop: function(event, ui) {
+				cJQobject.resizable("option", "aspectRatio", false).data('uiResizable')._aspectRatio = false;
+			}
+		});
+		windowScale(); // Both this and the call above are necessary.
+		colourState.initApply();
 	}
 	hiddenImg.src = FG_cutout_URL;
 }
@@ -192,28 +240,7 @@ function createForegroundCanvas() {
 	var ctx = c.getContext("2d");
 
 	// Make draggable
-	cJQobject = $(c);
-	cJQobject.draggable({containment: "#containerForeground", scroll: false});
-	cJQobject.on("dragstop", function(event, ui) {
-		var bg = $('#first');
-		var bgWidth = bg.width();
-		var bgHeight = bg.height();
-		var bgX = bg.position().left;
-		var bgY = bg.position().top;
-
-		// ui.position.{top,left} is the current CSS position of the helped, according to API linked above
-		fg_img_pos = [(ui.position.left)/bgWidth, (ui.position.top)/bgHeight];
-
-		// Set values of the spinners to match.
-		document.getElementById('xPosSpinner').value = fg_img_pos[0];
-		document.getElementById('yPosSpinner').value = fg_img_pos[1];
-		document.getElementById('xScaleSpinner').value = fg_img_scale[0];
-		document.getElementById('yScaleSpinner').value = fg_img_scale[1];
-
-		return true;
-	});
-	$(cJQobject).css({"pointer-events": "auto"});
-	cJQobject.css({"position": "absolute"});
+	var cJQobject = $(c);
 	cJQobject.on("mousedown", function(event) {getAndTriggerClickedImage(event, this);});
 
 	return c;
@@ -301,18 +328,50 @@ function scaleAndPositionForeground() {
 	// Get the fg and bg images and the width and height of the bg image
 	var fg = $('#foregroundImage');
 	var bg = $('#first');
-
 	var bgWidth = bg.width();
 	var bgHeight = bg.height();
 
-	// Set the intrinsic (and extrinsic?) dimensions of the fg image
+	// Set the intrinsic and extrinsic dimensions of the fg image
 	document.getElementById('foregroundImage').width = bgWidth * fg_img_scale[0];
 	document.getElementById('foregroundImage').height = bgHeight * fg_img_scale[1];
+	$('#foregroundImage').css({width: bgWidth * fg_img_scale[0], height: bgHeight * fg_img_scale[1]});
 
 	// Set the position of the fg image.  API notes a potential problem with user zooming in.
 	var bgX = bg.position().left;
 	var bgY = bg.position().top;
-	fg.css({top: fg_img_pos[1]*bgHeight, left: fg_img_pos[0]*bgWidth});
+	fg.css({top: 0, left: 0, right: 0, bottom: 0});
+	fgResizeDiv = $('#resultForegroundDragDiv>.ui-wrapper');
+	var offsetH = parseInt(fgResizeDiv.css("left"));
+	var offsetV = parseInt(fgResizeDiv.css("top"));
+	fgDragDiv = $('#resultForegroundDragDiv');
+	fgDragDiv.css({top: fg_img_pos[1]*bgHeight - offsetV, left: fg_img_pos[0]*bgWidth - offsetH});
+
+	// Now for the widget div
+	scaleAndPositionWidgetDiv();
+}
+
+function scaleAndPositionWidgetDiv() {
+	var fg = $('#foregroundImage');
+	var bg = $('#first');
+	var bgWidth = bg.width();
+	var bgHeight = bg.height();
+	// Set the location and scale of the widget box
+	$("#resultForegroundWidgets").css({	top: fg_img_pos[1]*bgHeight,
+										left: fg_img_pos[0]*bgWidth,
+										width: fg.width(),
+										height: fg.height()});
+	// Set the location of the grabable scale buttons
+	var scaleHandleDim = "10px"; // Change this if the CSS changes
+	var bottom = "calc(100% - "+scaleHandleDim+")";
+	var right = "calc(100% - "+scaleHandleDim+")";
+	$("#BRCornerScaleDiv").css({top: bottom, left: right});
+	$("#RCornerScaleDiv").css({top: "50%", left: right});
+	$("#TRCornerScaleDiv").css({top: 0, left: right});
+	$("#TCornerScaleDiv").css({top: 0, left: "50%"});
+	$("#TLCornerScaleDiv").css({top: 0, left: 0});
+	$("#LCornerScaleDiv").css({top: "50%", left: 0});
+	$("#BLCornerScaleDiv").css({top: bottom, left: 0});
+	$("#BCornerScaleDiv").css({top: bottom, left: "50%"});
 }
 
 function setForegroundPane() {
@@ -327,23 +386,11 @@ function setForegroundPane() {
 	var fgHeight = fg.height();
 
 	// Set the dimensions and position of the container to constrain the FG draggable area
-	var fgPane = $('#containerForeground');
-	fgPane.css({top: bgY - fgHeight,
-				left: bgX - fgWidth,
-				width: bgWidth + 2*fgWidth,
-				height: bgHeight + 2*fgHeight});
-
-	// Set the minimum and maximum position values for the number spinners.  Use the same values as for the draggable area
-	var xPosSpinner = document.getElementById('xPosSpinner');
-	var yPosSpinner = document.getElementById('yPosSpinner');
-	var xScaleSpinner = document.getElementById('xScaleSpinner');
-	var yScaleSpinner = document.getElementById('yScaleSpinner');
-	xPosSpinner.min = -fgWidth/bgWidth;
-	yPosSpinner.min = -fgHeight/bgHeight;
-	xPosSpinner.value = fg_img_pos[0];
-	yPosSpinner.value = fg_img_pos[1];
-	xScaleSpinner.value = fg_img_scale[0];
-	yScaleSpinner.value = fg_img_scale[1];
+	// var fgPane = $('#containerForeground');
+	// fgPane.css({top: bgY - fgHeight,
+	// 			left: bgX - fgWidth,
+	// 			width: bgWidth + 2*fgWidth,
+	// 			height: bgHeight + 2*fgHeight});
 
 	// Set the dimensions and position of resultForeground to make foreground overflowing background hidden
 	var resultForeground = $('#resultForeground');
@@ -351,27 +398,26 @@ function setForegroundPane() {
 }
 
 // We must scale and position the fg image when the window is resized
-function windowScale() {
+function windowScale(possibleEvent) {
+	if (possibleEvent != null) {
+		if (possibleEvent.target.classList != null) {
+			// But returning because a bogus event was passed
+			return;
+		}
+		// The event passed was a genuine window resize
+	}
 	// Check if both the fg and bg images have loaded before trying to proceed
 	if (!(fg_loaded && bg_loaded)) {
 		return;
 	}
-
-	// Reset the foreground canvas
-	$('#foregroundImage').remove();
-	$('#resultForegroundInner').append(createForegroundCanvas());
 
 	// Position and scaling
 	scaleAndPositionForeground();
 	setForegroundPane();
 
 	// Draw the foreground image onto the canvas
-	var w = document.getElementById('foregroundImage').width; // Using JQuery here doesn't work for some reason
-	var h = document.getElementById('foregroundImage').height;
-	var ctx = document.getElementById('foregroundImage').getContext("2d");
-	ctx.drawImage(hiddenImg, 0, 0, w, h);
 	colourState.applyState();
-	
+
 	// Size the finalResult image
 	var resultForeground = $('#resultForeground');
 	$('#finalImage').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
@@ -384,18 +430,18 @@ window.onresize = windowScale;
 /* === Event handlers for the commands pane === */
 function sendBehindButton() {
 	$('#resultForeground').before(selectedLayerDiv);
-	$('#first').parent().parent().insertAfter($('#containerForeground'));
+	$('#resultPane').prepend($('#first').parent().parent())
 }
 
 function bringToFrontButton() {
 	$('#resultForeground').after(selectedLayerDiv);
-	$('#first').parent().parent().insertAfter($('#containerForeground'));
+	$('#resultPane').prepend($('#first').parent().parent())
 }
 
 function postProcessFn() {
 	// Marshall the data
 	var BG_segment_URLs = new Array();
-	$('.backgroundImage').not('.mask, .outline').each(function(index) {
+	$('.backgroundImage').not('.mask').each(function(index) {
 		BG_segment_URLs.push($(this).attr('src')); // 'this' refers to the current element.  We use $(this).attr('src') instead of this.src to give relative, not absolute, paths
 	});
 	var FG_cutout_URL = $(hiddenImg).attr('src');
@@ -413,7 +459,7 @@ function postProcessFn() {
 		"original_BG_URL": original_BG_URL,
 		"colour_correction": {
 			"brightness": colourState.brightness,
-			"whiteBalance": colourState.whiteBalance
+			"white_balance": colourState.whiteBalance
 		}
 	};
 
@@ -454,13 +500,13 @@ function postProcessFn() {
 }
 
 function showMasks() {
-	if (showMask) 	$('.mask').css('visibility', 'visible');
-	else			$('.outline').css('visibility', 'visible');
+	$('.mask').css('visibility', 'visible');
+	$('#resultForegroundWidgets').css('visibility', 'visible');
 }
 
 function hideMasks() {
-	if (showMask) 	$('.mask').css('visibility', 'hidden');
-	else			$('.outline').css('visibility', 'hidden');
+	$('.mask').css('visibility', 'hidden');
+	$('#resultForegroundWidgets').css('visibility', 'hidden');
 }
 
 function toggleFinalImage() {
@@ -469,16 +515,27 @@ function toggleFinalImage() {
 	else			finalImage.style.visibility = "hidden";
 }
 
-function brightnessSliderFn() {
-	newBrightness = $('#brightnessSlider').val();
-	colourState.setBrightness(newBrightness);
-};
+function editButtonFn() {
+	var toToggle = $('#editCommands');
+	if (toToggle.css("visibility") == "hidden") {
+		toToggle.css("visibility", "visible");
+	}
+	else {
+		toToggle.css("visibility", "hidden");	
+	}
+}
 
-function whiteBalanceSliderFn() {
-	newWhiteBalance = $('#whiteBalanceSlider').val();
-	colourState.setWhiteBalance(newWhiteBalance);
-};
+function changeImagesFn() {
+	// Unhide screen 1; hide screen 2
+	$('#content-screen1').css("display", "flex");
+	$('#content-screen2').hide();
+	// Reset title location to original
+	$('.vCenterPane').css({"justify-content": 'center'});
+	// Reset screen 2 to original
+	$('.resultBackground, #resultForeground').remove();
+}
 
+// === Probably remove
 function resetPositionButton() {
 	fg_img_pos = fg_original_pos.slice();
 	windowScale();
@@ -487,47 +544,4 @@ function resetPositionButton() {
 function resetScaleButton() {
 	fg_img_scale = fg_original_scale.slice();
 	windowScale();
-}
-
-function toggleOutline() {
-	showMask = !showMask;
-}
-
-/* === Potentially old functions which may be removed === */
-function changePositionSpinner() {
-	fg_img_pos[0] = parseFloat(document.getElementById('xPosSpinner').value);
-	fg_img_pos[1] = parseFloat(document.getElementById('yPosSpinner').value);
-	windowScale();
-}
-
-function changeScaleSpinnerX() {
-	if (document.getElementById('scaleLink').checked){
-		var newX = parseFloat(document.getElementById('xScaleSpinner').value);
-		var newY = parseFloat(document.getElementById('xScaleSpinner').value) * (fg_img_scale[1]/fg_img_scale[0]) // newY = newX * (oldY/oldX)
-		fg_img_scale[0] = newX;
-		fg_img_scale[1] = newY;
-	}
-	else {
-		fg_img_scale[0] = document.getElementById('xScaleSpinner').value;
-		
-	}
-	windowScale();
-}
-
-function changeScaleSpinnerY() {
-	if (document.getElementById('scaleLink').checked){
-		var newY = parseFloat(document.getElementById('yScaleSpinner').value);
-		var newX = parseFloat(document.getElementById('yScaleSpinner').value) * (fg_img_scale[0]/fg_img_scale[1]) // newX = newY * (oldX/oldY)
-		fg_img_scale[0] = newX;
-		fg_img_scale[1] = newY;	
-	}
-	else {
-		fg_img_scale[1] = document.getElementById('yScaleSpinner').value;	
-		
-	}
-	windowScale();
-}
-
-function newButton() {
-	location.reload();
 }

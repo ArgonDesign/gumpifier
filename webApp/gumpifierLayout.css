@@ -11,14 +11,22 @@ html, body {
 	overflow: hidden; /* Makes the window not horizontally scroll when the container box for the draggable image overflows */
 }
 
-.content {
+#content-screen1, #content-screen2 {
 	/* Child properties*/
 	flex-grow: 1;
 
 	/* Parent properties*/
 	display: flex;
-	flex-flow: row;
 	flex-wrap: wrap;
+}
+
+#content-screen1 {
+	flex-flow: row;
+}
+
+#content-screen2 {
+	display: none;
+	flex-flow: column;
 }
 
 #circlePaneLeft {

@@ -117,7 +117,7 @@ class TF_Socket():
 			while totalsent < 5:
 				sent = socket.send("00000".encode())
 				if sent == 0: break
-				totalsent = totalsent + sent	
+				totalsent = totalsent + sent
 			socket.close()
 
 		if command == 'sgtF':
@@ -148,7 +148,6 @@ class TF_Socket():
 			try:
 				response = self.api.build_response(os.path.join(PREFIX, data['fg_url']), os.path.join(PREFIX, data['bg_url']))
 				# Remove the leading 'webApp/'
-				print(response["cutout"], os.path.relpath(response["cutout"], PREFIX))
 				response["foreground"] = [os.path.relpath(path, PREFIX) for path in response["foreground"]]
 				response["background"] = [os.path.relpath(path, PREFIX) for path in response["background"]]
 				response["cutout"] = os.path.relpath(response["cutout"], PREFIX)

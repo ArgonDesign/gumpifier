@@ -1,5 +1,6 @@
 // Event handler binding
 $(document).ready(function() {
+	// === Screen 1
 	// Foreground button
 	$('#foregroundForm').submit(function() {return uploadPictureFn($('#foregroundForm'), true);});
 
@@ -14,9 +15,21 @@ $(document).ready(function() {
 
 	// Gumpify button
 	$('#gumpifyButton').click(gumpifyFn);
-});
 
-function bindScreen2Functions() {
-	// Post Process button
-	$('#postProcessButton').click(postProcessFn);
-}
+	// === Screen 2
+	// Edit button
+	$('#editButton').click(editButtonFn);
+
+	// Brightness slider
+	$('#brightnessSlider').on('input', brightnessSliderFn);
+
+	// Temperature slider
+	$('#whiteBalanceSlider').on('input', whiteBalanceSliderFn);
+
+	// Undo button
+
+	// Redo button
+
+	// Change Images button
+	$('#changeImagesButton').click(changeImagesFn);
+});

@@ -1,0 +1,95 @@
+/* === Place images on top of each other === */
+#resultPane {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.resultBackground, .resultBackgroundInner, #resultFinal {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+#resultForeground {
+	overflow: hidden;
+	position: absolute;
+	/* Position set dynamically using JS*/
+}
+
+#resultForegroundInner {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+#resultForegroundWidgets {
+	position: absolute;
+}
+
+/*#containerForeground {*/
+	/*position: absolute;*/
+	/* The actual position set dynamically using JS*/
+
+	/* We need this to be able to click through to the main buttons*/
+	/*pointer-events: none;*/
+/*}*/
+
+.backgroundImage {
+	max-height: 100%;
+	max-width: 100%;
+}
+
+#foregroundImage {
+	/*position: absolute;*/
+}
+
+/* === Draggable === */
+#resultForegroundDragDiv {
+	display: block;
+	/*position: relative;*/
+}
+
+/* === CSS for the buttons === */
+#canvasCommands {
+	display: flex;
+}
+
+#canvasCommandsLeft, #canvasCommandsRight {
+	/* Child options*/
+	flex-grow: 1;
+}
+
+#editButton {
+	float: left;
+}
+
+#editCommands {
+	visibility: hidden;
+}
+
+#canvasCommandsRight 	{text-align: right;}
+#finalCommands			{text-align: center;}
+
+/* === CSS for masks === */
+.maskDiv {
+	pointer-events: none;
+}
+
+/* === CSS for the final result pane === */
+#finalImage {
+	position: absolute;
+	pointer-events: none;
+}
+
+/* === CSS for the scale grabable buttons === */
+/* Select elements with id containing subset of "CornerScaleDiv" */
+[id*="CornerScaleDiv"] {
+	position: absolute;
+}
