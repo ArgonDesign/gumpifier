@@ -66,8 +66,8 @@ function adjustWhiteBalanceColour(colour) {
 
 	for (var i = 0; i < data.length; i += 4) {
 		data[i] = data[i] * (255/colour.r); // Red
-		data[i+1] = data[i+1] * (255/colour.g); // Red
-		data[i+2] = data[i+2] * (255/colour.b); // Red
+		data[i+1] = data[i+1] * (255/colour.g); // Green
+		data[i+2] = data[i+2] * (255/colour.b); // Blue
 	}
 
 	ctx.putImageData(imageData, 0, 0);	

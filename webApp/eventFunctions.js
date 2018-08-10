@@ -195,7 +195,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 		$('#resultPane').append(bigusDivus);
 	}
 	// Set the id of the first background image
-	$('.backgroundImage:eq(0)').attr('id', 'first');
+	$('.backgroundImage:eq(0)').attr('id', 'first'); // DO NOT change the id from "first" - stuff relies on it!
 
 	// === Insert the foreground image (do in 'reverse': add divs first, then image)
 	// Create the containing divs
@@ -213,7 +213,9 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 	// Make the drag div draggable
 	dragDiv.draggable({scroll: false});
 	dragDiv.on("dragstart", function(event, ui) {
-		undoManager.initUndoEvent(new moveUndo(fg_img_pos));
+		undoManager.initUndoEvent(new moveUndo(fg_img_pos, function() {
+			this.newPosition = fg_img_pos.slice();
+		}));
 	});
 	dragDiv.on("dragstop", function(event, ui) {
 		var bg = $('#first');
@@ -226,11 +228,6 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 
 		// ui.position.{top,left} is the current CSS position of the helper, according to API linked above
 		fg_img_pos = [(ui.position.left + offsetH)/bgWidth, (ui.position.top + offsetV)/bgHeight];
-
-		// Finalise the undo event
-		undoManager.finaliseEvent(function(event) {
-			event.newPosition = fg_img_pos.slice();
-		});
 
 		return true;
 	});
@@ -279,7 +276,10 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 					cJQobject.resizable("option", "aspectRatio", true).data('uiResizable')._aspectRatio = true;
 				}
 				// Initialise undo event
-				undoManager.initUndoEvent(new scaleUndo(fg_img_scale, fg_img_pos));
+				undoManager.initUndoEvent(new scaleUndo(fg_img_scale, fg_img_pos, function() {
+					this.newScale = fg_img_scale.slice();
+					this.newPosition = fg_img_scale.slice();
+				}));
 			},
 			resize: function(event, ui) {
 				// Se the intrinsic dimenstions of the canvas
@@ -303,11 +303,6 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 			stop: function(event, ui) {
 				cJQobject.resizable("option", "aspectRatio", false).data('uiResizable')._aspectRatio = false;
 				reassertNormality();
-				// Finalise undo event
-				undoManager.finaliseEvent(function(event) {
-					event.newScale = fg_img_scale.slice();
-					event.newPosition = fg_img_pos.slice();
-				});
 			}
 		});
 		windowScale(); // Both this and the call above are necessary.
@@ -321,14 +316,11 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 	var overlayTextDragIcon = $('<div />', {"id": "overlayTextDragIcon", "data-html2canvas-ignore": "true"});
 	var overlayTextContainer = $('<div />', {"id": "overlayTextContainer"});
 	overlayText.val("I'm sorry Dave, I'm afraid I can't do that.");
-	// overlayText.on("focus", function() {
-	// 	undoManager.initUndoEvent(new textUndo(overlayText.val()));
-	// });
-	// overlayText.on("blur", function() {
-	// 	undoManager.finaliseEvent(function(event) {
-	// 		event.newText = overlayText.val();
-	// 	});
-	// });
+	overlayText.on("focus", function() {
+		undoManager.initUndoEvent(new textUndo(overlayText.val(), function() {
+			this.newText = overlayText.val();
+		}));
+	});
 	overlayTextDiv.draggable();
 	overlayTextDiv.hover(showMasks, hideMasks);
 
@@ -403,16 +395,16 @@ function getAndTriggerClickedImage(event, img) {
 				imgGrandparentJQ.removeClass("behind");
 				bringToFrontButton();
 				// Initialise undo event
-				undoManager.initUndoEvent(new toggleLayerUndo(true, selectedLayerDiv));
+				if ($(img).attr("id") != "first") {
+					undoManager.initUndoEvent(new toggleLayerUndo(true, selectedLayerDiv, function() {}));
+				}
 			}
 			else {
 				imgGrandparentJQ.addClass("behind");
 				sendBehindButton();
 				// Initialise Undo event
-				undoManager.initUndoEvent(new toggleLayerUndo(false, selectedLayerDiv));
+				undoManager.initUndoEvent(new toggleLayerUndo(false, selectedLayerDiv, function() {}));
 			}
-			// Finalise undo event
-			undoManager.finaliseEvent(function() {});
 		}
 		// Clicked the foreground image
 		else {
