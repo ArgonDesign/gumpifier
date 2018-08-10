@@ -15,3 +15,6 @@ portConfig.txt
 /webApp/cgi-bin/__pycache__/
 *.pyc
 messaging_server.py
+/webApp/testResizable
+/webApp/testTextArea
+/webApp/BeforeRefactor

@@ -1,20 +1,71 @@
+/* Original opacity for all masks was 0.7 */
 .mask {
-	opacity: 0.7;
+	opacity: 0.8;
 }
+
+.behind .mask {
+	opacity: 0.5;
+}	
 
 #resultForegroundWidgets {
 	border-style: solid;
-	border-width: 2px;
-	border-image-source: url("Resources/border.png");
+	border-width: 1px;
+	border-image-source: url("SharedResources/border.png");
 	border-image-slice: 1 1 1 1;
 	border-image-repeat: repeat;
 	/*border-image-source: linear-gradient(white, white 50%, black 50%, black);*/	
+}
+
+/* use foregroundImage:hover (instead of the perhaps more semantically correct resultForegroundWidgets:hover) so
+pointer-events capturing remains correct */
+#foregroundImage:hover {
+	cursor: move;
 }
 
 /* Select elements with id containing subset of "CornerScaleDiv" */
 [id*="CornerScaleDiv"] {
 	width: 10px; /* If these change, update scaleHandleDim in JS to match */
 	height: 10px; /* If these change, update scaleHandleDim in JS to match */
-	background-color: blue;
+	background-color: rgb(165,75,255);
 	border: 1px solid white;
+}
+
+#overlayText {
+	background-color: transparent;
+	font-family: "impact";
+	/* https://css-tricks.com/adding-stroke-to-web-text/ */
+	color: white;
+	text-shadow: 
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+	font-size: 300%;
+	text-align: center;
+}
+
+#overlayTextDragIcon {
+	background-image: url("SharedResources/GrabArrow.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#overlayTextDragIcon:hover {
+	cursor: move;
+}
+
+/* === CSS for the instructions text === */
+#instructions {
+	background-color: rgba(255, 255, 255, 0.9);
+	z-index: 91; /* This brings the instructions in front of the JQueryUI scale handles */
+
+}
+
+#instructionsText {
+	font-family: 'Quicksand', sans-serif;
+}
+
+#instructionsText>ul {
+	list-style-position: inside;
 }

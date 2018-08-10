@@ -77,19 +77,53 @@
 #canvasCommandsRight 	{text-align: right;}
 #finalCommands			{text-align: center;}
 
+/* === CSS for the overlay text === */
+#overlayTextContainer {
+	position: absolute;
+	pointer-events: none;
+}
+
+#overlayTextDiv {
+	pointer-events: auto;
+	padding-left: 20px;
+	padding-top: 20px;
+	display: inline-block;
+}
+
+#overlayTextDragIcon {
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#overlayText {
+	padding: 0;
+}
+
 /* === CSS for masks === */
 .maskDiv {
 	pointer-events: none;
 }
 
 /* === CSS for the final result pane === */
-#finalImage {
+/*#finalImage {
 	position: absolute;
 	pointer-events: none;
-}
+}*/
 
 /* === CSS for the scale grabable buttons === */
 /* Select elements with id containing subset of "CornerScaleDiv" */
 [id*="CornerScaleDiv"] {
 	position: absolute;
+}
+
+/* === CSS for the instructions text === */
+#instructions {
+	position: absolute;
+	/* Center vertically */
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }

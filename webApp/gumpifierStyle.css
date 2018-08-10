@@ -20,9 +20,9 @@ header {
 	background-size: contain;
 }
 
-#initArgonLogo {background-image: url("Resources/argonLogo.jpg");}
-#initDovetailedLogo {background-image: url("Resources/dovetailedLogo.jpg");}
-#initGumpifierLogo {background-image: url("Resources/gumpifierLogo.png");}
+#initArgonLogo {background-image: url("SharedResources/argonLogo.jpg");}
+#initDovetailedLogo {background-image: url("SharedResources/dovetailedLogo.jpg");}
+#initGumpifierLogo {background-image: url("SharedResources/gumpifierLogo.png");}
 
 #initArgonLogo {opacity: 1.0;}
 #initDovetailedLogo	{opacity: 0.0;}
@@ -67,6 +67,39 @@ header {
 
 .borderLineStep3 {
 		background-color: rgb(141,135,255);	
+}
+
+ /* === Example images === */
+ .grid-item {
+ 	background-size: cover;
+ 	background-repeat: no-repeat;
+ 	background-position: center;
+ }
+
+ .grid-item:hover {
+ 	cursor: pointer;
+ }
+
+/* Actual background URLs set in Javascript - this is just an example
+.item1.left {background-image: url("SharedResources/ExampleImages/FG_Poirot.jpg");} */
+
+/* === Upload buttons === */
+.uploadButton {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url("SharedResources/Upload.png");
+	display: block;
+	width: 60%;
+	height: 2em;
+	background-color: grey;
+}
+.uploadButton:hover {
+	cursor: pointer;
+}
+
+.overlapPane {
+	background-color: rgb(230,230,230);
 }
 
 /* === Style the instruction text: font, size, colour, alignment, etc*/

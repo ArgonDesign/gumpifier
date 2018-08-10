@@ -21,12 +21,17 @@ function applyState(fg_changed, bg_changed, data) {
 			// $(tmpImg).addClass('opt2ImageLeft');
 			// $('#opt2ImageLeftDiv').html(tmpImg);
 			$('#opt2ImageLeft').attr("src", data);
-			$('#foregroundForm').appendTo('#opt2vLeft');
+			// $('#foregroundForm').appendTo('#opt2vLeft');
 			fg_url = data;
 			console.log(fg_url);
 		}
 	}
 	else {
+		// Reset the form
+		document.getElementById("foregroundForm").reset();
+		// Revert layout
+		$('#option1Left').css({"display": "block"});
+		$('#option2Left').css({"display": "none"});
 		// Start animations
 		sideSwoosh('.borderLineL', '.borderLineLeft');
 		topBottomSwoosh('.borderLineB', '.borderLineLeft');
@@ -44,12 +49,19 @@ function applyState(fg_changed, bg_changed, data) {
 			// $(tmpImg).addClass('opt2ImageRight');
 			// $('#opt2ImageRightDiv').html(tmpImg);
 			$('#opt2ImageRight').attr("src", data);
-			$('#backgroundForm').appendTo('#opt2vRight');
+			// $('#backgroundForm').appendTo('#opt2vRight');
 			bg_url = data;
 		}
 	}
 	else {
+		// Reset the form
+		document.getElementById("backgroundForm").reset();
+		// Revert layout
+		$('#option1Right').css({"display": "block"});
+		$('#option2Right').css({"display": "none"});
 		// Start animations
+		sideSwoosh('.borderLineL', '.borderLineRight');
+		topBottomSwoosh('.borderLineB', '.borderLineRight');
 	}
 
 	// Deal with fg selected bg not selected
@@ -85,6 +97,7 @@ function applyState(fg_changed, bg_changed, data) {
 		$('.cornerCircleStep3').css({"background-color": 'rgb(135,135,135)'});
 		// Set text
 		if (fg_selected && bg_selected) $('#Step3').text("Step 3... (just a sec, we're processing your images)");
+		else 							$('#Step3').text("Step 3 ...");
 		// Stop the gumpify animations	
 		$('.borderLineL.borderLineStep3, .borderLineR.borderLineStep3, .borderLineT.borderLineStep3, .borderLineB.borderLineStep3').stop(true); // stopall=true
 		resetAnimationState(".borderLineStep3");
@@ -92,7 +105,7 @@ function applyState(fg_changed, bg_changed, data) {
 }
 
 function checkSegmentation(what) {
-	console.log("Check Segmentation called")
+	console.log("Check Segmentation called");
 	// what is either 'fg_url' or 'bg_url'
 	// We now make another AJAX call with returns when the FG image has finished segmenting
 	var toSend;

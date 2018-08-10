@@ -30,11 +30,11 @@ html, body {
 }
 
 #circlePaneLeft {
-	flex-grow: 3;
+	flex-grow: 5; /* Originally 3*/
 }
 
 #circlePaneRight {
-	flex-grow: 7;
+	flex-grow: 5; /* Originally 7*/
 }
 
 /* === Initial overlay === */
@@ -68,7 +68,6 @@ html, body {
 	width: 100%;
 }
 
-
 /* === Corner circles and overlapping content pane === */
 .circlePane {
 	position: relative; /* Needed so 'position: absolute' works for the circle divs */
@@ -92,7 +91,7 @@ html, body {
 	right: 0;
 }
 
-.cornerCircleBL {
+.cornerCircleBL	 {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -112,7 +111,6 @@ html, body {
 	left: 0;
 	right: 0;
 	z-index: 2;
-	background-color: white;
 }
 
 /* === Center text in content panes vertically */
@@ -120,6 +118,25 @@ html, body {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+}
+
+/* === Grid layout for example images === */
+#option1Left, #option1Right {
+	height: 60%;
+}
+
+.grid-container {;
+	display: grid;
+	grid-template-columns: auto auto;
+	height: calc(100% - 6em);
+	width: 60%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.uploadButton {
+	margin-left: auto;
+	margin-right: auto;	
 }
 
 /* === Images should not overflow, or grow larger than they are in reality === */
@@ -147,6 +164,11 @@ html, body {
 	width: 100%;
 }
 
+/* === Upload buttons === */
+#foregroundUploadButton, #backgroundUploadButton {
+	display: none;
+}
+
 /* === Vertical split between Step 2 and Step 3 === */
 #bgUploadPane {
 	position: relative;
@@ -157,8 +179,8 @@ html, body {
 	flex-direction: column;
 }
 
-#bgUploadPane {flex-grow: 9;}
-#gumpifyPane {flex-grow: 1;}
+#bgUploadPane {flex-grow: 8;} /* Original value 9 */
+#gumpifyPane {flex-grow: 2;} /* Original value 1 */
 
 /* === Gumpify pane style === */
 #gumpifyPane {

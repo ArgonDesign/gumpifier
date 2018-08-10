@@ -5,6 +5,7 @@
 	<title>The Gumpifier</title>
 	<!-- Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
 	<!-- Stylesheets -->
 	<link rel="stylesheet" href="gumpifierStyle.css">
 	<link rel="stylesheet" href="gumpifierLayout.css">
@@ -15,12 +16,14 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="http://malsup.github.com/jquery.form.js"></script> <!-- Form submission library -->
 	<script src="jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+	<script src="html2canvas.js"></script>
 	<!-- My scripts -->
 	<script src="animations.js"></script>
 	<script src="eventFunctions.js"></script>
 	<script src="eventHandlers.js"></script>
 	<script src="stateTracker.js"></script>
 	<script src="colourFunctions.js"></script>
+	<script src="undo.js"></script>
 </head>
 <body>
 
@@ -54,18 +57,28 @@
 				<div class="vCenterPane" id="vCenterPaneLeft">
 
 					<div id="option1Left">
-						Step 1: Upload a picture of you<br>
+						Step 1: A picture of a person<br>
+						Either choose an example...<br>
+						<div class="grid-container">
+							<!-- DO NOT change the order of the classes in the following divs, or the value of 'item{1,2,3,4}' without ammending the relevent JS -->
+							<div class="grid-item item1 left"></div>
+							<div class="grid-item item2 left"></div>
+							<div class="grid-item item3 left"></div>
+							<div class="grid-item item4 left"></div>
+						</div>
+						<br>... or upload your own
 						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
-							<!-- <input type="file" name="image" accept="image/*" id="foregroundUploadButton"><br> -->
-							<input type="file" name="fgimage" id="foregroundUploadButton"><br>
+							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
+							<input type="file" name="fgimage" accept="image/*" id="foregroundUploadButton">
+							<label for="foregroundUploadButton" class="uploadButton"></label>
 						</form>
 					</div>
 
 					<div id="option2Left">
 						<div id="opt2vLeft">
 							Currently selected picture<br><br>
-							<img id="opt2ImageLeft" onload="checkSegmentation('fg_url')"><br>
-							You can change your picture here
+							<img id="opt2ImageLeft""><br>
+							<input type="button" value="Choose again" id="chooseAgainFG">
 						</div>
 					</div>
 
@@ -88,18 +101,28 @@
 					<div class="vCenterPane" id="vCenterPaneRight">
 
 						<div id="option1Right">
-							Step 2: Upload a background picture<br>
+							Step 2: A background picture<br>
+							Either choose an example ...<br>
+							<div class="grid-container">
+								<!-- DO NOT change the order of the classes in the following divs, or the value of 'item{1,2,3,4}' without ammending the relevent JS -->
+								<div class="grid-item item1 right"></div>
+								<div class="grid-item item2 right"></div>
+								<div class="grid-item item3 right"></div>
+								<div class="grid-item item4 right"></div>
+							</div>
+							<br>... or upload your own
 							<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="backgroundForm">
-								<!-- <input type="file" name="image" accept="image/*" id="backgroundUploadButton"><br> -->
-								<input type="file" name="bgimage" id="backgroundUploadButton"><br>
+								<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
+								<input type="file" name="bgimage" accept="image/*" id="backgroundUploadButton">
+								<label for="backgroundUploadButton" class="uploadButton"></label>
 							</form>
 						</div>
 
 						<div id="option2Right">
 							<div id="opt2vRight">
 								Currently selected picture<br><br>
-								<img id="opt2ImageRight" onload="checkSegmentation('bg_url')"><br>
-								You can change your picture here
+								<img id="opt2ImageRight"><br>
+								<input type="button" value="Choose again" id="chooseAgainBG">
 							</div>
 						</div>
 
@@ -139,8 +162,8 @@
 				</div>
 			</div>
 			<div id="canvasCommandsRight">
-				<input type="button" value="Undo">
-				<input type="button" value="Redo">
+				<input type="button" value="Undo" id="undoButton">
+				<input type="button" value="Redo" id="redoButton">
 			</div>
 		</div>
 		<div class="col-mobile circlePane" id="circlePaneLeft">
@@ -174,13 +197,29 @@
 							</div>
 							<div id="resultForegroundInner resultForegroundWidgets"
 						</div> -->
+						<!-- <textarea id="overlayText" rows="1" cols="20"></textarea> -->
 					</div>
-					<img id="finalImage" pointer-events="none">
+					<!-- <img id="finalImage"> -->
+					<div id="instructions">
+						<div id="instructionsText">
+							I've found these objects in the background:<br>
+							<ul id="foundList"><!-- Populated in JS --></ul>
+							In the editor you can:
+							<ul>
+								<li>Move the inserted picture around, and make is bigger and smaller</li>
+								<li>Click on a background image to toggle whether it is in front or behind the inserted image</li>
+								<li>Change the brightness and temperature of the inserted image to make it blend in better</li>
+								<li>Change the meme text</li>
+								<li>Download the final image</li>
+							</ul>
+							<input type="button" value="Got it!" id="gotItButton">
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div id="finalCommands">
-			<input type="button" value="Download">
+			<input type="button" value="Download" id="downloadButton">
 			<input type="button" value="Change Images" id="changeImagesButton">
 		</div>
 	</div>

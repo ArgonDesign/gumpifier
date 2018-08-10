@@ -6,11 +6,37 @@ var bg_loaded = false;
 var fg_loaded = false;
 var selectedLayerDiv;
 
+// Closure to represent the urls of the example images used
+var exampleImageState = (function() {
+	// Define which images we'll use for the example grid
+	var foregroundExampleURLs = [	"SharedResources/ExampleImages/FG_Poirot.jpg",
+									"SharedResources/ExampleImages/FG_Patrick.jpg",
+									"SharedResources/ExampleImages/FG_Mohammed.jpg",
+									"SharedResources/ExampleImages/WIN_20180730_15_36_57_Pro.jpg"];
+	var backgroundExampleURLs = [	"SharedResources/ExampleImages/BG_bikes.jpg",
+									"SharedResources/ExampleImages/BG_bench_oblique.jpg",
+									"SharedResources/ExampleImages/BG_lamp.jpg",
+									"SharedResources/ExampleImages/BG_zebras.png"];
+	// Set the background-image CSS properties of the example divs to the above background images
+	$(document).ready(function() {
+		var toSetLeft = $(".grid-item.left");
+		for (var i = 0; i < toSetLeft.length; i++) $(toSetLeft[i]).css("backgroundImage", "url("+foregroundExampleURLs[i]+")");
+		var toSetRight = $(".grid-item.right");
+		for (var i = 0; i < toSetRight.length; i++) $(toSetRight[i]).css("backgroundImage", "url("+backgroundExampleURLs[i]+")");
+	});
+
+	// Return some functions to access state in the closure
+	return {
+		getForegroundURL: function(i) {return foregroundExampleURLs[i]},
+		getBackgroundURL: function(i) {return backgroundExampleURLs[i]}
+	}
+})()
+
 function uploadPictureFn(form, fg) {
 	// Submit the form
 	form.ajaxSubmit(function(data) {
 		// We can't get the path to the local file via the form because of security limitations
-		// so we download the uploaded file to the server.
+		// so we download the file uploaded to the server.
 		if (fg) fg_segmented = false;
 		else	bg_segmented = false;
 		data = data.slice(0,-1); // Remove the training \n character
@@ -25,6 +51,44 @@ function uploadPictureFn(form, fg) {
 	});
 	// Return false to prevent normal browser submit and page navigation
 	return false;
+}
+
+function chooseExamplePictureFn(event, fg) {
+	var egNumber = parseInt(event.target.classList[1].slice(-1)) - 1;
+	if (fg) {
+		fg_segmented = false;
+		var url = exampleImageState.getForegroundURL(egNumber);
+		var toSend = {'fg_url': url};
+		$.ajax({
+			type: "POST",
+			url: "cgi-bin/exampleImage.py",
+			data: toSend,
+			success: function(data) {
+				set_fg_true(url);
+			},
+			error: function(xhr, status, error) {
+				console.log(status);
+				console.log(error);
+			}
+		});
+	}
+	else	{
+		bg_segmented = false;
+		var url = exampleImageState.getBackgroundURL(egNumber);
+		var toSend = {'bg_url': url};
+		$.ajax({
+			type: "POST",
+			url: "cgi-bin/exampleImage.py",
+			data: toSend,
+			success: function(data) {
+				set_bg_true(url);
+			},
+			error: function(xhr, status, error) {
+				console.log(status);
+				console.log(error);
+			}
+		});
+	}
 }
 
 function gumpifyFn() {
@@ -54,11 +118,18 @@ function gumpifyFn() {
 				fg_original_pos = data.position.slice();
 				fg_original_scale = data.scale.slice();
 				// Force initialize colourState
-				colourState.initialize(data.colour_correction.brightness, data.colour_correction.white_balance, 6000);
+				colourState.initialize(data.colour_correction.brightness, data.colour_correction.white_balance);
 				$('#brightnessSlider').val(data.colour_correction.brightness);
 				$('#whiteBalanceSlider').val(6000);
 				// Load images
 				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs);
+				// Set instructions list text
+				var foundList = $('#foundList');
+				for (var url in data.labels) {
+					var toAppend = $('<li />');
+					toAppend.text(data.labels[url].name + " (" + Math.round(parseFloat(data.labels[url].confidence)*100) + "% confidence)");
+					foundList.append(toAppend);
+				}
 			}
 		},
 		dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
@@ -91,13 +162,13 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 	// Precondition: BG_segment_URLs.length = BG_mask_URLs.length + 1
 
 	// === Insert background images and masks
-	for (i = 0; i<BG_segment_URLs.length; i++) {
+	for (var i = 0; i<BG_segment_URLs.length; i++) {
 		// === Overall containing div
 		if (i <= layer) var bigusDivus = $("<div />", {"class": "resultBackground behind"});
 		else			var bigusDivus = $("<div />", {"class": "resultBackground"});
 		bigusDivus.hover(showMasks, hideMasks);
 
-		if (i == 0) var onLoadFn = function() {bg_loaded = true; windowScale()}
+		if (i == 0) var onLoadFn = function() {bg_loaded = true;}
 		else		var onLoadFn = function() {}
 
 		// === Background image
@@ -126,7 +197,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 	// Set the id of the first background image
 	$('.backgroundImage:eq(0)').attr('id', 'first');
 
-	// ===Insert the foreground image (do in 'reverse': add divs first, then image)
+	// === Insert the foreground image (do in 'reverse': add divs first, then image)
 	// Create the containing divs
 	var outerDiv = $("<div />", {"id": "resultForeground", "class": "result"});
 	outerDiv.hover(showMasks, hideMasks);
@@ -141,6 +212,9 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 
 	// Make the drag div draggable
 	dragDiv.draggable({scroll: false});
+	dragDiv.on("dragstart", function(event, ui) {
+		undoManager.initUndoEvent(new moveUndo(fg_img_pos));
+	});
 	dragDiv.on("dragstop", function(event, ui) {
 		var bg = $('#first');
 		var bgWidth = bg.width();
@@ -152,6 +226,11 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 
 		// ui.position.{top,left} is the current CSS position of the helper, according to API linked above
 		fg_img_pos = [(ui.position.left + offsetH)/bgWidth, (ui.position.top + offsetV)/bgHeight];
+
+		// Finalise the undo event
+		undoManager.finaliseEvent(function(event) {
+			event.newPosition = fg_img_pos.slice();
+		});
 
 		return true;
 	});
@@ -199,6 +278,8 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 				if ($(event.originalEvent.target).attr('class').match(/\b(ui-resizable-se|ui-resizable-sw|ui-resizable-ne|ui-resizable-nw)\b/)) {
 					cJQobject.resizable("option", "aspectRatio", true).data('uiResizable')._aspectRatio = true;
 				}
+				// Initialise undo event
+				undoManager.initUndoEvent(new scaleUndo(fg_img_scale, fg_img_pos));
 			},
 			resize: function(event, ui) {
 				// Se the intrinsic dimenstions of the canvas
@@ -221,12 +302,40 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 			},
 			stop: function(event, ui) {
 				cJQobject.resizable("option", "aspectRatio", false).data('uiResizable')._aspectRatio = false;
+				reassertNormality();
+				// Finalise undo event
+				undoManager.finaliseEvent(function(event) {
+					event.newScale = fg_img_scale.slice();
+					event.newPosition = fg_img_pos.slice();
+				});
 			}
 		});
 		windowScale(); // Both this and the call above are necessary.
-		colourState.initApply();
+		reassertNormality();
 	}
 	hiddenImg.src = FG_cutout_URL;
+
+	// === Add the overlay text
+	var overlayText = $('<textarea />', {"id": "overlayText", "rows": "1", "cols": "20"});
+	var overlayTextDiv = $('<div />', {"id": "overlayTextDiv"});
+	var overlayTextDragIcon = $('<div />', {"id": "overlayTextDragIcon", "data-html2canvas-ignore": "true"});
+	var overlayTextContainer = $('<div />', {"id": "overlayTextContainer"});
+	overlayText.val("I'm sorry Dave, I'm afraid I can't do that.");
+	// overlayText.on("focus", function() {
+	// 	undoManager.initUndoEvent(new textUndo(overlayText.val()));
+	// });
+	// overlayText.on("blur", function() {
+	// 	undoManager.finaliseEvent(function(event) {
+	// 		event.newText = overlayText.val();
+	// 	});
+	// });
+	overlayTextDiv.draggable();
+	overlayTextDiv.hover(showMasks, hideMasks);
+
+	overlayTextDiv.append(overlayTextDragIcon);
+	overlayTextDiv.append(overlayText);
+	overlayTextContainer.append(overlayTextDiv);
+	$('#resultPane').append(overlayTextContainer);
 }
 
 function createForegroundCanvas() {
@@ -283,30 +392,36 @@ function getAndTriggerClickedImage(event, img) {
 	// Click this layer
 	else {
 		selectedLayerDiv = $(img).parent().parent();
-		var url;
+		// var url;
 		// Clicked a segmented part
 		if (img.classList.contains("backgroundImage")) {
 			// Set the URL
-			url = img.src;
+			// url = img.src;
 			// Toggle behind vs in front of foreground
 			imgGrandparentJQ = $(img).parent().parent();
 			if (imgGrandparentJQ.hasClass("behind")) {
 				imgGrandparentJQ.removeClass("behind");
 				bringToFrontButton();
+				// Initialise undo event
+				undoManager.initUndoEvent(new toggleLayerUndo(true, selectedLayerDiv));
 			}
 			else {
 				imgGrandparentJQ.addClass("behind");
 				sendBehindButton();
+				// Initialise Undo event
+				undoManager.initUndoEvent(new toggleLayerUndo(false, selectedLayerDiv));
 			}
+			// Finalise undo event
+			undoManager.finaliseEvent(function() {});
 		}
 		// Clicked the foreground image
 		else {
 			// Set the URL
-			url = hiddenImg.src;
+			// url = hiddenImg.src;
 		}
-		$('#currentLayerPreviewContainer').css({
-			"background-image": "url(" + url + ")"
-		});
+		// $('#currentLayerPreviewContainer').css({
+		// 	"background-image": "url(" + url + ")"
+		// });
 	}
 }
 
@@ -374,6 +489,28 @@ function scaleAndPositionWidgetDiv() {
 	$("#BCornerScaleDiv").css({top: bottom, left: "50%"});
 }
 
+function reassertNormality() {
+	/* When resizing the foreground (esp. towards the left or top), the image and the containing draggable div are
+	offset from each other.  We want them to line up to click events go to the correct place.  We could try
+	setting the CSS for the draggable div s.t. 'display: inline' or display: 'inline-block'.  Or, we call this
+	function on stop resize to re-align the image and the draggable div */
+	var image = $('#resultForegroundDragDiv>.ui-wrapper');
+	var imageTop = image.position().top;
+	var imageLeft = image.position().left;
+	var imageWidth = image.width();
+	var imageHeight = image.height();
+
+	var dragDiv = $('#resultForegroundDragDiv');
+	var dragDivTop = dragDiv.position().top;
+	var dragDivLeft = dragDiv.position().left;
+
+	dragDiv.css({top: dragDivTop + imageTop,
+				left: dragDivLeft + imageLeft,
+				width: imageWidth,
+				height: imageHeight});
+	image.css({top: 0, left: 0});
+}
+
 function setForegroundPane() {
 	// Get some necessary variables
 	var fg = $('#foregroundImage');
@@ -419,26 +556,45 @@ function windowScale(possibleEvent) {
 	colourState.applyState();
 
 	// Size the finalResult image
+	// var resultForeground = $('#resultForeground');
+	// $('#finalImage').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
+	// 					left: resultForeground.position().left,
+	// 					width: resultForeground.width(),
+	// 					height: resultForeground.height()});
+
+	// Size the instruction text
 	var resultForeground = $('#resultForeground');
-	$('#finalImage').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
+	$('#instructions').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
 						left: resultForeground.position().left,
 						width: resultForeground.width(),
 						height: resultForeground.height()});
+
+
+	// Size the overlayTextContainer in a similar fashion
+	var overlayTextContainer = $('#resultForeground');
+	$('#overlayTextContainer').css({top: resultForeground.position().top,
+									left: resultForeground.position().left,
+									width: resultForeground.width(),
+									height: resultForeground.height()});
+
+	// Size the text
+	var first = $('#first');
+	$('#overlayText').css({fontSize: (0.086 * first.height()) + "px"});
 }
 window.onresize = windowScale;
 
 /* === Event handlers for the commands pane === */
 function sendBehindButton() {
 	$('#resultForeground').before(selectedLayerDiv);
-	$('#resultPane').prepend($('#first').parent().parent())
+	$('#resultPane').prepend($('#first').parent().parent());
 }
 
 function bringToFrontButton() {
 	$('#resultForeground').after(selectedLayerDiv);
-	$('#resultPane').prepend($('#first').parent().parent())
+	$('#resultPane').prepend($('#first').parent().parent());
 }
 
-function postProcessFn() {
+function downloadButtonFn() {
 	// Marshall the data
 	var BG_segment_URLs = new Array();
 	$('.backgroundImage').not('.mask').each(function(index) {
@@ -473,22 +629,43 @@ function postProcessFn() {
 		success: function(data) {
 			if (data.hasOwnProperty("ERROR")) {
 				$('#resultPane').text("Something went wrong!");
-				$('#finalImage').remove();
+				// $('#finalImage').remove();
 				console.log(data.ERROR);
 			}
 			else {
-				$('#finalImage').remove()
 				// Generate a new image
 				var tmpImg = new Image()
-				// Add the src and class
+				// What happens when the image loads
 				tmpImg.onload = function() {
-					windowScale();
+					// Create a canvas for the image to go on
+					var canvas = document.createElement("canvas");
+					// Set dimensions of canvas
+					canvas.width = tmpImg.width;
+					canvas.height = tmpImg.height;
+					// Get the canvas context
+					var ctx = canvas.getContext('2d');
+					// Draw the result image to the canvas
+					ctx.drawImage(tmpImg, 0, 0, tmpImg.width, tmpImg.height);
+					// Add the meme-like text
+					html2canvas(document.getElementById('overlayTextContainer'), {backgroundColor: null}).then(function(textCanvas) {
+						ctx.globalCompositeOperation = "source-over";
+						ctx.drawImage(textCanvas, 0, 0);
+						/* Download the image as per these links.  Chrome has a 2MB size limit (it would seem) on <a> download
+						size, so we convert to a blob instead.
+							-> https://jsfiddle.net/AbdiasSoftware/7PRNN/
+							-> https://stackoverflow.com/questions/38781968/problems-downloading-big-filemax-15-mb-on-google-chrome
+								-> https://stackoverflow.com/questions/36918075/is-it-possible-to-programmatically-detect-size-limit-for-data-url
+						*/
+						var link = $('<a />')[0];
+						canvas.toBlob(function(blob){
+							link.href = URL.createObjectURL(blob);
+							link.download = "Gumpified.png";
+							link.click();
+						});
+					});
 				}
+				// Add the src to set the processing going
 				tmpImg.src = data;
-				tmpImg.id = 'finalImage';
-
-				// Add image
-				$('#vCenterPaneLeft').append(tmpImg);
 			}
 		},
 		dataType: "json",
@@ -502,17 +679,15 @@ function postProcessFn() {
 function showMasks() {
 	$('.mask').css('visibility', 'visible');
 	$('#resultForegroundWidgets').css('visibility', 'visible');
+	$('#overlayText').css({borderStyle: "solid", resize: "auto"});
+	$('#overlayTextDragIcon').css('visibility', 'visible');
 }
 
 function hideMasks() {
 	$('.mask').css('visibility', 'hidden');
 	$('#resultForegroundWidgets').css('visibility', 'hidden');
-}
-
-function toggleFinalImage() {
-	checked = document.getElementById('finalImageCheckbox').checked;
-	if (checked)	finalImage.style.visibility = "visible";
-	else			finalImage.style.visibility = "hidden";
+	$('#overlayText').css({borderStyle: "none", resize: "none"});
+	$('#overlayTextDragIcon').css('visibility', 'hidden');
 }
 
 function editButtonFn() {
@@ -532,7 +707,31 @@ function changeImagesFn() {
 	// Reset title location to original
 	$('.vCenterPane').css({"justify-content": 'center'});
 	// Reset screen 2 to original
-	$('.resultBackground, #resultForeground').remove();
+	$('.resultBackground, #resultForeground, #overlayTextContainer').remove();
+	$('#foundList').empty();
+	$('#instructions').show();
+	undoManager.clearHistory();
+}
+
+function gotItFn() {
+	$('#instructions').hide();
+}
+
+function keyPressed(e) {
+	var key = e.which || e.keyCode;
+	if (e.ctrlKey && e.shiftKey && key == 90) {
+	// Ctrl+Shift+Z -> Redo.  Must come before Ctrl+Z otherwise captured!
+		console.log("Redoing");
+		undoManager.redo();
+	}
+	else if (e.ctrlKey && key == 90) {
+	// Ctrl+Z -> Undo
+		undoManager.undo();
+	}
+	else if (e.ctrlKey && key == 89) {
+	// Ctrl+Y -> Redo
+		undoManager.redo();
+	}
 }
 
 // === Probably remove
@@ -544,4 +743,10 @@ function resetPositionButton() {
 function resetScaleButton() {
 	fg_img_scale = fg_original_scale.slice();
 	windowScale();
+}
+
+function toggleFinalImage() {
+	checked = document.getElementById('finalImageCheckbox').checked;
+	if (checked)	finalImage.style.visibility = "visible";
+	else			finalImage.style.visibility = "hidden";
 }

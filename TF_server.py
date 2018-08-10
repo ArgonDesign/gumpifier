@@ -6,7 +6,9 @@ before it starts listening on localhost:1475 for commands.  The two levels of da
 	Length: 5 bytes (= len(command) + len(data) = 4 + len(data)
 	Command: 4 bytes
 	Data: variable length
-* Server level.  The command can be one of 'sgtF', 'sgtB', 'gump', 'post' (for 'segment foreground', 'segment background', 'Gumpify', 'post process').
+* Server level.  The command can be one of 'sgtF', 'sgtB', 'egFG', 'egBG', 'chkF', 'chkB', 'gump', 'post' (for 'segment 
+	foreground', 'segment background', 'example foreground', 'example background', 'check foreground', 'check background',
+	'Gumpify', 'post process').
 	We use the command to decide how to process the data and what to send back to the client at the other end of the socket.
 """
 
@@ -103,6 +105,8 @@ class TF_Socket():
 			command (str): one of 'sgtF', 'sgtB', 'gump', 'post'
 				-> 'sgtF' - segment the foreground.
 				-> 'sgtB' - segment the background
+				-> 'chk{F,B}' - use the Observer to tell the client when an image has been segmented
+				-> 'eg{F,B}G' - use an example image
 				-> 'gump' - Gumpify the segemented foreground and background.  Return suggested parameters to user
 				-> 'post' - post process the user-tweaker parameters and return a reference to the final image
 			socket (socket): the socket to send reply data along.
@@ -111,7 +115,7 @@ class TF_Socket():
 
 		print("Received command: {}".format(command))
 
-		if command in ['sgtF', 'sgtB'] :
+		if command in ['sgtF', 'sgtB', 'egFG', 'egBG']:
 			# Signal that there is no return data to receive
 			totalsent = 0
 			while totalsent < 5:
@@ -120,7 +124,7 @@ class TF_Socket():
 				totalsent = totalsent + sent
 			socket.close()
 
-		if command == 'sgtF':
+		if command in ['sgtF', 'egFG']:
 			# Set the foreround segmenting
 			try:
 				url = os.path.join(PREFIX, data)
@@ -130,7 +134,7 @@ class TF_Socket():
 				traceback.print_exc()
 				print("Error segmenting foreground")
 			return
-		elif command == 'sgtB':
+		elif command in ['sgtB', 'egBG']:
 			# Set the background segmenting
 			try:
 				url = os.path.join(PREFIX, data)
@@ -245,22 +249,23 @@ class SegmentObserver():
 		self.statusMapLock.acquire()
 		self.fnMapLock.acquire()
 		print("addFn acquired locks")
-		print(self.statusMap)
-		print(self.fnMap)
+		print("statusMap: {}".format(self.statusMap))
+		print("fnMap: {}".format(self.fnMap))
 
 		if url in self.statusMap:
 			print("url is already present, deleting from statusMap")
 			del self.statusMap[url]
-			print(self.statusMap)
+			print("statusMap: {}".format(self.statusMap))
 			self.fnMapLock.release()
 			self.statusMapLock.release()
 			print("locks released")
 			fn()
 		else:
 			print("url not already present, registering fn")
-			print(url)
+			print("Here's the URL: {}".format(url))
 			self.fnMap[url] = fn
-			print(self.fnMap)
+			print("statusMap: {}".format(self.statusMap))
+			print("fnMap: {}".format(self.fnMap))
 			self.fnMapLock.release()
 			self.statusMapLock.release()
 			print("locks released")
