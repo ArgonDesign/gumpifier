@@ -8,7 +8,7 @@ import hashlib
 import time, random, os, shadows
 from scipy.spatial import ConvexHull
 from scipy.ndimage.morphology import binary_erosion
-
+import colour
 # TODO: Do some clever processing to see what images are actually in front and which are behind?
 class API:
     def __init__(self):
@@ -412,9 +412,28 @@ class API:
 
         # ! Get the new temperature
         # ! Temporarily just return the background_img colour
-        sampled_area_temp = bg_img[top_left_y:bottom_right_y, top_left_x:bottom_right_x, :3]
-        sampled_area_temp_mean = np.mean(sampled_area_temp, axis=(0, 1))
-        response["white_balance"] = sampled_area_temp_mean.tolist()
+        sampled_area_temp = bg_img # [top_left_y:bottom_right_y, top_left_x:bottom_right_x, :3]
+        def wb(channel, perc = 0.05):
+            mi, ma = (np.percentile(channel, perc), np.percentile(channel,100.0-perc))
+            channel = np.uint8(np.clip((channel-mi)*255.0/(ma-mi), 0, 255))
+            return channel
+
+        channel_red = np.mean(wb(sampled_area_temp[:, :, 0]))
+        channel_green = np.mean(wb(sampled_area_temp[:, :, 1]))
+        channel_blue = np.mean(wb(sampled_area_temp[:, :, 2]))
+
+        # Assuming sRGB encoded colour values.
+        RGB = np.array([channel_red, channel_green, channel_blue])
+
+        # Conversion to tristimulus values.
+        XYZ = colour.sRGB_to_XYZ(RGB / 255)
+
+        # Conversion to chromaticity coordinates.
+        xy = colour.XYZ_to_xy(XYZ)
+
+        # Conversion to correlated colour temperature in K.
+        CCT = colour.xy_to_CCT_Hernandez1999(xy)
+        response["white_balance"] = CCT
         
         return response
         
