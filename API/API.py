@@ -163,7 +163,7 @@ class API:
         print("masking done", time.time() - start_time)
         response["colour_correction"] = self.get_colour_correction(bg_pred, response["cutout"], response["position"], response["scale"])
         print("colour correction done", time.time() - start_time)
-        response["quote"] = self.get_random_forrest_gump_quote()
+        response["quotation"] = self.get_random_forrest_gump_quotation()
         print("done", time.time() - start_time)
 
         return response
@@ -438,11 +438,11 @@ class API:
         
         return response
         
-    def get_random_forrest_gump_quote(self):
+    def get_random_forrest_gump_quotation(self):
         quotes = [
             "Life is like a box of chocolates, you never know what you're going to get.",
             "My mama says that stupid is as stupid does.",
-            "My mama always said, dyin' was a part of life. I sure wish it wasn't.",
+            "My mama always said, \"dyin' was a part of life\". I sure wish it wasn't.",
             "My mama says they were magic shoes. They could take me anywhere.",
             "Run! Forrest! Run!",
             "I may not be a smart man, but I know what love is."
