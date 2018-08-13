@@ -96,7 +96,7 @@ def jsonConverter(importedJSON):
 	BG_mask_URLs = importedJSON['background_masks']
 	colour_correction = importedJSON['colour_correction']
 	labels = importedJSON["labels"]
-	quotation = importedJSON["quote"]
+	quotation = importedJSON["quotation"]
 
 	returnDict = {
 		"BG_segment_URLs": BG_segment_URLs,
