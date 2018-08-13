@@ -55,6 +55,13 @@ pointer-events capturing remains correct */
 	cursor: move;
 }
 
+#overlayText {
+	border: none;
+}
+#overlayTextDiv>.ui-wrapper {
+	border: 1px solid rgb(169, 169, 169);
+}
+
 /* === CSS for the instructions text === */
 #instructions {
 	background-color: rgba(255, 255, 255, 0.9);

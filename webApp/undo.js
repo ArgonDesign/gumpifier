@@ -117,6 +117,18 @@ var textUndo = function(originalText, finaliseOp) {
 	this.finaliseOp = finaliseOp;;
 };
 
+var textScaleUndo = function(originalScale, finaliseOp) {
+	this.originalScale = originalScale;
+	this.newScale;
+	this.undo = function() {
+		overlay_scale = this.originalScale.slice();
+	};
+	this.redo = function() {
+		overlay_scale = this.newScale.slice();
+	};
+	this.finaliseOp = finaliseOp;
+}
+
 var brightnessUndo = function(originalBrightness, finaliseOp) {
 	this.originalBrightness = originalBrightness;
 	this.newBrightness = null;

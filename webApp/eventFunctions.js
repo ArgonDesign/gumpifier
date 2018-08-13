@@ -5,6 +5,8 @@ var fg_img_scale;
 var bg_loaded = false;
 var fg_loaded = false;
 var selectedLayerDiv;
+var overlay_pos = [0, 0];
+var overlay_scale = [0.9, 0.1];
 
 // Closure to represent the urls of the example images used
 var exampleImageState = (function() {
@@ -311,10 +313,11 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 	hiddenImg.src = FG_cutout_URL;
 
 	// === Add the overlay text
-	var overlayText = $('<textarea />', {"id": "overlayText", "rows": "1", "cols": "20"});
+	var overlayTextContainer = $('<div />', {"id": "overlayTextContainer"});
 	var overlayTextDiv = $('<div />', {"id": "overlayTextDiv"});
 	var overlayTextDragIcon = $('<div />', {"id": "overlayTextDragIcon", "data-html2canvas-ignore": "true"});
-	var overlayTextContainer = $('<div />', {"id": "overlayTextContainer"});
+	var overlayText = $('<textarea />', {"id": "overlayText"});
+	
 	overlayText.val("I'm sorry Dave, I'm afraid I can't do that.");
 	overlayText.on("focus", function() {
 		undoManager.initUndoEvent(new textUndo(overlayText.val(), function() {
@@ -328,6 +331,23 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 	overlayTextDiv.append(overlayText);
 	overlayTextContainer.append(overlayTextDiv);
 	$('#resultPane').append(overlayTextContainer);
+
+	overlayText.resizable({
+		handles: "se",
+		start: function(event, ui) {
+			undoManager.initUndoEvent(new textScaleUndo(overlay_scale.slice(), function() {
+							this.newScale = overlay_scale.slice();
+						}));
+		},
+		resize: function(event, ui) {
+			var newWidth = ui.originalSize.width + ((ui.size.width - ui.originalSize.width) * 2);
+
+			var bg = $('#first');
+			overlay_scale[0] = newWidth/bg.width();
+			overlay_scale[1] = ui.size.height/bg.height();
+			scaleAndPositionOverlayText();
+		}
+	});
 }
 
 function createForegroundCanvas() {
@@ -479,6 +499,28 @@ function scaleAndPositionWidgetDiv() {
 	$("#BCornerScaleDiv").css({top: bottom, left: "50%"});
 }
 
+function scaleAndPositionOverlayText() {
+	var overlayText = $('#overlayText');
+	var overlayTextUI = $('#overlayTextDiv>.ui-wrapper');
+	var overlayTextDiv = $('#overlayText');
+
+	var bg = $('#first');
+	var bgWidth = bg.width();
+	var bgHeight = bg.height();
+
+	// Set location of the draggable div
+	overlayTextDiv.css({left: overlay_pos[0]*bgWidth, top: overlay_pos[1]*bgHeight});
+
+	// Set the scale
+	overlayText.width(overlay_scale[0]*bgWidth);
+	overlayText.height(overlay_scale[1]*bgHeight);
+	overlayTextUI.width(overlay_scale[0]*bgWidth);
+	overlayTextUI.height(overlay_scale[1]*bgHeight);
+
+	// Set the font size
+	overlayText.css({fontSize: (0.086 * bgHeight) + "px"});
+}
+
 function reassertNormality() {
 	/* When resizing the foreground (esp. towards the left or top), the image and the containing draggable div are
 	offset from each other.  We want them to line up to click events go to the correct place.  We could try
@@ -568,8 +610,7 @@ function windowScale(possibleEvent) {
 									height: resultForeground.height()});
 
 	// Size the text
-	var first = $('#first');
-	$('#overlayText').css({fontSize: (0.086 * first.height()) + "px"});
+	scaleAndPositionOverlayText();
 }
 window.onresize = windowScale;
 
@@ -669,14 +710,14 @@ function downloadButtonFn() {
 function showMasks() {
 	$('.mask').css('visibility', 'visible');
 	$('#resultForegroundWidgets').css('visibility', 'visible');
-	$('#overlayText').css({borderStyle: "solid", resize: "auto"});
+	$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "solid"});
 	$('#overlayTextDragIcon').css('visibility', 'visible');
 }
 
 function hideMasks() {
 	$('.mask').css('visibility', 'hidden');
 	$('#resultForegroundWidgets').css('visibility', 'hidden');
-	$('#overlayText').css({borderStyle: "none", resize: "none"});
+	$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "none"});
 	$('#overlayTextDragIcon').css('visibility', 'hidden');
 }
 
