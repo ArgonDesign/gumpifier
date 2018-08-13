@@ -30,7 +30,7 @@ pointer-events capturing remains correct */
 	border: 1px solid white;
 }
 
-#overlayText {
+#overlayText, #clone {
 	background-color: transparent;
 	font-family: "impact";
 	/* https://css-tricks.com/adding-stroke-to-web-text/ */
@@ -42,6 +42,17 @@ pointer-events capturing remains correct */
 		1px 1px 0 #000;
 	font-size: 300%;
 	text-align: center;
+	border: none;
+}
+
+#clone {
+	/* Either of the below option work */
+	/*position: absolute;*/
+	display: none;
+}
+
+#overlayTextDiv>.ui-wrapper {
+	border: 1px solid rgb(169, 169, 169);
 }
 
 #overlayTextDragIcon {
@@ -53,13 +64,6 @@ pointer-events capturing remains correct */
 
 #overlayTextDragIcon:hover {
 	cursor: move;
-}
-
-#overlayText {
-	border: none;
-}
-#overlayTextDiv>.ui-wrapper {
-	border: 1px solid rgb(169, 169, 169);
 }
 
 /* === CSS for the instructions text === */

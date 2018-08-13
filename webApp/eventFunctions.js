@@ -124,7 +124,7 @@ function gumpifyFn() {
 				$('#brightnessSlider').val(data.colour_correction.brightness);
 				$('#whiteBalanceSlider').val(6000);
 				// Load images
-				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs);
+				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs, data.quotation);
 				// Set instructions list text
 				var foundList = $('#foundList');
 				for (var url in data.labels) {
@@ -160,7 +160,7 @@ function packageImageInDiv(onLoadFn, src, classes, onMouseDownFn, divClasses) {
 	return div;
 }
 
-function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) {
+function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, quotation) {
 	// Precondition: BG_segment_URLs.length = BG_mask_URLs.length + 1
 
 	// === Insert background images and masks
@@ -318,7 +318,19 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 	var overlayTextDragIcon = $('<div />', {"id": "overlayTextDragIcon", "data-html2canvas-ignore": "true"});
 	var overlayText = $('<textarea />', {"id": "overlayText"});
 	
-	overlayText.val("I'm sorry Dave, I'm afraid I can't do that.");
+	// Apply randomly generated quotation text and find appropriate dimensions for the textbox
+	// Uses technique here: https://www.impressivewebs.com/textarea-auto-resize/
+	$('#first').on("load", function() {
+		overlayText.val(quotation);
+		var clone = $('<div />', {"id": "clone"});
+		$('body').append(clone);
+		clone.css({fontSize: (0.086 * $('#first').height()) + "px", "width": 0.9 * $('#first').width()});
+		clone.text(quotation);
+		overlay_scale[1] = clone.height()/$('#first').height();
+		scaleAndPositionOverlayText();
+		clone.remove();
+	});
+
 	overlayText.on("focus", function() {
 		undoManager.initUndoEvent(new textUndo(overlayText.val(), function() {
 			this.newText = overlayText.val();
