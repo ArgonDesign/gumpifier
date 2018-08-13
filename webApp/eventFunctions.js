@@ -325,6 +325,18 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs) 
 		}));
 	});
 	overlayTextDiv.draggable();
+	overlayTextDiv.on("dragstart", function() {
+		undoManager.initUndoEvent(new textMoveUndo(overlay_pos, function() {
+			var bg = $('#first');
+			this.newPosition[0] = overlay_pos[0];
+			this.newPosition[1] = overlay_pos[1];
+		}));
+	});
+	overlayTextDiv.on("dragstop", function() {
+		var bg = $('#first');
+		overlay_pos[0] = parseInt(overlayTextDiv.css("left").slice(0,-2))/bg.width();
+		overlay_pos[1] = parseInt(overlayTextDiv.css("top").slice(0,-2))/bg.height();
+	});
 	overlayTextDiv.hover(showMasks, hideMasks);
 
 	overlayTextDiv.append(overlayTextDragIcon);
@@ -502,14 +514,14 @@ function scaleAndPositionWidgetDiv() {
 function scaleAndPositionOverlayText() {
 	var overlayText = $('#overlayText');
 	var overlayTextUI = $('#overlayTextDiv>.ui-wrapper');
-	var overlayTextDiv = $('#overlayText');
+	var overlayTextDiv = $('#overlayTextDiv');
 
 	var bg = $('#first');
 	var bgWidth = bg.width();
 	var bgHeight = bg.height();
 
 	// Set location of the draggable div
-	overlayTextDiv.css({left: overlay_pos[0]*bgWidth, top: overlay_pos[1]*bgHeight});
+	overlayTextDiv.css({left: (overlay_pos[0]*bgWidth) + "px", top: (overlay_pos[1]*bgHeight) + "px"});
 
 	// Set the scale
 	overlayText.width(overlay_scale[0]*bgWidth);

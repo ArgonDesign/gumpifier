@@ -117,9 +117,21 @@ var textUndo = function(originalText, finaliseOp) {
 	this.finaliseOp = finaliseOp;;
 };
 
+var textMoveUndo = function(originalPosition, finaliseOp) {
+	this.originalPosition = originalPosition.slice();
+	this.newPosition = new Array(2);
+	this.undo = function() {
+		overlay_pos = this.originalPosition.slice();
+	};
+	this.redo = function() {
+		overlay_pos = this.newPosition.slice();
+	};
+	this.finaliseOp = finaliseOp;
+};
+
 var textScaleUndo = function(originalScale, finaliseOp) {
 	this.originalScale = originalScale;
-	this.newScale;
+	this.newScale = null;
 	this.undo = function() {
 		overlay_scale = this.originalScale.slice();
 	};
