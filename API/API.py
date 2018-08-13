@@ -163,7 +163,7 @@ class API:
         print("masking done", time.time() - start_time)
         response["colour_correction"] = self.get_colour_correction(bg_pred, response["cutout"], response["position"], response["scale"])
         print("colour correction done", time.time() - start_time)
-        response["quote"] = self.get_forrest_gump_quote()
+        response["quote"] = self.get_random_forrest_gump_quote()
         print("done", time.time() - start_time)
 
         return response
