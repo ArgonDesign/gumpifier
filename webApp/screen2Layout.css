@@ -29,8 +29,13 @@
 	right: 0;
 }
 
+/* === CSS for the widgets === */
 #resultForegroundWidgets {
 	position: absolute;
+}
+
+#resultForegroundWidgets>.ui-resizable-handle {
+	pointer-events: auto;
 }
 
 /*#containerForeground {*/
@@ -130,6 +135,7 @@
 	justify-content: center;
 }
 
-#resultForegroundWidgets>.ui-resizable-handle {
-	pointer-events: auto;
+#instructionsText {
+	max-height: 100%;
+	overflow: auto;
 }
