@@ -413,7 +413,6 @@ class API:
 
 
         # ! Get the new temperature
-        # ! Temporarily just return the background_img colour
         sampled_area_temp = bg_img # [top_left_y:bottom_right_y, top_left_x:bottom_right_x, :3]
         def wb(channel, perc = 0.05):
             mi, ma = (np.percentile(channel, perc), np.percentile(channel,100.0-perc))
@@ -441,7 +440,7 @@ class API:
         
     def get_random_forrest_gump_quote(self):
         quotes = [
-            "Life is like a box a chocolate, you never know what your going to get.",
+            "Life is like a box of chocolates, you never know what you're going to get.",
             "My mama says that stupid is as stupid does.",
             "My mama always said, dyin' was a part of life. I sure wish it wasn't.",
             "My mama says they were magic shoes. They could take me anywhere.",
