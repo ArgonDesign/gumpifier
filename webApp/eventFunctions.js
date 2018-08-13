@@ -264,9 +264,14 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	hiddenImg = new Image(); // Yuck, global variable
 	hiddenImg.onload = function() {
 		fg_loaded = true;
-		var c = createForegroundCanvas()
+		// Create a canvas
+		var c = document.createElement("canvas");
+		c.id = "foregroundImage";
+		var ctx = c.getContext("2d");
+		var cJQobject = $(c);
+		cJQobject.on("mousedown", function(event) {getAndTriggerClickedImage(event, this);});
+
 		dragDiv.append(c);
-		cJQobject = $(c);
 		windowScale();  // Both this and the call below are necessary.
 		// Make canvas resizable
 		cJQobject.resizable({
@@ -382,23 +387,6 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 			scaleAndPositionOverlayText();
 		}
 	});
-}
-
-function createForegroundCanvas() {
-	// Create a canvas
-	var c = document.createElement("canvas");
-
-	// Set some attributes
-	c.id = "foregroundImage";
-
-	// Draw the image
-	var ctx = c.getContext("2d");
-
-	// Make draggable
-	var cJQobject = $(c);
-	cJQobject.on("mousedown", function(event) {getAndTriggerClickedImage(event, this);});
-
-	return c;
 }
 
 function getAndTriggerClickedImage(event, img) {
@@ -622,13 +610,6 @@ function windowScale(possibleEvent) {
 	// Draw the foreground image onto the canvas
 	colourState.applyState();
 
-	// Size the finalResult image
-	// var resultForeground = $('#resultForeground');
-	// $('#finalImage').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
-	// 					left: resultForeground.position().left,
-	// 					width: resultForeground.width(),
-	// 					height: resultForeground.height()});
-
 	// Size the instruction text
 	var resultForeground = $('#resultForeground');
 	$('#instructions').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
@@ -695,7 +676,6 @@ function downloadButtonFn() {
 		success: function(data) {
 			if (data.hasOwnProperty("ERROR")) {
 				$('#resultPane').text("Something went wrong!");
-				// $('#finalImage').remove();
 				console.log(data.ERROR);
 			}
 			else {
@@ -809,10 +789,4 @@ function resetPositionButton() {
 function resetScaleButton() {
 	fg_img_scale = fg_original_scale.slice();
 	windowScale();
-}
-
-function toggleFinalImage() {
-	checked = document.getElementById('finalImageCheckbox').checked;
-	if (checked)	finalImage.style.visibility = "visible";
-	else			finalImage.style.visibility = "hidden";
 }

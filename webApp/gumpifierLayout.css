@@ -118,6 +118,7 @@ html, body {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	overflow: auto;
 }
 
 /* === Grid layout for example images === */
@@ -125,7 +126,7 @@ html, body {
 	height: 60%;
 }
 
-.grid-container {;
+.grid-container {
 	display: grid;
 	grid-template-columns: auto auto;
 	height: calc(100% - 6em);
@@ -223,7 +224,7 @@ html, body {
 .col-11 {width: 91.66%;}
 .col-12 {width: 100%;}
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 768px) { /* Originally 768 */
     /*
     For mobile phones
     This even works with flex.  When not mobile, col-mobile is undefined so flex ratio dominates,
@@ -231,6 +232,12 @@ html, body {
     */
     [class*="col-"] {
         width: 100%;
+    }
+}
+
+@media only screen and (max-height: 600px) {
+	.grid-container {
+    	height: 50%;
     }
 }
 
