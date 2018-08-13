@@ -251,14 +251,14 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	$(outerDiv).insertAfter(selector);
 
 	// Add scale icons
-	widgetDiv.append($('<div />', {"id": "BRCornerScaleDiv"}));
-	widgetDiv.append($('<div />', {"id": "RCornerScaleDiv"}));
-	widgetDiv.append($('<div />', {"id": "TRCornerScaleDiv"}));
-	widgetDiv.append($('<div />', {"id": "TCornerScaleDiv"}));
-	widgetDiv.append($('<div />', {"id": "TLCornerScaleDiv"}));
-	widgetDiv.append($('<div />', {"id": "LCornerScaleDiv"}));
-	widgetDiv.append($('<div />', {"id": "BLCornerScaleDiv"}));
-	widgetDiv.append($('<div />', {"id": "BCornerScaleDiv"}));
+	widgetDiv.append($('<div />', {"id": "BRCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-se"}));
+	widgetDiv.append($('<div />', {"id": "RCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-e"}));
+	widgetDiv.append($('<div />', {"id": "TRCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-ne"}));
+	widgetDiv.append($('<div />', {"id": "TCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-n"}));
+	widgetDiv.append($('<div />', {"id": "TLCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-nw"}));
+	widgetDiv.append($('<div />', {"id": "LCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-w"}));
+	widgetDiv.append($('<div />', {"id": "BLCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-sw"}));
+	widgetDiv.append($('<div />', {"id": "BCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-s"}));
 
 	// Load the image and call windowScale to convert it to a canvas and add to the appropriate div
 	hiddenImg = new Image(); // Yuck, global variable
@@ -271,7 +271,17 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 		// Make canvas resizable
 		cJQobject.resizable({
 			alsoResize: "#resultForegroundWidgets",
-			handles: "all",
+			// handles: "all",
+			handles: {
+				se: $('#BRCornerScaleDiv'),
+				e: $('#RCornerScaleDiv'),
+				ne: $('#TRCornerScaleDiv'),
+				n: $('#TCornerScaleDiv'),
+				nw: $('#TLCornerScaleDiv'),
+				w: $('#LCornerScaleDiv'),
+				sw: $('#BLCornerScaleDiv'),
+				s: $('#BCornerScaleDiv')
+			},
 			start: function(event, ui) {
 				// https://stackoverflow.com/questions/3699125/jquery-ui-resize-only-one-handle-with-aspect-ratio
 				if ($(event.originalEvent.target).attr('class').match(/\b(ui-resizable-se|ui-resizable-sw|ui-resizable-ne|ui-resizable-nw)\b/)) {
@@ -513,6 +523,7 @@ function scaleAndPositionWidgetDiv() {
 	var scaleHandleDim = "10px"; // Change this if the CSS changes
 	var bottom = "calc(100% - "+scaleHandleDim+")";
 	var right = "calc(100% - "+scaleHandleDim+")";
+	$('#resultForegroundWidgets>.ui-resizable-handle').css({width: scaleHandleDim, height: scaleHandleDim});
 	$("#BRCornerScaleDiv").css({top: bottom, left: right});
 	$("#RCornerScaleDiv").css({top: "50%", left: right});
 	$("#TRCornerScaleDiv").css({top: 0, left: right});
