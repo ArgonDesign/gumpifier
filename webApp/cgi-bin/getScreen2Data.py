@@ -45,19 +45,21 @@ bg_url = form['bg_url'].value
 	# prefix = "Resources/patrick_json_dynamic/"
 
 # === Option 2 Package up JSON from a file (either uploade from option 1 or from a different, specified, file === #
-# prefix = "Resources/Eg2/"
-# f = open(prefix + "patrick.json", "r")
-# importedJSON = json.loads(f.read())
-# f.close()
+DEBUG = False
+if DEBUG:
+	prefix = "Resources/Eg2/"
+	f = open(prefix + "patrick.json", "r")
+	importedJSON = json.loads(f.read())
+	f.close()
 
-# BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
-# FG_cutout_URL = prefix + importedJSON['cutout']
-# layer = len(importedJSON['background']) - 1
-# position = importedJSON['position']
-# scale = importedJSON['scale']
-# BG_mask_URLs = [prefix + path for path in importedJSON['background_masks']]
-# # BG_outline_URLs = [prefix + path for path in importedJSON['background_masks']]
-# colour_correction = importedJSON["colour_correction"]
+	BG_segment_URLs = [prefix + path for path in importedJSON['background'] + importedJSON['foreground']]
+	FG_cutout_URL = prefix + importedJSON['cutout']
+	layer = len(importedJSON['background']) - 1
+	position = importedJSON['position']
+	scale = importedJSON['scale']
+	BG_mask_URLs = [prefix + path for path in importedJSON['background_masks']]
+	# BG_outline_URLs = [prefix + path for path in importedJSON['background_masks']]
+	colour_correction = importedJSON["colour_correction"]
 
 # === Option 3 Make up some data === #
 # BG_segment_URLs = ['Resources/BGTest1.png', 'Resources/BGTest2.png', 'Resources/BGTest3.png', 'Resources/BGTest4.png']
@@ -67,16 +69,18 @@ bg_url = form['bg_url'].value
 # scale = (0.5, 0.5)
 
 # === Create the dictionary to return for the above options === #
-# returnDict = {
-# 	"BG_segment_URLs": BG_segment_URLs,
-# 	"FG_cutout_URL": FG_cutout_URL,
-# 	"layer": layer,
-# 	"position": position,
-# 	"scale": scale,
-# 	"BG_mask_URLs": BG_mask_URLs,
-# 	"colour_correction": colour_correction,
-# 	"labels": None
-# }
+if DEBUG:
+	returnDict = {
+		"BG_segment_URLs": BG_segment_URLs,
+		"FG_cutout_URL": FG_cutout_URL,
+		"layer": layer,
+		"position": position,
+		"scale": scale,
+		"BG_mask_URLs": BG_mask_URLs,
+		"colour_correction": colour_correction,
+		"labels": None,
+		"quotation": "Open the pod bay doors, Hal.  I'm sorry Dave, I'm afraid I can't do that."
+	}
 
 # returnJSON = json.dumps(returnDict) # Remove this in production
 
@@ -92,6 +96,7 @@ def jsonConverter(importedJSON):
 	BG_mask_URLs = importedJSON['background_masks']
 	colour_correction = importedJSON['colour_correction']
 	labels = importedJSON["labels"]
+	quotation = importedJSON["quote"]
 
 	returnDict = {
 		"BG_segment_URLs": BG_segment_URLs,
@@ -101,7 +106,8 @@ def jsonConverter(importedJSON):
 		"scale": scale,
 		"BG_mask_URLs": BG_mask_URLs,
 		"colour_correction": colour_correction,
-		"labels": labels
+		"labels": labels,
+		"quotation": quotation
 	}
 
 	return json.dumps(returnDict) # Remove this in production
@@ -110,9 +116,11 @@ returnJSON = None
 
 dataType = "application/json" # Keep this in production
 try:
-	importedJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
-	returnJSON = jsonConverter(importedJSON)
-	# returnJSON = json.dumps(returnDict)
+	if not DEBUG:
+		importedJSON = sendData(json.dumps({"fg_url": fg_url, "bg_url": bg_url}), "gump")
+		returnJSON = jsonConverter(importedJSON)
+	else:
+		returnJSON = json.dumps(returnDict)
 except ConnectionAbortedError as err: # TODO: catch all in one like (ConnectionAbortedError, ValueError, ConnectionRefusedError)
 	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ValueError as err:
