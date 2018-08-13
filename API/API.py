@@ -162,6 +162,8 @@ class API:
         response["background_outlines"] = response["background_masks"]
         print("masking done", time.time() - start_time)
         response["colour_correction"] = self.get_colour_correction(bg_pred, response["cutout"], response["position"], response["scale"])
+        print("colour correction done", time.time() - start_time)
+        response["quote"] = self.get_forrest_gump_quote()
         print("done", time.time() - start_time)
 
         return response
@@ -437,3 +439,13 @@ class API:
         
         return response
         
+    def get_random_forrest_gump_quote(self):
+        quotes = [
+            "Life is like a box a chocolate, you never know what your going to get.",
+            "My mama says that stupid is as stupid does.",
+            "My mama always said, dyin' was a part of life. I sure wish it wasn't.",
+            "My mama says they were magic shoes. They could take me anywhere.",
+            "Run! Forrest! Run!",
+            "I may not be a smart man, but I know what love is."
+        ]
+        return np.random.choice(quotes, 1)[0]
