@@ -2,15 +2,26 @@
 var colourState = (function() {
 	var brightness = 0;
 	var whiteBalance = 8000;
-	var initWhiteBalanceColour = {r: null, g: null, b: null};
 	function applyState() {
 		resetCanvas();
 		adjustBrightness(brightness);
 		adjustWhiteBalance(whiteBalance);
 	}
 	return {
-		setBrightness: function(newBrightness) {brightness = newBrightness; applyState();},
-		setWhiteBalance: function(newWhiteBalance) {whiteBalance = newWhiteBalance; applyState();},
+		setBrightness: function(newBrightness) {			
+			brightness = newBrightness; applyState();
+			$('#brightnessSlider').val(brightness);
+		},
+		getBrightness: function() {
+			return brightness;
+		},
+		setWhiteBalance: function(newWhiteBalance) {
+			whiteBalance = newWhiteBalance; applyState();
+			$('#whiteBalanceSlider').val(whiteBalance);
+		},
+		getWhiteBalance: function() {
+			return whiteBalance;
+		},
 		initialize: function(initBrightness, initWhiteBalanceTemp) {
 			brightness = initBrightness;
 			whiteBalance = initWhiteBalanceTemp;

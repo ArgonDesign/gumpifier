@@ -116,3 +116,27 @@ var textUndo = function(originalText, finaliseOp) {
 	};
 	this.finaliseOp = finaliseOp;;
 };
+
+var brightnessUndo = function(originalBrightness, finaliseOp) {
+	this.originalBrightness = originalBrightness;
+	this.newBrightness = null;
+	this.undo = function() {
+		colourState.setBrightness(this.originalBrightness);
+	};
+	this.redo = function() {
+		colourState.setBrightness(this.newBrightness);
+	};
+	this.finaliseOp = finaliseOp;
+}
+
+var whiteBalanceUndo = function(originalWhiteBalance, finaliseOp) {
+	this.originalWhiteBalance = originalWhiteBalance;
+	this.newWhiteBalance = null;
+	this.undo = function() {
+		colourState.setWhiteBalance(this.originalWhiteBalance);
+	};
+	this.redo = function() {
+		colourState.setWhiteBalance(this.newWhiteBalance);
+	};
+	this.finaliseOp = finaliseOp;
+}

@@ -37,9 +37,15 @@ $(document).ready(function() {
 
 	// Brightness slider
 	$('#brightnessSlider').on('input', brightnessSliderFn);
+	$('#brightnessSlider').on('mousedown', function() {
+		undoManager.initUndoEvent(new brightnessUndo(colourState.getBrightness(), function() {this.newBrightness = colourState.getBrightness();}));
+	});
 
 	// Temperature slider
 	$('#whiteBalanceSlider').on('input', whiteBalanceSliderFn);
+	$('#whiteBalanceSlider').on('mousedown', function() {
+		undoManager.initUndoEvent(new whiteBalanceUndo(colourState.getWhiteBalance(), function() {this.newWhiteBalance = colourState.getWhiteBalance();}));
+	});
 
 	// Undo button
 	$('#undoButton').click(undoManager.undo);

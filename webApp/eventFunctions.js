@@ -386,7 +386,7 @@ function getAndTriggerClickedImage(event, img) {
 		selectedLayerDiv = $(img).parent().parent();
 		// var url;
 		// Clicked a segmented part
-		if (img.classList.contains("backgroundImage")) {
+		if (img.classList.contains("backgroundImage") && $(img).attr("id") != "first") {
 			// Set the URL
 			// url = img.src;
 			// Toggle behind vs in front of foreground
@@ -395,9 +395,7 @@ function getAndTriggerClickedImage(event, img) {
 				imgGrandparentJQ.removeClass("behind");
 				bringToFrontButton();
 				// Initialise undo event
-				if ($(img).attr("id") != "first") {
-					undoManager.initUndoEvent(new toggleLayerUndo(true, selectedLayerDiv, function() {}));
-				}
+				undoManager.initUndoEvent(new toggleLayerUndo(true, selectedLayerDiv, function() {}));
 			}
 			else {
 				imgGrandparentJQ.addClass("behind");
@@ -406,7 +404,7 @@ function getAndTriggerClickedImage(event, img) {
 				undoManager.initUndoEvent(new toggleLayerUndo(false, selectedLayerDiv, function() {}));
 			}
 		}
-		// Clicked the foreground image
+		// Clicked the foreground image or the very background image
 		else {
 			// Set the URL
 			// url = hiddenImg.src;
