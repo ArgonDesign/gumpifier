@@ -8,6 +8,7 @@ bleach==1.5.0
 certifi==2018.4.16
 chardet==3.0.4
 cloudpickle==0.5.3
+colour-science==0.3.11
 cycler==0.10.0
 Cython==0.28.3
 dask==0.18.1
@@ -17,6 +18,7 @@ entrypoints==0.2.3
 gast==0.2.0
 grpcio==1.13.0
 h5py==2.8.0
+hickle==3.2.2
 html5lib==0.9999999
 idna==2.7
 imagesize==1.0.0
@@ -53,13 +55,16 @@ parso==0.3.0
 pexpect==4.6.0
 pickleshare==0.7.4
 Pillow==5.2.0
+progressbar2==3.38.0
+prometheus-client==0.3.0
 prompt-toolkit==1.0.15
 protobuf==3.6.0
 ptyprocess==0.6.0
-pycocotools==2.0
+pycocotools==2.0.0
 Pygments==2.2.0
 pyparsing==2.2.0
 python-dateutil==2.7.3
+python-utils==2.3.0
 pytz==2018.5
 PyWavelets==0.5.2
 PyYAML==3.13
@@ -85,5 +90,6 @@ traitlets==4.3.2
 typing==3.6.4
 urllib3==1.23
 wcwidth==0.1.7
+webencodings==0.5.1
 Werkzeug==0.14.1
 widgetsnbextension==3.2.1
