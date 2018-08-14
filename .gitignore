@@ -18,3 +18,5 @@ messaging_server.py
 /webApp/testResizable
 /webApp/testTextArea
 /webApp/BeforeRefactor
+messaging_client.py
+gitwatcher.sh
