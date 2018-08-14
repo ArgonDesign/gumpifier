@@ -23,6 +23,8 @@ import hashlib, time, random
 
 form = cgi.FieldStorage()
 
+os.chdir("..")
+
 # Get the file item (data and name)
 # Set the command keyword we send to the TF server
 if 'fgimage' in form:

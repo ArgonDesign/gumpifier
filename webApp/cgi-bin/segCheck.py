@@ -7,6 +7,8 @@ from TF_interface import sendData
 
 form = cgi.FieldStorage()
 
+os.chdir("..")
+
 if 'fg_url' in form:
 	url = form['fg_url'].value
 	command = 'chkF'

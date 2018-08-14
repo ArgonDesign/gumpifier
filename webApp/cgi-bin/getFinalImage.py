@@ -18,6 +18,8 @@ from TF_interface import sendData
 import traceback
 import json
 
+os.chdir("..")
+
 # === Receive the data from the webpage === #
 content_len = int(os.environ["CONTENT_LENGTH"]) # https://stackoverflow.com/questions/10718572/post-json-to-python-cgi
 data = sys.stdin.read(content_len)

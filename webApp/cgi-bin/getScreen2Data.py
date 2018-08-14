@@ -22,6 +22,8 @@ import traceback
 
 form = cgi.FieldStorage()
 
+os.chdir("..")
+
 # Get the URLs for the foreground and background image URLs
 fg_url = form['fg_url'].value
 bg_url = form['bg_url'].value

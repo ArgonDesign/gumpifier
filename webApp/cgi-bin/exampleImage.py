@@ -19,6 +19,8 @@ import hashlib, time, random
 
 form = cgi.FieldStorage()
 
+os.chdir("..")
+
 # Get the url
 if 'fg_url' in form:
 	url = form['fg_url'].value
