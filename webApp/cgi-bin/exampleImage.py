@@ -16,6 +16,7 @@ import cgitb; cgitb.enable() # Traceback enable
 from TF_interface import sendData
 import threading
 import hashlib, time, random
+from shutil import copyfile
 
 form = cgi.FieldStorage()
 
@@ -29,11 +30,22 @@ elif 'bg_url' in form:
 	url = form['bg_url'].value
 	command = 'egBG'
 
-# Set the TF server segmenting the image.  We're not waiting for a response from this one so use threading
-threading.Thread(target=sendData, args=(url, command)).start()
+# Copy the example image to a unique instance in storage/
+extension = os.path.basename(url).split('.')[-1]
+# Try to guard against an insertion attack by testing that the extension is correct
+# E.g. extension might be "/../....../etc/passwd"
+if extension.lower() not in ['bmp', 'gif', 'ico', 'jpg', 'jpeg', 'png', 'svg', 'tif', 'tiff', 'webp']: # https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
+	extension = ""
+hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
+dest = 'storage/{}'.format(hashName)
+try:
+	copyfile(url, dest)
+	message = dest
+except:
+	message = "ERROR"
 
-# Return nothing
-message = ""
+# Set the TF server segmenting the image.  We're not waiting for a response from this one so use threading
+threading.Thread(target=sendData, args=(dest, command)).start()
 
 # Return stuff to client
 print("""Content-type: text/html

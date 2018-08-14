@@ -59,14 +59,14 @@ function chooseExamplePictureFn(event, fg) {
 	var egNumber = parseInt(event.target.classList[1].slice(-1)) - 1;
 	if (fg) {
 		fg_segmented = false;
-		var url = exampleImageState.getForegroundURL(egNumber);
-		var toSend = {'fg_url': url};
+		var toSend = {'fg_url': exampleImageState.getForegroundURL(egNumber)};
 		$.ajax({
 			type: "POST",
 			url: "cgi-bin/exampleImage.py",
 			data: toSend,
 			success: function(data) {
-				set_fg_true(url);
+
+				set_fg_true(data.slice(0,-1)); // Remove the training \n character
 			},
 			error: function(xhr, status, error) {
 				console.log(status);
@@ -76,14 +76,13 @@ function chooseExamplePictureFn(event, fg) {
 	}
 	else	{
 		bg_segmented = false;
-		var url = exampleImageState.getBackgroundURL(egNumber);
-		var toSend = {'bg_url': url};
+		var toSend = {'bg_url': exampleImageState.getBackgroundURL(egNumber)};
 		$.ajax({
 			type: "POST",
 			url: "cgi-bin/exampleImage.py",
 			data: toSend,
 			success: function(data) {
-				set_bg_true(url);
+				set_bg_true(data.slice(0,-1)); // Remove the training \n character
 			},
 			error: function(xhr, status, error) {
 				console.log(status);
@@ -786,15 +785,4 @@ function keyPressed(e) {
 	// Ctrl+Y -> Redo
 		undoManager.redo();
 	}
-}
-
-// === Probably remove
-function resetPositionButton() {
-	fg_img_pos = fg_original_pos.slice();
-	windowScale();
-}
-
-function resetScaleButton() {
-	fg_img_scale = fg_original_scale.slice();
-	windowScale();
 }

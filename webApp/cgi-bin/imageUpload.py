@@ -43,7 +43,8 @@ if fileitem.filename: # fileitem.filename is actually a path
 	if extension.lower() not in ['bmp', 'gif', 'ico', 'jpg', 'jpeg', 'png', 'svg', 'tif', 'tiff', 'webp']: # https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
 		extension = ""
 	hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
-	savedPath = 'storage/{}'.format(hashName)
+	savedPath = os.path.join("storage", hashName)
+	# savedPath = 'storage/{}'.format(hashName)
 	open(savedPath, 'wb').write(fileitem.file.read())
 
 	# Set the TF server segmenting the image.  We're not waiting for a response from this one so use threading
