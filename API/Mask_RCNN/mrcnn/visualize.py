@@ -18,7 +18,7 @@ import numpy as np
 from skimage.measure import find_contours
 import matplotlib.pyplot as plt
 from matplotlib import patches,  lines
-import IPython.display
+ # import IPython.display
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")

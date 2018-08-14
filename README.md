@@ -6,11 +6,22 @@ The Gumpifier is a collaborative project between Argon Design and Dovetailed whi
 ### First time: Setup the Python virtual environment and MaskRCNN Dataset
 
 1. `cd path/to/repo/`
-2. `python3 -m venv venv`
-3. `source venv/bin/activate`
-4. `pip install -r requirements.txt`
 
-TODO: instructions on how to set up MaskRCNN dataset.
+2. `python3 -m venv venv`
+
+3. `source venv/bin/activate`
+
+4. `python3 -m pip install --upgrade pip`
+
+5. `pip install -r requirements.txt`
+
+6. For windows: (Ensure you have Visual C++ 2015 build tools) `pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI`
+
+   Linux: `pip install git+https://github.com/waleedka/coco.git#subdirectory=PythonAPI`
+
+7. `python3 API/Mask_RCNN/setup.py install`
+
+   
 
 ### Set the Tensorflow server running
 
