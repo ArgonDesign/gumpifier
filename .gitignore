@@ -20,3 +20,11 @@ messaging_server.py
 /webApp/BeforeRefactor
 messaging_client.py
 gitwatcher.sh
+Logs/
+API/Mask_RCNN/*
+!API/Mask_RCNN/mrcnn/
+!API/Mask_RCNN/mask_rcnn_coco.h5
+!API/Mask_RCNN/setup.py
+!API/Mask_RCNN/setup.cfg
+!API/Mask_RCNN/requirements.txt
+!API/Mask_RCNN/README.md
