@@ -41,7 +41,7 @@ def sendData(data, command):
 	# https://docs.python.org/2/howto/sockets.html
 
 	# Create the socket and connect to TF server
-	f = open('../portConfig.txt', 'r')
+	f = open('../../portConfig.txt', 'r')
 	port = int(f.read())
 	f.close()
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
