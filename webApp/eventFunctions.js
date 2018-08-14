@@ -170,7 +170,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 		else			var bigusDivus = $("<div />", {"class": "resultBackground"});
 		bigusDivus.hover(showMasks, hideMasks);
 
-		if (i == 0) var onLoadFn = function() {bg_loaded = true;}
+		if (i == 0) var onLoadFn = function() {bg_loaded = true; initWhenImagesLoaded();}
 		else		var onLoadFn = function() {}
 
 		// === Background image
@@ -267,63 +267,11 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 		// Create a canvas
 		var c = document.createElement("canvas");
 		c.id = "foregroundImage";
-		var ctx = c.getContext("2d");
 		var cJQobject = $(c);
 		cJQobject.on("mousedown", function(event) {getAndTriggerClickedImage(event, this);});
 
 		dragDiv.append(c);
-		windowScale();  // Both this and the call below are necessary.
-		// Make canvas resizable
-		cJQobject.resizable({
-			alsoResize: "#resultForegroundWidgets",
-			// handles: "all",
-			handles: {
-				se: $('#BRCornerScaleDiv'),
-				e: $('#RCornerScaleDiv'),
-				ne: $('#TRCornerScaleDiv'),
-				n: $('#TCornerScaleDiv'),
-				nw: $('#TLCornerScaleDiv'),
-				w: $('#LCornerScaleDiv'),
-				sw: $('#BLCornerScaleDiv'),
-				s: $('#BCornerScaleDiv')
-			},
-			start: function(event, ui) {
-				// https://stackoverflow.com/questions/3699125/jquery-ui-resize-only-one-handle-with-aspect-ratio
-				if ($(event.originalEvent.target).attr('class').match(/\b(ui-resizable-se|ui-resizable-sw|ui-resizable-ne|ui-resizable-nw)\b/)) {
-					cJQobject.resizable("option", "aspectRatio", true).data('uiResizable')._aspectRatio = true;
-				}
-				// Initialise undo event
-				undoManager.initUndoEvent(new scaleUndo(fg_img_scale, fg_img_pos, function() {
-					this.newScale = fg_img_scale.slice();
-					this.newPosition = fg_img_scale.slice();
-				}));
-			},
-			resize: function(event, ui) {
-				// Se the intrinsic dimenstions of the canvas
-				document.getElementById('foregroundImage').width = ui.size.width;
-				document.getElementById('foregroundImage').height = ui.size.height;
-				// Set the new scale
-				var bg = $('#first');
-				var bgWidth = bg.width();
-				var bgHeight = bg.height();
-				fg_img_scale[0] = ui.size.width / bgWidth;
-				fg_img_scale[1] = ui.size.height / bgHeight;
-				// Set position
-				var dragLeft = parseInt($("#resultForegroundDragDiv").css("left"));
-				var dragTop = parseInt($('#resultForegroundDragDiv').css("top"));
-				fg_img_pos[0] = ((dragLeft + ui.position.left)/bgWidth);
-				fg_img_pos[1] = ((dragTop + ui.position.top)/bgHeight);
-				// Redraw
-				colourState.applyState();
-				scaleAndPositionWidgetDiv();
-			},
-			stop: function(event, ui) {
-				cJQobject.resizable("option", "aspectRatio", false).data('uiResizable')._aspectRatio = false;
-				reassertNormality();
-			}
-		});
-		windowScale(); // Both this and the call above are necessary.
-		reassertNormality();
+		initWhenImagesLoaded();
 	}
 	hiddenImg.src = FG_cutout_URL;
 
@@ -629,6 +577,66 @@ function windowScale(possibleEvent) {
 	scaleAndPositionOverlayText();
 }
 window.onresize = windowScale;
+
+function initWhenImagesLoaded() {
+	if (!(fg_loaded && bg_loaded)) {
+		return;
+	}
+
+	windowScale();  // Both this and the call below are necessary.
+	// Make canvas resizable
+	cJQobject = $('#foregroundImage');
+	cJQobject.resizable({
+		alsoResize: "#resultForegroundWidgets",
+		// handles: "all",
+		handles: {
+			se: $('#BRCornerScaleDiv'),
+			e: $('#RCornerScaleDiv'),
+			ne: $('#TRCornerScaleDiv'),
+			n: $('#TCornerScaleDiv'),
+			nw: $('#TLCornerScaleDiv'),
+			w: $('#LCornerScaleDiv'),
+			sw: $('#BLCornerScaleDiv'),
+			s: $('#BCornerScaleDiv')
+		},
+		start: function(event, ui) {
+			// https://stackoverflow.com/questions/3699125/jquery-ui-resize-only-one-handle-with-aspect-ratio
+			if ($(event.originalEvent.target).attr('class').match(/\b(ui-resizable-se|ui-resizable-sw|ui-resizable-ne|ui-resizable-nw)\b/)) {
+				cJQobject.resizable("option", "aspectRatio", true).data('uiResizable')._aspectRatio = true;
+			}
+			// Initialise undo event
+			undoManager.initUndoEvent(new scaleUndo(fg_img_scale, fg_img_pos, function() {
+				this.newScale = fg_img_scale.slice();
+				this.newPosition = fg_img_scale.slice();
+			}));
+		},
+		resize: function(event, ui) {
+			// Set the intrinsic dimenstions of the canvas
+			document.getElementById('foregroundImage').width = ui.size.width;
+			document.getElementById('foregroundImage').height = ui.size.height;
+			// Set the new scale
+			var bg = $('#first');
+			var bgWidth = bg.width();
+			var bgHeight = bg.height();
+			fg_img_scale[0] = ui.size.width / bgWidth;
+			fg_img_scale[1] = ui.size.height / bgHeight;
+			// Set position
+			var dragLeft = parseInt($("#resultForegroundDragDiv").css("left"));
+			var dragTop = parseInt($('#resultForegroundDragDiv').css("top"));
+			fg_img_pos[0] = ((dragLeft + ui.position.left)/bgWidth);
+			fg_img_pos[1] = ((dragTop + ui.position.top)/bgHeight);
+			// Redraw
+			colourState.applyState();
+			scaleAndPositionWidgetDiv();
+		},
+		stop: function(event, ui) {
+			cJQobject.resizable("option", "aspectRatio", false).data('uiResizable')._aspectRatio = false;
+			reassertNormality();
+		}
+	});
+	windowScale(); // Both this and the call above are necessary.
+	reassertNormality();
+}
 
 /* === Event handlers for the commands pane === */
 function sendBehindButton() {
