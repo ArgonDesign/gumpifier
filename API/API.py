@@ -1,5 +1,13 @@
-"""The API for the Gumpifier project
-"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# ******************************************************************************
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Module : Gumpifier
+# Author : Argon Design
+# Desc: The API for segmenting the images and retrieving the segmentation data
+# ******************************************************************************
 from MaskRCNN import MaskRCNN
 from PIL import Image, ImageFilter
 import numpy as np
@@ -159,7 +167,6 @@ class API:
         response["position"], response["scale"] = self.get_optimal_position(fg_pred, bg_pred)
         print("position and scale done", time.time() - start_time)
         response["background_masks"] = self.get_mask_fill(bg_pred)
-        response["background_outlines"] = response["background_masks"]
         print("masking done", time.time() - start_time)
         response["colour_correction"] = self.get_colour_correction(bg_pred, response["cutout"], response["position"], response["scale"])
         print("colour correction done", time.time() - start_time)
