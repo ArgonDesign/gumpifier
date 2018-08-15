@@ -119,7 +119,6 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 		// === Overall containing div
 		if (i <= layer) var bigusDivus = $("<div />", {"class": "resultBackground behind"});
 		else			var bigusDivus = $("<div />", {"class": "resultBackground"});
-		bigusDivus.hover(showMasks, hideMasks);
 
 		if (i == 0) var onLoadFn = function() {bg_loaded = true; initWhenImagesLoaded();}
 		else		var onLoadFn = function() {}
@@ -688,10 +687,11 @@ function packageImageInDiv(onLoadFn, src, classes, onMouseDownFn, divClasses) {
 	var tmpImg = new Image();
 	// Add the onLoadFn
 	tmpImg.onload = onLoadFn;
-	// Add src, class and onMouseDownFn
+	// Add src, class, onMouseDownFn and hover function to the image
 	tmpImg.src = src;
 	$(tmpImg).addClass(classes);
 	$(tmpImg).on("mousedown", function(event) {onMouseDownFn(event, this);});
+	$(tmpImg).hover(showMasks, hideMasks);
 	// Create the div
 	var div = $("<div />", {"class": divClasses})
 	// Add image to div
