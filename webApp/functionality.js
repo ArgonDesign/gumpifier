@@ -163,7 +163,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	widgetDiv.css({"pointer-events": "none"});
 
 	// Make the drag div draggable
-	dragDiv.draggable({scroll: false});
+	dragDiv.draggable({containment: $('#containerForeground'), scroll: false});
 	dragDiv.on("dragstart", function(event, ui) {
 		undoManager.initUndoEvent(new moveUndo(fg_img_pos, function() {
 			this.newPosition = fg_img_pos.slice();
@@ -252,7 +252,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	});
 
 	// Make overlay text draggable
-	overlayTextDiv.draggable();
+	overlayTextDiv.draggable({containment: "parent"});
 	overlayTextDiv.on("dragstart", function() {
 		undoManager.initUndoEvent(new textMoveUndo(overlay_pos, function() {
 			var bg = $('#first');
@@ -457,11 +457,12 @@ function setForegroundPane() {
 	var fgHeight = fg.height();
 
 	// Set the dimensions and position of the container to constrain the FG draggable area
-	// var fgPane = $('#containerForeground');
-	// fgPane.css({top: bgY - fgHeight,
-	// 			left: bgX - fgWidth,
-	// 			width: bgWidth + 2*fgWidth,
-	// 			height: bgHeight + 2*fgHeight});
+	var containerForeground = $('#containerForeground');
+	var leeway = 0.01 * Math.max(bgWidth, bgHeight); // 1% of the largest background dimension keeps windowScale happy
+	containerForeground.css({top: bgY - fgHeight + leeway,
+				left: bgX - fgWidth + leeway,
+				width: bgWidth + 2*fgWidth - 2*leeway,
+				height: bgHeight + 2*fgHeight - 2*leeway});
 
 	// Set the dimensions and position of resultForeground to make foreground overflowing background hidden
 	var resultForeground = $('#resultForeground');

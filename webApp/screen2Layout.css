@@ -51,13 +51,13 @@ sizing and pointer events.
 	pointer-events: auto;
 }
 
-/*#containerForeground {*/
-	/*position: absolute;*/
-	/* The actual position set dynamically using JS*/
+#containerForeground {
+	position: absolute;
+	 /*The actual position set dynamically using JS*/
 
 	/* We need this to be able to click through to the main buttons*/
-	/*pointer-events: none;*/
-/*}*/
+	pointer-events: none;
+}
 
 .backgroundImage {
 	max-height: 100%;
