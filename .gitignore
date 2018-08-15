@@ -1,5 +1,6 @@
 /webApp/Resources
-/webApp/storage/
+/webApp/storage/*
+!/webApp/storage/.gitkeep
 /API/API_caller.py
 /venv
 /.idea

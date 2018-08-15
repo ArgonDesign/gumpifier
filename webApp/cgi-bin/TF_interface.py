@@ -10,7 +10,7 @@
 
 """
 This script provides an interface between the CGI scripts in cgi-bin and the Python 'server' script running the loaded TensorFlow (TF) model
-and providing predictions from it (i.e. TF_server.py)
+and providing predictions from it (i.e. TF_server.py).  It simply transfers data, but does no semantic processing on it.
 """
 
 import os

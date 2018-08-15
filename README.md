@@ -21,15 +21,15 @@ The Gumpifier is a collaborative project between Argon Design and Dovetailed whi
 
 7. `python3 API/Mask_RCNN/setup.py install`
 
-   
-
 ### Set the Tensorflow server running
 
 1. `python TF_server.py`
 
-If the port TF_server.py attempts to use is in use, you can change it in `portConfig.txt`.
+If the port TF_server.py attempts to use is in use, you can change it in `portConfig.txt`
 
-### Set the http server going
+### Set the http server going (built on Ubuntu)
+
+See information in repo/uWSGI/README.md for help on building uWSGI.
 
 1. In a different console window: `cd` into the repo and activate the venv
 2. `cd uWSGI`
@@ -39,7 +39,8 @@ If the port TF_server.py attempts to use is in use, you can change it in `portCo
 
 Each directory has a README.md file which documents, in the detail, its purpose.
 
-* `API/` - contains the backend code.
+* `API/` - contains the backend code
+* `DocumenttationResource` - contains diagrams for the documentation.
 * `Logs/` - 
 * `uWSGI/` - a basic webserver and config file for the webapp.
 * `webApp/` - frontend code (HTML, CSS, JS) and CGI scripts (PY) which provide interface between the backend API and frontend.
@@ -55,3 +56,9 @@ The neural network model is complex and there is overhead into loading the weigh
 ### portConfig.txt
 
 TF_server.py listens on this port for incoming connections from the CGI scripts.  The CGI scripts themselves need to know what port is used, hence the presence of this file.
+
+## Overall Operation
+
+The series of events when the user presses a button on the front end is show in the diagram below.  The white boxes name what module handles the request, the coloured boxes depict where in the repo the associated code resides: each location has its own README.md providing more details.
+
+![](Z:\Spock\repo\DocumentationResources\HighLevelDiagram.svg)

@@ -49,4 +49,4 @@ If you prefer to use a different webserver make sure that:
 
 * It serves static files from `repo/webApp`
 * It can execute CGI scripts from `repo/webApp/cgi-bin`
-* It can handle concurrent requests to CGI scripts.
+* It can handle concurrent requests to CGI scripts.  Front end responsiveness will degrade otherwise.
