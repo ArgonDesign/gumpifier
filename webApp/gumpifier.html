@@ -20,8 +20,9 @@
 	<script src="html2canvas.js"></script>
 	<!-- My scripts -->
 	<script src="animations.js"></script>
-	<script src="eventFunctions.js"></script>
 	<script src="eventHandlers.js"></script>
+	<script src="topLevelEventFunctions.js"></script>
+	<script src="functionality.js"></script>
 	<script src="stateTracker.js"></script>
 	<script src="colourFunctions.js"></script>
 	<script src="undo.js"></script>
@@ -181,24 +182,53 @@
 					<div id="resultPane">
 						<!-- <div id="containerForeground"></div> -->
 
-						<!-- === Images of the following form will be inserted here using JS === -->
-						<!-- <div class="resultBackground behind">
+						<!-- ==================================================================================
+						Images of the following form will be inserted here using JS. 
+						Note the constrution of the foreground divs: an outer div is draggable and an inner div
+						is resizable
+						=================================================================================== -->
+
+						<!-- 
+						<div class="resultBackground behind">
+							<div class="resultBackgroundInner">
+								<img class="backgroundImage" id="first">
+							</div>
+						</div>
+						-->
+						<!-- 
+						<div class="resultBackground behind">
 							<div class="resultBackgroundInner">
 								<img class="backgroundImage">
 							</div>
 							<div class="resultBackgroundInner maskDiv">
 								<img class="backgroundImage mask">
 							</div>
-						</div> -->
-						<!-- <div id="resultForeground">
+						</div>
+						-->
+						<!--
+						<div id="resultForeground" class="result">
 							<div id="resultForegroundInner">
 								<div id="resultForegroundDragDiv">
-									<img id="foregroundImage">
+									<div class="ui-wrapper">
+										<canvas id="foregroundImage">
+									</div>
 								</div>
 							</div>
-							<div id="resultForegroundInner resultForegroundWidgets"
-						</div> -->
-						<!-- <textarea id="overlayText" rows="1" cols="20"></textarea> -->
+							<div id="resultForegroundWidgets">
+								...
+							</div>
+						</div>
+						-->
+						<!--
+						<div id="overlayTextContainer">
+							<div id="overlayTextDiv">
+								<div id="overlayTextDragIcon"></div>
+								<div class="ui-wrapper">
+									<textarea id="overlayText"></textarea>
+								</div>
+							</div>
+						</div>
+						-->
 					</div>
 					<div id="instructions">
 						<div id="instructionsText">

@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+################################################################################
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Author : Patrick Taylor
+################################################################################
+
 """
 This CGI script tells the TF server to use one of the example images.  Currently this just starts the
 relevant image segmenting, but in the future could almost instantly return a pre-segmented image.

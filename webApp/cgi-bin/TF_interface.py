@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+################################################################################
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Author : Patrick Taylor
+################################################################################
+
 """
 This script provides an interface between the CGI scripts in cgi-bin and the Python 'server' script running the loaded TensorFlow (TF) model
 and providing predictions from it (i.e. TF_server.py)

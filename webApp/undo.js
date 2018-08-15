@@ -1,10 +1,52 @@
-// Undo manager closure
+/*****************************************************************************
+Argon Design Ltd. Project P8010 Spock
+(c) Copyright 2018 Argon Design Ltd. All rights reserved.
+
+Author : Patrick Taylor
+*******************************************************************************/
+
+/*
+This file is the undo manager and associated functions.  It is split into two parts:
+ 1. An undo manager closure exposes the following API:
+ 	- undo()
+ 	- redo()
+ 	- initUndoEvent(event: see below)
+	- clearHistory()
+	- peek() (can used for debugging)
+ 2. A list of events which can be passed to initUndoEvent().  An instance of each event object is created when an event
+ 	starts, and is provided with a 'finalise operation': a function taking no arguments but acts on internal state of
+ 	the event object to provide redo information and is run either:
+ 		a) When 'undo' is called, or
+ 		b) When the initUndoEvent() is next called
+
+ 	The list of undo events is as follows:
+ 	- moveUndo(originalPosition: Array(2), finaliseOp) - undo move of the foreground
+	- scaleUndo(originalScale: Array(2), originalPosition: Array(2), finaliseOp) - undo scale of the foreground
+	- toggleLayerUndo(originallyBehind: bool, layer: Jquery object, finaliseOp)
+	- textUndo(originalText: string, finaliseOp)
+	- textMoveUndo(originalPosition: Array(2), finaliseOp) - undo move of the meme textarea
+	- textScaleUndo(originalScale: Array(2), finaliseOp) - undo scale of the meme textarea
+	- brightnessUndo(originalBrightness: number, finaliseOp)
+	- whiteBalanaceUndo(originalWhiteBalance: number, finaliseOp)
+
+	Each of the above objects provides the following API:
+	- undo()
+	- redo() 
+*/
+
+// Global undo manager closure
 var undoManager = (function() {
+	/*
+	Initialize undo/redo queues.  currentEvent is an event which has been started but not yet finalized.
+	*/
 	var undoQueue = new Array();
 	var redoQueue = new Array();
 	var currentEvent = null;
 
 	var undo = function() {
+		/*
+		Finalises currentEvent, undoes the last event (if available) and flips it to the redo queue
+		*/
 		if (currentEvent != null) {
 			finaliseCurrentEvent();
 		}
@@ -16,6 +58,9 @@ var undoManager = (function() {
 		}
 	}; 
 	var redo = function() {
+		/*
+		Redoes the last undone event (if available) and flips it to the undo queue
+		*/
 		if (redoQueue.length) {
 			var toRedo = redoQueue.pop();
 			toRedo.redo();
@@ -24,26 +69,38 @@ var undoManager = (function() {
 		}
 	};
 	var initUndoEvent = function(event) {
+		/*
+		Finalises the current event if there is one, then sets currentEvent to arg event.
+		*/
 		if (currentEvent != null) {
 			finaliseCurrentEvent();
 		}
 		currentEvent = event;
 	};
 	var finaliseCurrentEvent = function() {
+		/*
+		Runs the finaliseOp of the object pointed to by curretnEvent, transfers it to the undo queue, clears
+		the redo queue.
+		*/
 		currentEvent.finaliseOp();
 		undoQueue.push(currentEvent);
 		currentEvent = null;
 		redoQueue.length = 0;
 	};
 	var clearHistory = function() {
+		/*
+		Clears both undo and redo queues
+		*/
 		undoQueue.length = 0;
 		redoQueue.length = 0;
 	};
+	/*
+	Return certain functions representing the undo manager's API
+	*/
 	return {
 		undo: undo,
 		redo: redo,
 		initUndoEvent: initUndoEvent,
-		finaliseCurrentEvent: finaliseCurrentEvent,
 		clearHistory: clearHistory,
 		peek: function() {
 			console.log(undoQueue);
@@ -53,7 +110,7 @@ var undoManager = (function() {
 	};
 })();
 
-// Various undo objects
+/* === Functions to construct the undo objects === */
 var moveUndo = function(originalPosition, finaliseOp) {
 	this.originalPosition = originalPosition.slice();
 	this.newPosition = new Array(2);
@@ -90,11 +147,11 @@ var toggleLayerUndo = function(originallyBehind, layer, finaliseOp) {
 		selectedLayerDiv = this.layer;
 		if (this.originallyBehind) {
 			selectedLayerDiv.addClass("behind");
-			sendBehindButton()
+			sendBehind()
 		}
 		else {
 			selectedLayerDiv.removeClass("behind");
-			bringToFrontButton()	
+			bringToFront()	
 		}
 	};
 	this.redo = function() {

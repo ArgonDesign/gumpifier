@@ -1,5 +1,31 @@
+/*****************************************************************************
+Argon Design Ltd. Project P8010 Spock
+(c) Copyright 2018 Argon Design Ltd. All rights reserved.
+
+Author : Patrick Taylor
+*******************************************************************************/
+
+/*
+This file deals with colour modifications to the freground image.  It is split into two parts:
+ 1. A colour state closure which exposes the following API:
+ 	- setBrightness(newBrightness: number)
+ 	- getBrightness(): number
+ 	- setWhiteBalance(newWhiteBalance: number)
+ 	- getWhiteBalance(): number
+ 	- initialize(initBrightness: number, initWhiteBalance: number)
+ 	- applyState() - applies the current brightess/white balance settings to the foreground
+ 2. Auxillary functions
+ 	- To receive input from the brightness and white balance sliders
+ 	- To redraw the original, unmodified image to the canvas (is called from within applyState())
+ 	- Logic to perform the brightness and white balance adjustement - inspired by the CamanJS library.
+*/
+
 // This closure represents the state for the colour sliders.
 var colourState = (function() {
+	/*
+	Initialize brightness and white balance values.  They will be re-initialized when initialize(...) is called.
+	Also define applyState()
+	*/
 	var brightness = 0;
 	var whiteBalance = 8000;
 	function applyState() {
@@ -7,6 +33,9 @@ var colourState = (function() {
 		adjustBrightness(brightness);
 		adjustWhiteBalance(whiteBalance);
 	}
+	/*
+	Return our API - the code is fairly self explanatory
+	*/
 	return {
 		setBrightness: function(newBrightness) {			
 			brightness = newBrightness; applyState();
@@ -30,6 +59,7 @@ var colourState = (function() {
 	}
 })();
 
+/* Functions for taking input from the sliders and re-drawing */
 function brightnessSliderFn() {
 	newBrightness = $('#brightnessSlider').val();
 	colourState.setBrightness(newBrightness);
@@ -41,11 +71,12 @@ function whiteBalanceSliderFn() {
 };
 
 function resetCanvas() {
+	/* Redraws the original, unaltered image to the canvas */
 	var canvas = document.getElementById('foregroundImage');
 	canvas.getContext('2d').drawImage(hiddenImg, 0, 0, canvas.width, canvas.height);
 }
 
-
+/* The implementations which perform the colour changes */
 function adjustBrightness(newBrightness) {
 	// Algorithm from CamanJS library
 	var adjust = Math.floor(255 * (newBrightness / 100));

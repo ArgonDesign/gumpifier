@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+################################################################################
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Author : Patrick Taylor
+################################################################################
+
 """
 This CGI script returns data to the client necessary for it to set up the second screen.
 There are a number of commented out options used for testing (e.g. uploading a zip file with the necessary data bundled)

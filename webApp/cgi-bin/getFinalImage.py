@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+################################################################################
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Author : Patrick Taylor
+################################################################################
+
 """
 This CGI script takes the user tweaks to the suggested parameters, and returns a reference to the final, processed, image.
 We do not parse the JSON here but pass it on directly to the server.

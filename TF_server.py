@@ -1,6 +1,13 @@
+################################################################################
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Author : Patrick Taylor
+################################################################################
+
 """
 This program provides a server which gives predictions from a Tensorflow (TF) model.  The model is loaded when the TF_socket class is instantiated
-before it starts listening on localhost:1475 for commands.  The two levels of data transfer are:
+before it starts listening on localhost (port defined in portConfig) for commands.  The two levels of data transfer are:
 
 * Socket level.  We transfer a command and arbitrarily sized data using the following format:
 	Length: 5 bytes (= len(command) + len(data) = 4 + len(data)

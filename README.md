@@ -27,6 +27,8 @@ The Gumpifier is a collaborative project between Argon Design and Dovetailed whi
 
 1. `python TF_server.py`
 
+If the port TF_server.py attempts to use is in use, you can change it in `portConfig.txt`.
+
 ### Set the http server going
 
 1. In a different console window: `cd` into the repo and activate the venv
@@ -41,6 +43,7 @@ Each directory has a README.md file which documents, in the detail, its purpose.
 * `Logs/` - 
 * `uWSGI/` - a basic webserver and config file for the webapp.
 * `webApp/` - frontend code (HTML, CSS, JS) and CGI scripts (PY) which provide interface between the backend API and frontend.
+* `portConfig.txt` - what port the TF_server.py listens on.
 * `TF_server.py` - a local middleware server which provides an interface for the CGI scripts to access the backend API.
 
 ## Detail on specific files
@@ -48,3 +51,7 @@ Each directory has a README.md file which documents, in the detail, its purpose.
 ### TF_server.py
 
 The neural network model is complex and there is overhead into loading the weights into memory.  TF_server.py takes the hit of this overhead once, when it is loaded, before allowing multiple socket connections to request predictions.  These socket connections come from the CGI scripts, requested by user actions on the front end and run by the web server.
+
+### portConfig.txt
+
+TF_server.py listens on this port for incoming connections from the CGI scripts.  The CGI scripts themselves need to know what port is used, hence the presence of this file.
