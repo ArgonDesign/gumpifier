@@ -7,10 +7,10 @@
 
 """
 This program provides a server which gives predictions from a Tensorflow (TF) model.  The model is loaded when the TF_socket class is instantiated
-before it starts listening on localhost (port defined in portConfig) for commands.  The two levels of data transfer are:
+before it starts listening on localhost (port defined in portConfig.txt) for commands.  The two levels of data transfer are:
 
 * Socket level.  We transfer a command and arbitrarily sized data using the following format:
-	Length: 5 bytes (= len(command) + len(data) = 4 + len(data)
+	Length: 5 bytes (= len(command) + len(data) = 4 + len(data))
 	Command: 4 bytes
 	Data: variable length
 * Server level.  The command can be one of 'sgtF', 'sgtB', 'egFG', 'egBG', 'chkF', 'chkB', 'gump', 'post' (for 'segment 
@@ -36,9 +36,8 @@ class TF_Socket():
 		"""
 
 		# Create the socket and bind to a port
-		f = open('portConfig.txt', 'r')
-		port = int(f.read())
-		f.close()
+		with open('portConfig.txt', 'r') as f:
+			port = int(f.read())
 		self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.serversocket.bind(('localhost', port))
 
@@ -97,15 +96,19 @@ class TF_Socket():
 			command = data[:4]
 			data = data[4:]
 
+			# Call the dispatcher in a new thread to start the relevent process running
 			threading.Thread(target=self.dispatcher, args=(data, command, clientsocket)).start()
 
+			# Delete old files in the storage/ folder
 			self.cleanUp()
 
 	def dispatcher(self, data, command, socket):
 		"""
+		Dec
 		Decide what to do with the data depending on the command; do it and return a result along the socket before destroying the socket.
 		For 'sgtF' and 'sgtB' we send the null response, close the socket then start TF processing.
 		For 'gump' and 'post' we do the processing then send the response.
+		The implementations for each command are in separate methods below
 
 		Args:
 			data (str): data sent from the client
@@ -117,89 +120,32 @@ class TF_Socket():
 				-> 'gump' - Gumpify the segemented foreground and background.  Return suggested parameters to user
 				-> 'post' - post process the user-tweaker parameters and return a reference to the final image
 			socket (socket): the socket to send reply data along.
+		Returns:
+			None
 		"""
-		response = None
-
 		print("Received command: {}".format(command))
 
-		if command in ['sgtF', 'sgtB', 'egFG', 'egBG']:
-			# Signal that there is no return data to receive
-			totalsent = 0
-			while totalsent < 5:
-				sent = socket.send("00000".encode())
-				if sent == 0: break
-				totalsent = totalsent + sent
-			socket.close()
+		switchDict = {
+			'sgtF': self.segmentForeground,
+			'egFG': self.segmentForeground,
+			'sgtB': self.segmentBackground,
+			'egBG': self.segmentBackground,
+			'chkF': self.checkImage,
+			'chkB': self.checkImage,
+			'gump': self.gumpify,
+			'post': self.postProcess
+		}
 
-		if command in ['sgtF', 'egFG']:
-			# Set the foreround segmenting
-			try:
-				url = os.path.join(PREFIX, data)
-				self.api.load_foreground(url, fn=lambda: self.segObs.addStatus(url=url))
-				print("Segmented foreground successfully")
-			except:
-				traceback.print_exc()
-				print("Error segmenting foreground")
-			return
-		elif command in ['sgtB', 'egBG']:
-			# Set the background segmenting
-			try:
-				url = os.path.join(PREFIX, data)
-				self.api.load_background(url, fn=lambda: self.segObs.addStatus(url=url))
-				print("Segmented background successfully")
-			except:
-				traceback.print_exc()
-				print("Error segmenting background")
-			return
-		elif command in ['chkF', 'chkB']:
-			self.segObs.addFn(url=os.path.join(PREFIX, data), fn=lambda: self.sendResponse(json.dumps({"done": True}), socket))
-			return
-		elif command == 'gump':
-			data = json.loads(data)
-			try:
-				response = self.api.build_response(os.path.join(PREFIX, data['fg_url']), os.path.join(PREFIX, data['bg_url']))
-				# Remove the leading 'webApp/'
-				response["foreground"] = [os.path.relpath(path, PREFIX) for path in response["foreground"]]
-				response["background"] = [os.path.relpath(path, PREFIX) for path in response["background"]]
-				response["cutout"] = os.path.relpath(response["cutout"], PREFIX)
-				response["background_masks"] = [os.path.relpath(path, PREFIX) for path in response["background_masks"]]
-				response["background_outlines"] = [os.path.relpath(path, PREFIX) for path in response["background_outlines"]]
-
-				response = json.dumps(response)
-			except Exception as err:
-				traceback.print_exc()
-				response = "ERROR"
-		elif command == 'post':
-			data = json.loads(data)
-			# Marshall data
-			cutout = os.path.join(PREFIX, data['FG_cutout_URL'])
-			layer = data['layer']
-			foreground = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][layer:]]
-			background = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][:layer]]
-			position = data['position']
-			scale = data['scale']
-			original_BG_URL = os.path.join(PREFIX, data['original_BG_URL'])
-
-			print(cutout, foreground, background, position, scale, original_BG_URL)
-
-			# Get response
-			try:
-				response = self.api.create_image(cutout, foreground, background, position, scale, original_BG_URL)
-				response = os.path.relpath(response, PREFIX)
-			except Exception as err:
-				traceback.print_exc()
-				response = "ERROR"
+		# Run the relevant command, or produce an error if an unrecognised command is received
+		if command not in switchDict:
+			self.sendResponse("ERROR", socket)
 		else:
-			response = "ERROR"
-
-
-		# === Send the response if needed === #
-		self.sendResponse(response, socket)
+			switchDict[command](data, socket)
 
 	def cleanUp(self):
 		"""
 		This function is run each time a connection is accepted.  It checks for files in the uploads
-		folder for which the modification time is greater than 30 days old and deletes them.
+		folder for which the modification time is greater than 5 days old and deletes them.
 		"""
 		for file in os.listdir(os.path.join(PREFIX, "storage")):
 			fiveDaysInSeconds = 5*24*60*60
@@ -213,7 +159,7 @@ class TF_Socket():
 
 	def sendResponse(self, response, socket):
 		"""
-		Sends response to socket, with a 5 byte length field at the start.
+		Sends response to socket, with a 5 byte length field at the start, then destroys the socket
 		"""
 		toSend = "{:0>5}".format(len(response)) + response
 		print("Sending this: {}".format(toSend))
@@ -225,6 +171,103 @@ class TF_Socket():
 			totalsent = totalsent + sent
 
 		socket.close()
+
+	"""
+	The following methods are the implementations for the each command w emight receive
+	Each takes the same args are returns None, as follows:
+	Args:
+		data: variable type - the data from the client.
+		socket - the socket to which to send a reply
+	"""
+	def segmentForeground(self, data, socket):
+		"""
+		Calls the API to set the given foreground segmenting
+		"""
+		# Signal that there is no return data to receive
+		self.sendResponse("", socket)
+		# Set the foreround segmenting
+		try:
+			url = os.path.join(PREFIX, data)
+			self.api.load_foreground(url, fn=lambda: self.segObs.addStatus(url=url))
+			print("Segmented foreground successfully")
+		except:
+			traceback.print_exc()
+			print("Error segmenting foreground")
+
+	def segmentBackground(self, data, socket):
+		"""
+		Calls the API to set the given background segmenting
+		"""
+		# Signal that there is no return data to receive
+		self.sendResponse("", socket)
+		# Set the foreround segmenting
+		try:
+			url = os.path.join(PREFIX, data)
+			self.api.load_background(url, fn=lambda: self.segObs.addStatus(url=url))
+			print("Segmented foreground successfully")
+		except:
+			traceback.print_exc()
+			print("Error segmenting foreground")		
+
+	def checkImage(self, data, socket):
+		"""
+		Registers a callback function with the Observer pattern.  When the image given in 'data' has been segmented,
+		the callback function is run.  This function returns 'true' to the front end client to signal that the image
+		has finished segementing.
+		"""
+		imageURL = os.path.join(PREFIX, data)
+		callbackFunction = lambda: self.sendResponse(json.dumps({"done": True}), socket)
+		self.segObs.addFn(url=imageURL, fn=callbackFunction)
+
+	def gumpify(self, data, socket):
+		"""
+		Calls the API to build the appropriate response to the gumpify button.  Due to slight differences in JSON
+		format between what the API returns and what the front end expects, we do some processing of the JSON here.
+		"""
+		data = json.loads(data)
+		try:
+			response = self.api.build_response(os.path.join(PREFIX, data['fg_url']), os.path.join(PREFIX, data['bg_url']))
+			# Remove the leading 'webApp/'
+			response["foreground"] = [os.path.relpath(path, PREFIX) for path in response["foreground"]]
+			response["background"] = [os.path.relpath(path, PREFIX) for path in response["background"]]
+			response["cutout"] = os.path.relpath(response["cutout"], PREFIX)
+			response["background_masks"] = [os.path.relpath(path, PREFIX) for path in response["background_masks"]]
+			response["background_outlines"] = [os.path.relpath(path, PREFIX) for path in response["background_outlines"]]
+
+			response = json.dumps(response)
+		except Exception as err:
+			traceback.print_exc()
+			response = "ERROR"
+
+		self.sendResponse(response, socket)
+
+	def postProcess(self, data, socket):
+		"""
+		Calls the API to perform post-processing on the given data when the front end 'Download' button is pressed.
+		As in the gumpify() function, we do some processing on the JSON we pass to the API.
+		"""
+		data = json.loads(data)
+		# Marshall data
+		cutout = os.path.join(PREFIX, data['FG_cutout_URL'])
+		layer = data['layer']
+		foreground = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][layer:]]
+		background = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][:layer]]
+		position = data['position']
+		scale = data['scale']
+		original_BG_URL = os.path.join(PREFIX, data['original_BG_URL'])
+
+		print(cutout, foreground, background, position, scale, original_BG_URL)
+
+		# Get response
+		try:
+			response = self.api.create_image(cutout, foreground, background, position, scale, original_BG_URL)
+			response = os.path.relpath(response, PREFIX)
+		except Exception as err:
+			traceback.print_exc()
+			response = "ERROR"
+
+		self.sendResponse(response, socket)
+
 
 class SegmentObserver():
 	"""

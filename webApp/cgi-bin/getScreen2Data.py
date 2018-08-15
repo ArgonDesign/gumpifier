@@ -96,30 +96,17 @@ if DEBUG:
 # === Option 4 Ask the TF server to give us the data === #
 def jsonConverter(importedJSON):
 	importedJSON = json.loads(importedJSON)
-	""" From combinations of the commented out code above """
-	BG_segment_URLs = importedJSON['background'] + importedJSON['foreground']
-	FG_cutout_URL = importedJSON['cutout']
-	layer = len(importedJSON['background']) - 1
-	position = importedJSON['position']
-	scale = importedJSON['scale']
-	BG_mask_URLs = importedJSON['background_masks']
-	colour_correction = importedJSON['colour_correction']
-	labels = importedJSON["labels"]
-	quotation = importedJSON["quotation"]
+	# There are differences between what the TF_server returns and what the frontend expects.  We do the processing
+	# of the JSON here in place so that any new JSON fields added in the future are passed through
+	importedJSON['BG_segment_URLs'] = importedJSON['background'] + importedJSON['foreground']
+	importedJSON['FG_cutout_URL'] = importedJSON['cutout']
+	importedJSON['layer'] = len(importedJSON['background']) - 1
+	importedJSON['BG_mask_URLs'] = importedJSON['background_masks']
+	del(importedJSON['background'])
+	del(importedJSON['foreground'])
+	del(importedJSON['background_masks'])
 
-	returnDict = {
-		"BG_segment_URLs": BG_segment_URLs,
-		"FG_cutout_URL": FG_cutout_URL,
-		"layer": layer,
-		"position": position,
-		"scale": scale,
-		"BG_mask_URLs": BG_mask_URLs,
-		"colour_correction": colour_correction,
-		"labels": labels,
-		"quotation": quotation
-	}
-
-	return json.dumps(returnDict) # Remove this in production
+	return json.dumps(importedJSON) # Remove this in production
 
 returnJSON = None
 
