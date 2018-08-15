@@ -69,14 +69,14 @@ pointer-events capturing remains correct */
 	border: 1px none rgb(169, 169, 169);
 }
 
-#overlayTextDragIcon {
+#overlayTextDragIconTL, #overlayTextDragIconBR {
 	background-image: url("SharedResources/GrabArrow.png");
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
-#overlayTextDragIcon:hover {
+#overlayTextDragIconTL:hover, #overlayTextDragIconBR:hover {
 	cursor: move;
 }
 

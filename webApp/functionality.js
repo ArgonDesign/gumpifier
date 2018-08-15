@@ -228,7 +228,8 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	// === Add the overlay text
 	var overlayTextContainer = $('<div />', {"id": "overlayTextContainer"});
 	var overlayTextDiv = $('<div />', {"id": "overlayTextDiv"});
-	var overlayTextDragIcon = $('<div />', {"id": "overlayTextDragIcon", "data-html2canvas-ignore": "true"});
+	var overlayTextDragIconTL = $('<div />', {"id": "overlayTextDragIconTL", "data-html2canvas-ignore": "true"});
+	var overlayTextDragIconBR = $('<div />', {"id": "overlayTextDragIconBR", "data-html2canvas-ignore": "true"});
 	var overlayText = $('<textarea />', {"id": "overlayText"});
 	
 	// Apply randomly generated quotation text and find appropriate dimensions for the textbox
@@ -270,7 +271,8 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	overlayTextDiv.hover(showMasks, hideMasks);
 
 	// Create overlay text div structure and add
-	overlayTextDiv.append(overlayTextDragIcon);
+	overlayTextDiv.append(overlayTextDragIconTL);
+	overlayTextDiv.append(overlayTextDragIconBR);
 	overlayTextDiv.append(overlayText);
 	overlayTextContainer.append(overlayTextDiv);
 	$('#resultPane').append(overlayTextContainer);
@@ -335,10 +337,10 @@ function windowScale(possibleEvent) {
 
 	// Size the overlayTextContainer in a similar fashion
 	var overlayTextContainer = $('#resultForeground');
-	$('#overlayTextContainer').css({top: resultForeground.position().top,
-									left: resultForeground.position().left,
-									width: resultForeground.width(),
-									height: resultForeground.height()});
+	$('#overlayTextContainer').css({top: resultForeground.position().top - 20,
+									left: resultForeground.position().left - 20,
+									width: resultForeground.width() + 20,
+									height: resultForeground.height() + 20});
 
 	// Size the text
 	scaleAndPositionOverlayText();
@@ -353,11 +355,13 @@ function initWhenImagesLoaded() {
 	Operation:
 		- If both the foreground and very background iamge havn't loaded, return.
 		- Make the foreground image resizable.
+		- Set the initial position of the overlayText
 	*/
 	if (!(fg_loaded && bg_loaded)) {
 		return;
 	}
 
+	// Make the foreground resizable
 	windowScale();  // Both this and the call below are necessary.
 	// Make canvas resizable
 	cJQobject = $('#foregroundImage');
@@ -411,6 +415,9 @@ function initWhenImagesLoaded() {
 	});
 	windowScale(); // Both this and the call above are necessary.
 	reassertNormality();
+
+	// Set the initial position of the overlayText
+	overlay_pos[1] = 20 / $('#first').height();
 }
 
 /*==============================
@@ -637,7 +644,7 @@ function showMasks() {
 	$('.mask').css('visibility', 'visible');
 	$('#resultForegroundWidgets').css('visibility', 'visible');
 	$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "solid"});
-	$('#overlayTextDragIcon').css('visibility', 'visible');
+	$('#overlayTextDragIconTL, #overlayTextDragIconBR').css('visibility', 'visible');
 }
 
 function hideMasks() {
@@ -647,7 +654,7 @@ function hideMasks() {
 	$('.mask').css('visibility', 'hidden');
 	$('#resultForegroundWidgets').css('visibility', 'hidden');
 	$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "none"});
-	$('#overlayTextDragIcon').css('visibility', 'hidden');
+	$('#overlayTextDragIconTL, #overlayTextDragIconBR').css('visibility', 'hidden');
 }
 
 function reassertNormality() {
