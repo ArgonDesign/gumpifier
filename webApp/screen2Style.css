@@ -1,3 +1,16 @@
+/*****************************************************************************
+Argon Design Ltd. Project P8010 Spock
+(c) Copyright 2018 Argon Design Ltd. All rights reserved.
+
+Author : Patrick Taylor
+*******************************************************************************/
+
+/*
+This file provides the static or initial CSS style for screen 1 of the webapp.  For instance: background colours;
+certain dimensions; background images (and associated positioning); text align, family, weight and size; borders;
+opacity; cursor style.
+*/
+
 /* Original opacity for all masks was 0.7 */
 .mask {
 	opacity: 0.8;
@@ -70,8 +83,6 @@ pointer-events capturing remains correct */
 /* === CSS for the instructions text === */
 #instructions {
 	background-color: rgba(255, 255, 255, 0.9);
-	z-index: 91; /* This brings the instructions in front of the JQueryUI scale handles */
-
 }
 
 #instructionsText {

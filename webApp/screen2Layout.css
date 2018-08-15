@@ -1,3 +1,16 @@
+/*****************************************************************************
+Argon Design Ltd. Project P8010 Spock
+(c) Copyright 2018 Argon Design Ltd. All rights reserved.
+
+Author : Patrick Taylor
+*******************************************************************************/
+
+/*
+This file provides the static and initial layout for screen 2 of the webapp.  Mostly this comprises positioning and
+sizing and pointer events.
+*/
+
+
 /* === Place images on top of each other === */
 #resultPane {
 	position: relative;
@@ -133,6 +146,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	z-index: 91; /* This brings the instructions in front of the JQueryUI scale handles */
 }
 
 #instructionsText {
