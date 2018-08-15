@@ -382,7 +382,7 @@ function initWhenImagesLoaded() {
 			// Initialise undo event
 			undoManager.initUndoEvent(new scaleUndo(fg_img_scale, fg_img_pos, function() {
 				this.newScale = fg_img_scale.slice();
-				this.newPosition = fg_img_scale.slice();
+				this.newPosition = fg_img_pos.slice();
 			}));
 		},
 		resize: function(event, ui) {
@@ -423,20 +423,23 @@ function scaleAndPositionForeground() {
 	var bgWidth = bg.width();
 	var bgHeight = bg.height();
 
+	var finalWidth = fg_img_scale[0] * bgWidth;
+	var finalHeight = fg_img_scale[1] * bgHeight;
+
 	// Set the intrinsic and extrinsic dimensions of the fg image canvas
-	document.getElementById('foregroundImage').width = fg_img_scale[0] * bgWidth;
-	document.getElementById('foregroundImage').height = fg_img_scale[1] * bgHeight;
-	$('#foregroundImage').css({width: fg_img_scale[0] * bgWidth, height: fg_img_scale[1] * bgHeight});
+	document.getElementById('foregroundImage').width = finalWidth;
+	document.getElementById('foregroundImage').height = finalHeight;
+	$('#foregroundImage').css({width: finalWidth, height: finalHeight});
+
+	// Set the scales for the resize and drag divs
+	$('#resultForegroundDragDiv>.ui-wrapper').css({width: finalWidth, height: finalHeight});
+	$('#resultForegroundDragDiv').css({width: finalWidth, height: finalHeight});
 
 	// Set the position of the fg image.  API notes a potential problem with user zooming in.
 	var bgX = bg.position().left;
 	var bgY = bg.position().top;
-	fg.css({top: 0, left: 0, right: 0, bottom: 0});
-	fgResizeDiv = $('#resultForegroundDragDiv>.ui-wrapper');
-	var offsetH = parseInt(fgResizeDiv.css("left"));
-	var offsetV = parseInt(fgResizeDiv.css("top"));
 	fgDragDiv = $('#resultForegroundDragDiv');
-	fgDragDiv.css({top: fg_img_pos[1]*bgHeight - offsetV, left: fg_img_pos[0]*bgWidth - offsetH});
+	fgDragDiv.css({top: fg_img_pos[1] * bgHeight, left: fg_img_pos[0] * bgWidth});
 
 	// Now for the widget div
 	scaleAndPositionWidgetDiv();
@@ -480,17 +483,20 @@ function scaleAndPositionWidgetDiv() {
 										height: fg.height()});
 
 	// Set the location of the grabable scale buttons
-	var scaleHandleDim = "10px"; // Change the CSS if this changes
-	var bottom = "calc(100% - "+scaleHandleDim+")";
-	var right = "calc(100% - "+scaleHandleDim+")";
-	$('#resultForegroundWidgets>.ui-resizable-handle').css({width: scaleHandleDim, height: scaleHandleDim});
+	var scaleHandleDim = parseInt($('#resultForegroundWidgets>.ui-resizable-handle').css("width").slice(0,-2));
+	var halfScaleHandleDim = scaleHandleDim/2;
+	var bottom = "calc(100% - "+halfScaleHandleDim+"px)";
+	var right = "calc(100% - "+halfScaleHandleDim+"px)";
+	var left = (-halfScaleHandleDim) + "px";
+	var top = (-halfScaleHandleDim) + "px";
+	$('#resultForegroundWidgets>.ui-resizable-handle').css({width: scaleHandleDim + "px", height: scaleHandleDim + "px"});
 	$("#BRCornerScaleDiv").css({top: bottom, left: right});
 	$("#RCornerScaleDiv").css({top: "50%", left: right});
-	$("#TRCornerScaleDiv").css({top: 0, left: right});
-	$("#TCornerScaleDiv").css({top: 0, left: "50%"});
-	$("#TLCornerScaleDiv").css({top: 0, left: 0});
-	$("#LCornerScaleDiv").css({top: "50%", left: 0});
-	$("#BLCornerScaleDiv").css({top: bottom, left: 0});
+	$("#TRCornerScaleDiv").css({top: top, left: right});
+	$("#TCornerScaleDiv").css({top: top, left: "50%"});
+	$("#TLCornerScaleDiv").css({top: top, left: left});
+	$("#LCornerScaleDiv").css({top: "50%", left: left});
+	$("#BLCornerScaleDiv").css({top: bottom, left: left});
 	$("#BCornerScaleDiv").css({top: bottom, left: "50%"});
 }
 

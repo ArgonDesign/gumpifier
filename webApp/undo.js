@@ -70,22 +70,21 @@ var undoManager = (function() {
 	};
 	var initUndoEvent = function(event) {
 		/*
-		Finalises the current event if there is one, then sets currentEvent to arg event.
+		Finalises the current event if there is one, clears the redo queue then sets currentEvent to 'event'.
 		*/
 		if (currentEvent != null) {
 			finaliseCurrentEvent();
 		}
+		redoQueue.length = 0;
 		currentEvent = event;
 	};
 	var finaliseCurrentEvent = function() {
 		/*
-		Runs the finaliseOp of the object pointed to by curretnEvent, transfers it to the undo queue, clears
-		the redo queue.
+		Runs the finaliseOp of the object pointed to by curretnEvent, transfers it to the undo queue.
 		*/
 		currentEvent.finaliseOp();
 		undoQueue.push(currentEvent);
 		currentEvent = null;
-		redoQueue.length = 0;
 	};
 	var clearHistory = function() {
 		/*
