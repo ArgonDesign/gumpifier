@@ -104,6 +104,7 @@ def jsonConverter(importedJSON):
 	importedJSON['BG_mask_URLs'] = importedJSON['background_masks']
 	del(importedJSON['background'])
 	del(importedJSON['foreground'])
+	del(importedJSON['cutout'])
 	del(importedJSON['background_masks'])
 
 	return json.dumps(importedJSON) # Remove this in production
