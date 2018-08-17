@@ -43,7 +43,7 @@ function chooseExamplePictureFn(event, fg) {
 	var egNumber = parseInt(event.target.classList[1].slice(-1)) - 1;
 	if (fg) {
 		fg_segmented = false;
-		var toSend = {'fg_url': exampleImageState.getForegroundURL(egNumber)};
+		var toSend = {'fg_url': egNumber};
 		$.ajax({
 			type: "POST",
 			url: "cgi-bin/exampleImage.py",
@@ -59,7 +59,7 @@ function chooseExamplePictureFn(event, fg) {
 	}
 	else	{
 		bg_segmented = false;
-		var toSend = {'bg_url': exampleImageState.getBackgroundURL(egNumber)};
+		var toSend = {'bg_url': egNumber};
 		$.ajax({
 			type: "POST",
 			url: "cgi-bin/exampleImage.py",

@@ -9,7 +9,26 @@ The sections below represent possible attack vectors and testing we have underta
 
 ## Escape from served directory
 
+**Attempt 1 - Failed**
+
 It seems that the server is sensible and does not serve files outside its root.  For instance, a request to `10.10.10.90:8002/storage/../../portConfig.txt` returns 404 Not Found.  Indeed, it redirects to `10.10.10.90:800s/portConfig.txt`.
+
+**Attempt 2 - Succeeded; now mitigated**
+
+The CGI script `exampleImage.py` at one point performs `copyfile(url, dest)`.  'url' is an arbitrary string provided from an AJAX call and 'dest 'is returned to the user.  Thus, a user could execute the following in their JS console:
+
+```javascript
+$.ajax({
+    type: "POST",
+    url: "/cgi-bin/exampleImage.py",
+    data: {fg_url: "/path/to.file"},
+    success: function(data) {console.log(data);},
+});
+```
+
+This allows them to gain access to any file the CGI script has permission to copy.
+
+This threat was mitigated by hardcoding into `exampleImage.py` arrays containing the URLS of images used as examples and passing an integer to index into them.  This restricts the arguments to `copyfile(...)` to server side generated values.
 
 ## Arbitrary Code Execution
 

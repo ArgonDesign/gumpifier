@@ -13,7 +13,9 @@ This CGI script tells the TF server to use one of the example images.  Currently
 relevant image segmenting, but in the future could almost instantly return a pre-segmented image.
 
 CGI args:
-	JSON.  Either {'fg_url': url} or {'bg_url': url}
+	JSON.  Either {'fg_url': int} or {'bg_url': int}
+CGI preconditions:
+	The argument value must be in range 0..3 inclusive.  It is use as an indec to the arrays below
 CGI return:
 	Nothing
 """
@@ -29,21 +31,28 @@ form = cgi.FieldStorage()
 
 os.chdir("..")
 
+# Set the list of images used
+foregroundExampleURLs = [	"SharedResources/ExampleImages/FG_Poirot.jpg",
+							"SharedResources/ExampleImages/FG_Patrick.jpg",
+							"SharedResources/ExampleImages/FG_Mohammed.jpg",
+							"SharedResources/ExampleImages/WIN_20180730_15_36_57_Pro.jpg"];
+backgroundExampleURLs = [	"SharedResources/ExampleImages/BG_bikes.jpg",
+							"SharedResources/ExampleImages/BG_bench_oblique.jpg",
+							"SharedResources/ExampleImages/BG_lamp.jpg",
+							"SharedResources/ExampleImages/BG_zebras.png"];
+
 # Get the url
 if 'fg_url' in form:
-	url = form['fg_url'].value
+	index = int(form['fg_url'].value)
+	url = foregroundExampleURLs[index]
 	command = 'egFG'
 elif 'bg_url' in form:
-	url = form['bg_url'].value
+	index = int(form['bg_url'].value)
+	url = backgroundExampleURLs[index]
 	command = 'egBG'
 
-# Copy the example image to a unique instance in storage/
-extension = os.path.basename(url).split('.')[-1]
-# Try to guard against an insertion attack by testing that the extension is correct
-# E.g. extension might be "/../....../etc/passwd"
-if extension.lower() not in ['bmp', 'gif', 'ico', 'jpg', 'jpeg', 'png', 'svg', 'tif', 'tiff', 'webp']: # https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
-	extension = ""
-hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
+
+hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + ".jpg"
 dest = 'storage/{}'.format(hashName)
 try:
 	copyfile(url, dest)

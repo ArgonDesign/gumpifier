@@ -80,7 +80,7 @@ var exampleImageState = (function() {
 		for (var i = 0; i < toSetRight.length; i++) $(toSetRight[i]).css("backgroundImage", "url("+backgroundExampleURLs[i]+")");
 	});
 
-	// Return some functions to access state in the closure
+	// Return some functions to access state in the closure.  These are not used any more as a result of a security update.
 	return {
 		getForegroundURL: function(i) {return foregroundExampleURLs[i]},
 		getBackgroundURL: function(i) {return backgroundExampleURLs[i]}
