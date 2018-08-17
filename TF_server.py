@@ -152,6 +152,7 @@ class TF_Socket():
 		# Remove old files
 		for file in os.listdir(os.path.join(PREFIX, "storage")):
 			fiveDaysInSeconds = 5*24*60*60
+			if file == ".gitkeep": continue
 			path = os.path.join(PREFIX, "storage", file)
 			timeDifference = time.time() - os.path.getmtime(path)
 			if timeDifference > fiveDaysInSeconds:
