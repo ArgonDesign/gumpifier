@@ -47,7 +47,7 @@ Create file `Security/option1.html`.  Filled in the noted down filename for the 
 Results:
 
 - The first AJAX call to a legitimate function ran successfully.  The second AJAX call to the malicious script failed with 404.  I thought this meant that, although we prefixed the URL with '/cgi-bin/', control was not passed to the CGI plugin and the server simply tried to server the Python file but failed because of the exclusion of .py extension.  However, the extension is not .py, so some other failure must have occurred.
-- Running `ls -l` on the server show that that no one has execute permissions on the malicious uploaded script, which is encouraging.
+- Running `ls -l` on the server show that that no one has execute permissions on the malicious uploaded script, which is encouraging.  I couldn't find information online about Python `open()`'s default permissions, so set them explicitly.
 
 **Option 2 - Trick the server into uploading an executable script to cgi-bin/**
 

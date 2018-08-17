@@ -51,8 +51,9 @@ if fileitem.filename: # fileitem.filename is actually a path
 		extension = ""
 	hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
 	savedPath = os.path.join("storage", hashName)
-	# savedPath = 'storage/{}'.format(hashName)
-	open(savedPath, 'wb').write(fileitem.file.read())
+	# Use technique here to ensure strict permissions: https://stackoverflow.com/a/45368120
+	with open(os.open(savedPath, os.O_CREAT | os.O_WRONLY, 0o644), 'wb') as outputFile:
+		outputFile.write(fileitem.file.read())
 
 	# Set the TF server segmenting the image.  We're not waiting for a response from this one so use threading
 	threading.Thread(target=sendData, args=(savedPath, command)).start()
