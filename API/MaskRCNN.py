@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import numpy as np
-import imgaug  # https://github.com/aleju/imgaug (pip3 install imgaug)
+# https://github.com/aleju/imgaug (pip3 install imgaug)
 # Note: Edit PythonAPI/Makefile and replace "python" with "python3".
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
@@ -19,7 +19,6 @@ import matplotlib.pyplot as plt
 ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Mask_RCNN")
 sys.path.append(ROOT_DIR)  # To find local version of the library
 # Import Mask RCNN
-from mrcnn import visualize
 from mrcnn.config import Config
 from mrcnn import model as modellib, utils
 from keras import backend as K
