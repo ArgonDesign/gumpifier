@@ -146,7 +146,9 @@ class TF_Socket():
 		"""
 		This function is run each time a connection is accepted.  It checks for files in the uploads
 		folder for which the modification time is greater than 5 days old and deletes them.
+		Then it runs an API function to clean up the internal dictionaries there.
 		"""
+		# Remove old files
 		for file in os.listdir(os.path.join(PREFIX, "storage")):
 			fiveDaysInSeconds = 5*24*60*60
 			path = os.path.join(PREFIX, "storage", file)
@@ -156,6 +158,8 @@ class TF_Socket():
 					os.remove(path)
 				except:
 					traceback.print_exc()
+		# Clean up API internals
+		self.api.clear_dict()
 
 	def sendResponse(self, response, socket):
 		"""
