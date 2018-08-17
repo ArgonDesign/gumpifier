@@ -346,7 +346,6 @@ function changeImagesFn() {
 	// Reset screen 2 to original
 	$('.resultBackground, #resultForeground, #overlayTextContainer').remove();
 	$('#foundList').empty();
-	$('#instructions').show();
 	// Reset some state
 	fg_loaded = false;
 	bg_loaded = false;

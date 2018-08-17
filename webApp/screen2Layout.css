@@ -156,6 +156,7 @@ sizing and pointer events.
 	flex-direction: column;
 	justify-content: center;
 	z-index: 91; /* This brings the instructions in front of the JQueryUI scale handles */
+	display: none /* Have this initially then display when images have loaded */
 }
 
 #instructionsText {

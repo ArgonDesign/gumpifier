@@ -416,8 +416,11 @@ function initWhenImagesLoaded() {
 	windowScale(); // Both this and the call above are necessary.
 	reassertNormality();
 
-	// Set the initial position of the overlayText
+	// Set the initial position of the meme text
 	overlay_pos[1] = 20 / $('#first').height();
+
+	// Show the overlay text
+	$('#instructions').css("display", "flex");
 }
 
 /*==============================
