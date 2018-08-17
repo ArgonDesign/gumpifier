@@ -26,11 +26,13 @@ class API:
         self.objects_to_be_behind = [] # [2, 3, 4, 9, 11, 15, 16, 17, 18, 19, 20, 23, 57, 58, 59, 60, 61, 64]  # ! This is a personal choice and needs to be reconsidered in more depth
 
     def clear_dict(self):
-        files_remaining = set(os.path.join("webApp/storage/", x) for x in os.listdir("../webApp/storage"))
+        print(os.getcwd())
+        files_remaining = set(os.path.join("webApp/storage/", x) for x in os.listdir("webApp/storage"))
         new_keys_fg = set(self.foreground_map.keys()) & files_remaining
         new_keys_bg = set(self.background_map.keys()) & files_remaining
         self.foreground_map = {x : self.foreground_map[x] for x in new_keys_fg}
         self.background_map = {x : self.background_map[x] for x in new_keys_bg}
+        print(self.foreground_map, self.background_map)
 
     def load_foreground(self, foreground, fn=lambda: None):
         """Loads and segments the foreground. Currently resizes the image if it's above a threshold
