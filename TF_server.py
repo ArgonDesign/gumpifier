@@ -147,6 +147,7 @@ class TF_Socket():
 		This function is run each time a connection is accepted.  It checks for files in the uploads
 		folder for which the modification time is greater than 5 days old and deletes them.
 		Then it runs an API function to clean up the internal dictionaries there.
+		Finally runs a cleanup function for the Observer pattern
 		"""
 		# Remove old files
 		for file in os.listdir(os.path.join(PREFIX, "storage")):
@@ -158,8 +159,13 @@ class TF_Socket():
 					os.remove(path)
 				except:
 					traceback.print_exc()
+
 		# Clean up API internals
 		self.api.clear_dict()
+
+		# Clean up the segment observer - uses code similar to the above API call
+		files_remaining = set(os.path.join(PREFIX, "storage", x) for x in os.listdir(os.path.join(PREFIX, "storage")))
+		self.segObs.intersect(files_remaining)
 
 	def sendResponse(self, response, socket):
 		"""
@@ -298,6 +304,17 @@ class SegmentObserver():
 		self.fnMapLock = threading.Lock()
 
 	def addFn(self, url, fn):
+		"""
+		Args:
+			url: string - the url of the resource for which we register a callback
+			fn: function - the callback function executed once the image at url has been segmented
+		Returns:
+			None
+		Operation:
+			Locks both maps to ensure correct concurrent execution
+			If the URL has already been segmented: remove entry from the status map, releases locks and executes function
+			If not: registers the (url, fn) pair in the function map then releases locks
+		"""
 		print("addFn acquiring locks")
 		self.statusMapLock.acquire()
 		self.fnMapLock.acquire()
@@ -324,6 +341,17 @@ class SegmentObserver():
 			print("locks released")
 
 	def addStatus(self, url):
+		"""
+		Args:
+			url: string - the url of the resource which has been segmented
+		Returns:
+			None
+		Operation:
+			Locks both maps to ensure correct concurrent execution.
+			If the URL already has a callback function registered, removes the entry from the function map, releases
+			locks and executes the callback.
+			If not: registers the (url, True) pair in the status map
+		"""
 		print("addStatus acquiring locks")
 		self.statusMapLock.acquire()
 		self.fnMapLock.acquire()
@@ -349,6 +377,34 @@ class SegmentObserver():
 			self.statusMapLock.release()
 			print("locks released")
 
+	def intersect(self, urlSet):
+		"""
+		Args:
+			urlSet: set - a set of urls which are still present in the storage/ directory
+		Returns:
+			None
+		Operation:
+			Removes entries from the maps which are no longer in the storage/ directory
+		"""
+		# Acquire locks
+		print("Cleaning up Segment Observer")
+		self.statusMapLock.acquire()
+		self.fnMapLock.acquire()
+
+		# Find the files to remove
+		for theMap in [self.statusMap, self.fnMap]:
+			uniqueKeys = set(theMap.keys())
+			commonPathNames = uniqueKeys & urlSet
+			toDelete = uniqueKeys - commonPathNames
+
+			print("Originally: {}".format(theMap))
+			for path in toDelete:
+				del(theMap[path])
+			print("Now: {}".format(theMap))
+
+		# Release locks
+		self.fnMapLock.release()
+		self.statusMapLock.release()
 
 if __name__ == "__main__":
 	tfs = TF_Socket()
