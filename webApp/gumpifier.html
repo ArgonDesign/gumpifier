@@ -51,50 +51,50 @@ Author : Patrick Taylor
 	<header><h1>The Gumpifier</h1></header>
 
 	<div id="content-screen1">
-		<div class="col-mobile circlePane outerContent" id="circlePaneLeft">
-			<div class="cornerCircle cornerCircleTL cornerCircleLeft"></div>
-			<div class="cornerCircle cornerCircleTR cornerCircleLeft"></div>
-			<div class="cornerCircle cornerCircleBL cornerCircleLeft"></div>
-			<div class="cornerCircle cornerCircleBR cornerCircleLeft"></div>
+		<div id="imageUploads">
+			<div class="col-mobile circlePane outerContent" id="circlePaneLeft">
+				<div class="cornerCircle cornerCircleTL cornerCircleLeft"></div>
+				<div class="cornerCircle cornerCircleTR cornerCircleLeft"></div>
+				<div class="cornerCircle cornerCircleBL cornerCircleLeft"></div>
+				<div class="cornerCircle cornerCircleBR cornerCircleLeft"></div>
 
-			<div class="overlapPane">
-				<div class="borderLine borderLineB borderLineLeft"></div>
-				<div class="borderLine borderLineL borderLineLeft"></div>
-				<div class="borderLine borderLineR borderLineLeft"></div>
-				<div class="borderLine borderLineT borderLineLeft"></div>
+				<div class="overlapPane">
+					<div class="borderLine borderLineB borderLineLeft"></div>
+					<div class="borderLine borderLineL borderLineLeft"></div>
+					<div class="borderLine borderLineR borderLineLeft"></div>
+					<div class="borderLine borderLineT borderLineLeft"></div>
 
-				<div class="vCenterPane" id="vCenterPaneLeft">
+					<div class="vCenterPane" id="vCenterPaneLeft">
 
-					<div id="option1Left">
-						Step 1: A picture of a person<br>
-						Either choose an example...<br>
-						<div class="grid-container">
-							<!-- DO NOT change the order of the classes in the following divs, or the value of 'item{1,2,3,4}' without ammending the relevent JS -->
-							<div class="grid-item item1 left"></div>
-							<div class="grid-item item2 left"></div>
-							<div class="grid-item item3 left"></div>
-							<div class="grid-item item4 left"></div>
+						<div id="option1Left">
+							Step 1: A picture of a person<br>
+							Either choose an example...<br>
+							<div class="grid-container">
+								<!-- DO NOT change the order of the classes in the following divs, or the value of 'item{1,2,3,4}' without ammending the relevent JS -->
+								<div class="grid-item item1 left"></div>
+								<div class="grid-item item2 left"></div>
+								<div class="grid-item item3 left"></div>
+								<div class="grid-item item4 left"></div>
+							</div>
+							<br>... or upload your own
+							<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
+								<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
+								<input type="file" name="fgimage" accept="image/*" id="foregroundUploadButton">
+								<label for="foregroundUploadButton" class="uploadButton"></label>
+							</form>
 						</div>
-						<br>... or upload your own
-						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
-							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
-							<input type="file" name="fgimage" accept="image/*" id="foregroundUploadButton">
-							<label for="foregroundUploadButton" class="uploadButton"></label>
-						</form>
-					</div>
 
-					<div id="option2Left">
-						<div id="opt2vLeft">
-							Currently selected picture<br><br>
-							<img id="opt2ImageLeft""><br>
-							<input type="button" value="Choose again" id="chooseAgainFG">
+						<div id="option2Left">
+							<div id="opt2vLeft">
+								Currently selected picture<br><br>
+								<img id="opt2ImageLeft""><br>
+								<input type="button" value="Choose again" id="chooseAgainFG">
+							</div>
 						</div>
-					</div>
 
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="col-mobile outerContent" id="circlePaneRight">
 			<div id="bgUploadPane" class="circlePane">
 				<div class="cornerCircle cornerCircleTL cornerCircleRight"></div>
 				<div class="cornerCircle cornerCircleTR cornerCircleRight"></div>
@@ -138,6 +138,8 @@ Author : Patrick Taylor
 					</div>
 				</div>
 			</div>
+		</div>
+		<div id="gumpifyArea">
 			<div id="gumpifyPane" class="circlePane">
 				<div class="cornerCircle cornerCircleTL cornerCircleStep3"></div>
 				<div class="cornerCircle cornerCircleTR cornerCircleStep3"></div>

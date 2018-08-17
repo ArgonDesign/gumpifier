@@ -33,7 +33,27 @@ html, body {
 }
 
 #content-screen1 {
+	/*flex-flow: row;*/
+	flex-flow: column;
+}
+
+#imageUploads {
+	/* Child properties */
+	flex-grow: 5;
+	flex-basis: 0;
+
+	/* Parent properties */
+	display: flex;
+	flex-wrap: wrap;
 	flex-flow: row;
+}
+
+#gumpifyArea {
+	/* Child properties */
+	flex-grow: 1;
+
+	/* Parent */
+	display: flex;
 }
 
 #content-screen2 {
@@ -243,7 +263,20 @@ html, body {
     when in mobile mode, width is 100%
     */
     [class*="col-"] {
-        width: 100%;
+        /*width: 100%;*/
+    }
+
+    #imageUploads {
+    	display: block;
+    	overflow: auto;
+    }
+
+    #bgUploadPane {
+    	height: 50vh;
+    }
+
+    #circlePaneLeft {
+    	height: 50vh;
     }
 }
 
