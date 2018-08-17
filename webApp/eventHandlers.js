@@ -17,6 +17,7 @@ is detected.
 $(document).ready(function() {
 	// Initialization
 	applyState();
+	detectTouchscreen();
 
 	/* === Screen 1 === */
 	// Choose example images

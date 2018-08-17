@@ -20,6 +20,7 @@ var fg_segmented = false;
 var bg_segmented = false;
 var fg_url = "storage/Poirot_cutout_256x256.PNG";
 var bg_url = "storage/Street_256x256.JPG";
+var isTouchscreen;
 
 function applyState(fg_changed, bg_changed, data) {
 	/*

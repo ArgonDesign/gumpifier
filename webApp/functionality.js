@@ -640,11 +640,14 @@ function bringToFront() {
 function showMasks() {
 	/*
 	Show: the masks, the widget div and the meme textarea widgets
+	If we're on a touchscreen, set a timeout.
 	*/
 	$('.mask').css('visibility', 'visible');
 	$('#resultForegroundWidgets').css('visibility', 'visible');
 	$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "solid"});
 	$('#overlayTextDragIconTL, #overlayTextDragIconBR').css('visibility', 'visible');
+
+	if (isTouchscreen) setTimeout(hideMasks, 5000);
 }
 
 function hideMasks() {

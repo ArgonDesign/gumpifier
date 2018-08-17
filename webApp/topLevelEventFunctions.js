@@ -25,6 +25,7 @@ of the actions the end-user will take.  Each has a description of its own, but h
 
  === General ===
  - keyPressed - called when a key is pressed.  Used to implement undo/redo key capture.
+ - detectTouchscreen - called when the document loads, detects if the device is a touchscreen
 */
 
 function chooseExamplePictureFn(event, fg) {
@@ -346,6 +347,9 @@ function changeImagesFn() {
 	$('.resultBackground, #resultForeground, #overlayTextContainer').remove();
 	$('#foundList').empty();
 	$('#instructions').show();
+	// Reset some state
+	fg_loaded = false;
+	bg_loaded = false;
 	undoManager.clearHistory();
 }
 
@@ -372,4 +376,28 @@ function keyPressed(e) {
 	// Ctrl+Y -> Redo
 		undoManager.redo();
 	}
+}
+
+function detectTouchscreen() {
+	/*
+	Args:
+		None
+	Returns:
+		None
+	Operation:
+		See here update 2018 here:
+		https://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript/4819886#4819886
+	*/
+	var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
+	var mq = function(query) {
+		return window.matchMedia(query).matches;
+	}
+	if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+		return true;
+	}
+	// include the 'heartz' as a way to have a non matching MQ to help terminate the join
+	// https://git.io/vznFH
+	var query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
+	console.log(mq(query));
+	isTouchscreen = mq(query);
 }
