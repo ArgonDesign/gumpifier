@@ -48,6 +48,9 @@ def sendData(data, command):
 	# https://docs.python.org/2/howto/sockets.html
 
 	# Create the socket and connect to TF server
+	if not os.path.exists('../portConfig.txt'):
+		raise IOError("portConfig.txt not found. Run TF_server before making requests")
+		
 	f = open('../portConfig.txt', 'r')
 	port = int(f.read())
 	f.close()

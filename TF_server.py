@@ -21,12 +21,12 @@ before it starts listening on localhost (port defined in portConfig.txt) for com
 
 import socket
 import json
-import API
 import threading
 import traceback
 import os
 import time
-
+import errno
+from API.API import API
 PREFIX = "webApp"
 
 class TF_Socket():
@@ -34,18 +34,33 @@ class TF_Socket():
 		"""
 		Create a server socket and initialise the TF model
 		"""
-
-		# Create the socket and bind to a port
-		with open('portConfig.txt', 'r') as f:
-			port = int(f.read())
 		self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.serversocket.bind(('localhost', port))
+
+		# Check if portConfig exists - if not, find a port and save it
+		# This method avoids race conditions
+		if not os.path.exists('portConfig.txt'):
+			port = 7999
+			try:
+				self.serversocket.bind(('localhost', port))
+			except socket.error as e:
+				if e.errno == errno.EADDRINUSE:
+					port += 1
+				else:
+					# something else raised the socket.error exception
+					raise
+			with open("portConfig.txt", "w") as f:
+				f.write(str(port))
+			print("First run - %s is the chosen port. Change in portConfig.txt" % port)
+		else:
+			with open('portConfig.txt', 'r') as f:
+				self.serversocket.bind(('localhost', int(f.read())))
+		
 
 		# Initialise the observer pattern for segmenting completion callback registering
 		self.segObs = SegmentObserver()
 
 		# Initialize the TF model
-		self.api = API.API.API()
+		self.api = API()
 
 	def startListening(self):
 		"""
