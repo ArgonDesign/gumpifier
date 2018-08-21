@@ -61,4 +61,4 @@ TF_server.py listens on this port for incoming connections from the CGI scripts.
 
 The series of events when the user presses a button on the front end is show in the diagram below.  The white boxes name what module handles the request, the coloured boxes depict where in the repo the associated code resides: each location has its own README.md providing more details.
 
-![](Z:\Spock\repo\DocumentationResources\HighLevelDiagram.svg)
+![](DocumentationResources\HighLevelDiagram.svg)
