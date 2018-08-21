@@ -4,7 +4,7 @@
 
 This folder contains code for the frontend (HTML, CSS, JS), the CGI scripts (PY) and an interface mediates between the CGI scripts and the Tensorflow server.  I.e. the orange boxes in the diagram below.
 
-![](Z:\Spock\repo\DocumentationResources\HighLevelDiagram.svg)
+![](../DocumentationResources/HighLevelDiagram.svg)
 
 ## Terminology
 

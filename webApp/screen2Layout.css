@@ -22,9 +22,6 @@ sizing and pointer events.
 
 #headerLeft {
 	width: 90%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 }
 
 #headerRight {
@@ -138,9 +135,6 @@ sizing and pointer events.
 .commandText {
 	float: left;
 	height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 }
 
 #commandButtonEdit {
@@ -239,10 +233,6 @@ sizing and pointer events.
 /* === CSS for the instructions text === */
 #instructions {
 	position: absolute;
-	/* Center vertically */
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 	z-index: 91; /* This brings the instructions in front of the JQueryUI scale handles */
 	display: none /* Have this initially then display when images have loaded */
 }
@@ -251,3 +241,8 @@ sizing and pointer events.
 	max-height: 100%;
 	overflow: auto;
 }
+
+/* === Hover detector === */
+/*#hoverDetector {
+	position: absolute;
+}*/

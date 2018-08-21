@@ -29,6 +29,18 @@ header {
 	position: relative;
 }
 
+.flex-col-center {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.flex-row-center {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
 /* === Initial overlay === */
 /*#initOverlay {
 	position: absolute;
@@ -63,27 +75,11 @@ header {
 /* === Header === */
 #headerOption1 {
 	height: 100%;
-
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 }
 
 #content-screen1, #content-screen2 {
 	/* Child properties */
 	flex-grow: 5;
-
-	/* Parent properties */
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
-#screen1-row1, #screen1-row2 {
-	/* Parent properties */
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
 }
 
 #content-screen2 {
@@ -109,11 +105,6 @@ header {
 	/* Flex child */
 	flex-grow: 1;
 
-	/* Flex parent */
-	display: flex;
-    flex-direction: column;
-	justify-content: center;
-
 	/* Other*/
     text-align: center;
 }
@@ -132,45 +123,8 @@ header {
 	position: absolute;
 	top: 0;
 	left: 0;
-
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 }
 
 .opt2OverlayText {
-	text-align: center;
 	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
-#gumpifyButton {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
-#gumpifyButtonContent {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;	
-}
-
-#gumpifyButtonText {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
-#footer {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-}
-
-.footerText {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 }

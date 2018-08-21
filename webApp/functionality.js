@@ -334,6 +334,11 @@ function windowScale(possibleEvent) {
 	// 					width: resultForeground.width(),
 	// 					height: resultForeground.height()});
 
+	// Size the hover detector div
+	$('#hoverDetector').css({top: resultForeground.position().top,
+						left: resultForeground.position().left,
+						width: resultForeground.width(),
+						height: resultForeground.height()});
 
 	// Size the overlayTextContainer in a similar fashion
 	var overlayTextContainer = $('#resultForeground');
@@ -503,15 +508,16 @@ function scaleAndPositionWidgetDiv() {
 	var right = "calc(100% - "+halfScaleHandleDim+"px)";
 	var left = (-halfScaleHandleDim) + "px";
 	var top = (-halfScaleHandleDim) + "px";
+	var halfwayTop = "calc(50% - " + halfScaleHandleDim + "px)";
 	$('#resultForegroundWidgets>.ui-resizable-handle').css({width: scaleHandleDim + "px", height: scaleHandleDim + "px"});
 	$("#BRCornerScaleDiv").css({top: bottom, left: right});
 	$("#RCornerScaleDiv").css({top: "50%", left: right});
 	$("#TRCornerScaleDiv").css({top: top, left: right});
-	$("#TCornerScaleDiv").css({top: top, left: "50%"});
+	$("#TCornerScaleDiv").css({top: top, left: halfwayTop});
 	$("#TLCornerScaleDiv").css({top: top, left: left});
 	$("#LCornerScaleDiv").css({top: "50%", left: left});
 	$("#BLCornerScaleDiv").css({top: bottom, left: left});
-	$("#BCornerScaleDiv").css({top: bottom, left: "50%"});
+	$("#BCornerScaleDiv").css({top: bottom, left: halfwayTop});
 }
 
 function scaleAndPositionOverlayText() {

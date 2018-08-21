@@ -55,6 +55,10 @@ $(document).ready(function() {
 	// 'Got it!' button to make the instruction text disappear
 	// $('#gotItButton').click(function() {$('#instructions').hide()});
 
+	// The hover detector show and hides the UI elements, but must pass clicks through
+	// $('#hoverDetector').hover(function(event) {showMasks; clickThroughHover(event);}, function(event) {hideMasks; clickThroughHover(event);});
+	// $('#hoverDetector').on("mousedown", clickThroughHover); // clickThroughHover is automatically passed the click event
+
 	// 'X' button to make the instruction text disappear
 	$('#headerClose').click(function() {$('#headerOption2').hide(); $('#headerOption1').css("display", "flex");});
 

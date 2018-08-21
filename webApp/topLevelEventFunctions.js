@@ -21,6 +21,7 @@ of the actions the end-user will take.  Each has a description of its own, but h
  - downloadButtonFn - called when the user presses the 'Download button'.  Downloads their final image.
  - editButtonFn - called when the user presses 'Edit'.  Toggles visibility of colour correction sliders.
  - changeImagesFn - called when the user presses 'Change Images'.  Resets some state and transitions to screen 1.
+ - clickThroughHover - called when the hover detector is clicked.  NOT USED.
 
  === General ===
  - keyPressed - called when a key is pressed.  Used to implement undo/redo key capture.
@@ -153,7 +154,7 @@ function gumpifyFn() {
 				// Initialize colourState
 				colourState.initialize(data.colour_correction.brightness, data.colour_correction.white_balance);
 				$('#brightnessSlider').val(data.colour_correction.brightness);
-				$('#whiteBalanceSlider').val(6000);
+				$('#whiteBalanceSlider').val(data.colour_correction.white_balance);
 				// Load images and construct screen 2
 				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs, data.quotation);
 				// Set instructions list text
@@ -264,6 +265,31 @@ function downloadButtonFn() {
 					html2canvas(document.getElementById('overlayTextContainer'), {backgroundColor: null}).then(function(textCanvas) {
 						ctx.globalCompositeOperation = "source-over";
 						ctx.drawImage(textCanvas, 0, 0);
+						/*
+						Some browsers (e.g. Edge) don't support canvas.toBlob, which is used below to donwload stuff.
+						We use a polyfill to define a custom version.  See here:
+						https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+						*/
+						if (!HTMLCanvasElement.prototype.toBlob) {
+						  Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+						    value: function (callback, type, quality) {
+						      var canvas = this;
+						      setTimeout(function() {
+
+						        var binStr = atob( canvas.toDataURL(type, quality).split(',')[1] ),
+						            len = binStr.length,
+						            arr = new Uint8Array(len);
+
+						        for (var i = 0; i < len; i++ ) {
+						          arr[i] = binStr.charCodeAt(i);
+						        }
+
+						        callback( new Blob( [arr], {type: type || 'image/png'} ) );
+
+						      });
+						    }
+						  });
+						}
 						/* Download the image as per these links.  Chrome has a 2MB size limit (it would seem) on <a> download
 						size, so we convert to a blob instead.
 							-> https://jsfiddle.net/AbdiasSoftware/7PRNN/
@@ -274,7 +300,13 @@ function downloadButtonFn() {
 						canvas.toBlob(function(blob){
 							link.href = URL.createObjectURL(blob);
 							link.download = "Gumpified.png";
+							// We must add and remove the <a> from the DOM to allow clicking Firefox
+							// https://stackoverflow.com/questions/32225904/programmatical-click-on-a-tag-not-working-in-firefox#
+							console.log(link.href);
+							link.setAttribute("type", "hidden");
+							document.body.appendChild(link);
 							link.click();
+							link.remove();
 						});
 					});
 				}
@@ -333,6 +365,23 @@ function changeImagesFn() {
 	fg_loaded = false;
 	bg_loaded = false;
 	undoManager.clearHistory();
+}
+
+function clickThroughHover(event) {
+	/*
+	Args:
+		event - the click event
+	Returns:
+		None
+	Operation:
+		Hides the hover detector and sends the click to an element behind before showing the detector again.
+		Similar logic to when we click through alpha in the actual images (see getAndTriggerClickedImage())
+	*/
+	console.log(event);
+	$('#hoverDetector').hide();
+	var nextElement = document.elementFromPoint(event.clientX, event.clientY);
+	$(nextElement).trigger(event);
+	$('#hoverDetector').show();
 }
 
 function keyPressed(e) {

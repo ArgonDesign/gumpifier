@@ -23,6 +23,26 @@ header {
 	font-size: 130%;
 }
 
+/* === Initial overlay === */
+/*#initOverlay {
+	background-color: white;
+}
+
+.initLogo {
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+}
+
+#initArgonLogo {background-image: url("SharedResources/argonLogo.jpg");}
+#initDovetailedLogo {background-image: url("SharedResources/dovetailedLogo.jpg");}
+#initGumpifierLogo {background-image: url("SharedResources/gumpifierLogo.png");}
+
+#initArgonLogo {opacity: 1.0;}
+#initDovetailedLogo	{opacity: 0.0;}
+#initGumpifierLogo	{opacity: 0.0;}*/
+
+/* === Header === */
 #headerLogo {
 	background-image: url("SharedResources/Gumpifier Logo Cropped.png");
 	background-size: contain;
@@ -33,6 +53,7 @@ header {
 	margin-bottom: 1vh;
 }
 
+/* === Main content === */
 .uploadSquareMargin {
 	margin: 0 7%;
 }
@@ -123,11 +144,8 @@ header {
 	background-color: rgb(198, 198, 198);
 }
 
-.footerElement {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 400;
-	text-align: center;
-	font-size: 150%;
+.footerText {
+	font-family: "Playfair Display", serif;
 }
 
 #argonLogo {

@@ -52,12 +52,12 @@ Author : Patrick Taylor
 	</div> -->
 
 	<header>
-		<div id="headerOption1">
+		<div id="headerOption1" class="flex-col-center">
 			<div id="headerLogo"></div>
 			Put yourself into any photo with the power of AI!
 		</div>
 		<div id="headerOption2"  style="display: none;">
-			<div id="headerLeft">
+			<div id="headerLeft" class="flex-col-center">
 				<div id="headerTextMain">
 					We've found 3 objects in the background.  Click on the objects to send them forwards and back.
 				</div>
@@ -71,8 +71,8 @@ Author : Patrick Taylor
 		</div>
 	</header>
 
-	<div id="content-screen1">
-		<div id="screen1-row1">
+	<div id="content-screen1" class="flex-col-center">
+		<div id="screen1-row1" class="flex-row-center">
 			<div class="uploadSquareMargin">
 				<div id="uploadBackground" class="uploadSquare">
 					<div id="option1Right">
@@ -80,14 +80,14 @@ Author : Patrick Taylor
 						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="backgroundForm">
 							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
 							<input type="file" name="bgimage" accept="image/*" id="backgroundUploadInput">
-							<label for="backgroundUploadInput" class="uploadButton" id="backgroundUploadButton">Upload background</label>
+							<label for="backgroundUploadInput" class="uploadButton flex-col-center" id="backgroundUploadButton">Upload background</label>
 						</form>
 					</div>
 
 					<div id="option2Right">
 						<div id="opt2ImageRight"></div>
-						<div id="opt2OverlayRight">
-							<div class="opt2OverlayText">
+						<div id="opt2OverlayRight" class="flex-col-center">
+							<div class="opt2OverlayText flex-col-center">
 								Upload background
 							</div>
 						</div>
@@ -101,14 +101,14 @@ Author : Patrick Taylor
 						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
 							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
 							<input type="file" name="fgimage" accept="image/*" id="foregroundUploadInput">
-							<label for="foregroundUploadInput" class="uploadButton" id="foregroundUploadButton">Upload foreground</label>
+							<label for="foregroundUploadInput" class="uploadButton flex-col-center" id="foregroundUploadButton">Upload foreground</label>
 						</form>
 					</div>
 
 					<div id="option2Left">
 						<div id="opt2ImageLeft"></div>
-						<div id="opt2OverlayLeft">
-							<div class="opt2OverlayText">
+						<div id="opt2OverlayLeft" class="flex-col-center">
+							<div class="opt2OverlayText flex-col-center">
 								Upload foreground
 							</div>
 						</div>
@@ -116,23 +116,23 @@ Author : Patrick Taylor
 				</div>
 			</div>
 		</div>
-		<div id="screen1-row2">
-			<div id="gumpifyButton">
-				<div id="gumpifyButtonContent">
+		<div id="screen1-row2" class="flex-row-center">
+			<div id="gumpifyButton" class="flex-col-center">
+				<div id="gumpifyButtonContent" class="flex-row-center">
 					<div id="gumpifyButtonIcon"></div>
-					<div id="gumpifyButtonText">Gumpify!</div>
+					<div id="gumpifyButtonText" class="flex-col-center">Gumpify!</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="content-screen2">
+	<div id="content-screen2" class="flex-col-center">
 		<div id="canvasCommandsOuter">
 			<div id="canvasCommands">
 				<!-- <div id="colourControlsContainer"> -->
 					<div class="commandButton" id="commandButtonEdit">
 						<div class="commandIcon" id="commandIconEdit"></div>
-						<div class="commandText" id="commandTextEdit">Tweak colour</div>
+						<div class="commandText flex-col-center" id="commandTextEdit">Tweak colour</div>
 						<div id="triangle"></div>
 						<div id="editCommands">
 							<div class="editCommand">
@@ -147,11 +147,11 @@ Author : Patrick Taylor
 				<!-- </div> -->
 				<div class="commandButton" id="commandButtonUndo">
 					<div class="commandIcon" id="commandIconUndo"></div>
-					<div class="commandText" id="commandTextUndo">Undo</div>
+					<div class="commandText flex-col-center" id="commandTextUndo">Undo</div>
 				</div>
 				<div class="commandButton" id="commandButtonRedo">
 					<div class="commandIcon" id="commandIconRedo"></div>
-					<div class="commandText" id="commandTextRedo">Redo</div>
+					<div class="commandText flex-col-center" id="commandTextRedo">Redo</div>
 				</div>
 			</div>
 		</div>
@@ -209,7 +209,7 @@ Author : Patrick Taylor
 				</div>
 				-->
 			</div>
-			<div id="instructions">
+			<div id="instructions" class="flex-col-center">
 				<div id="instructionsText">
 					I've found these objects in the background:<br>
 					<ul id="foundList"><!-- Populated in JS --></ul>
@@ -224,6 +224,8 @@ Author : Patrick Taylor
 					<input type="button" value="Got it!" id="gotItButton">
 				</div>
 			</div>
+			<!-- <div id="hoverDetector">
+			</div> -->
 		</div>
 
 		<div id="finalCommands">
@@ -233,11 +235,11 @@ Author : Patrick Taylor
 
 	</div>
 
-	<div id=footer>
-		<div class="footerText">A collaboration between&nbsp;</div>
-		<a href="http://www.argondesign.com/"><div id="argonLogo"></div></a>
-		<div class="footerText">&nbsp;and&nbsp;</div>
-		<a href="https://www.dovetailed.co/"><div id="dovetailedLogo"></div></a>
+	<div id="footer" class="flex-row-center">
+		<div class="footerText flex-col-center">A collaboration between&nbsp;</div>
+		<a href="http://www.argondesign.com/" class="flex-col-center"><div id="argonLogo"></div></a>
+		<div class="footerText flex-col-center">&nbsp;and&nbsp;</div>
+		<a href="https://www.dovetailed.co/" class="flex-col-center"><div id="dovetailedLogo"></div></a>
 	</div>
 
 </body>
