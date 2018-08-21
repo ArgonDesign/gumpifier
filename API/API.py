@@ -332,11 +332,12 @@ class API:
         image = bg_pred.make_image_transparent(image)
         image[:, :, 3] = 255
         mask_fill = []
+        fill_color = (216, 162, 255, 255)
         for n in range(masks.shape[2]):
             mask = masks[:, :, n]
             img = bg_pred._apply_mask(image, mask)
             indices = (mask==1)
-            img[indices] = 255
+            img[indices] = fill_color
             mask_fill.append(self.save_img_get_url(img))
         return mask_fill
 

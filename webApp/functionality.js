@@ -329,10 +329,10 @@ function windowScale(possibleEvent) {
 
 	// Size the instruction text
 	var resultForeground = $('#resultForeground');
-	$('#instructions').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
-						left: resultForeground.position().left,
-						width: resultForeground.width(),
-						height: resultForeground.height()});
+	// $('#instructions').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
+	// 					left: resultForeground.position().left,
+	// 					width: resultForeground.width(),
+	// 					height: resultForeground.height()});
 
 
 	// Size the overlayTextContainer in a similar fashion
@@ -344,6 +344,9 @@ function windowScale(possibleEvent) {
 
 	// Size the text
 	scaleAndPositionOverlayText();
+
+	// Position the Edit, Undo and Redo buttons right aligned with the main image
+	$('#canvasCommands').css("right", $('#first').position().left + "px"); // Left is same as right because #first is centered.
 }
 
 function initWhenImagesLoaded() {
@@ -420,7 +423,7 @@ function initWhenImagesLoaded() {
 	overlay_pos[1] = 20 / $('#first').height();
 
 	// Show the overlay text
-	$('#instructions').css("display", "flex");
+	// $('#instructions').css("display", "flex");
 }
 
 /*==============================

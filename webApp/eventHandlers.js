@@ -28,17 +28,21 @@ $(document).ready(function() {
 	$('#foregroundForm').submit(function() {return uploadPictureFn($('#foregroundForm'), true);});
 
 	// Auto-submit when a file is chosen
-	$('#foregroundUploadButton').change(function() {$('#foregroundForm').submit();});
+	$('#foregroundUploadInput').change(function() {$('#foregroundForm').submit();});
 
 	// Upload own background image button
 	$('#backgroundForm').submit(function() {return uploadPictureFn($('#backgroundForm'), false);});
 
 	// Auto-submit when a file is chosen
-	$('#backgroundUploadButton').change(function() {$('#backgroundForm').submit();});
+	$('#backgroundUploadInput').change(function() {$('#backgroundForm').submit();});
 
-	// Check segmentation of images
-	document.getElementById('opt2ImageLeft').onload = function() {checkSegmentation('fg_url');}
-	document.getElementById('opt2ImageRight').onload = function() {checkSegmentation('bg_url');}
+	// Bring up 'upload own image' form when clicking on the upload icon as well
+	$('#backgroundUploadIcon').click(function() {$('#backgroundUploadButton').click();});
+	$('#foregroundUploadIcon').click(function() {$('#foregroundUploadButton').click();});
+
+	// Bring up 'upload own image' form when the user chooses a new image, having chosen one alread
+	$('#opt2OverlayLeft').click(function() {$('#foregroundUploadButton').click();});
+	$('#opt2OverlayRight').click(function() {$('#backgroundUploadButton').click();});
 
 	// Choose again buttons
 	$('#chooseAgainFG').click(set_fg_false);
@@ -49,10 +53,14 @@ $(document).ready(function() {
 
 	/* === Screen 2 === */
 	// 'Got it!' button to make the instruction text disappear
-	$('#gotItButton').click(function() {$('#instructions').hide()});
+	// $('#gotItButton').click(function() {$('#instructions').hide()});
+
+	// 'X' button to make the instruction text disappear
+	$('#headerClose').click(function() {$('#headerOption2').hide(); $('#headerOption1').css("display", "flex");});
 
 	// Edit button
-	$('#editButton').click(editButtonFn);
+	$('#commandIconEdit, #commandTextEdit').click(editButtonFn);
+	// $('#commandButtonEdit').not('#editCommands *, #triangle').click(editButtonFn);
 
 	// Brightness slider - function not in topLevelEventFunctions.js
 	$('#brightnessSlider').on('input', brightnessSliderFn);
@@ -67,10 +75,10 @@ $(document).ready(function() {
 	});
 
 	// Undo button - function not in topLevelEventFunctions.js
-	$('#undoButton').click(undoManager.undo);
+	$('#commandButtonUndo').click(undoManager.undo);
 
 	// Redo button - function not in topLevelEventFunctions.js
-	$('#redoButton').click(undoManager.redo);
+	$('#commandButtonRedo').click(undoManager.redo);
 
 	// Capture undo and redo key combos
 	document.onkeydown = function(e) {keyPressed(e)};

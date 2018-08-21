@@ -9,7 +9,6 @@ Author : Patrick Taylor
 This file implements the top level events bound in eventHandlers.js.  They are presented here in roughly chronological
 of the actions the end-user will take.  Each has a description of its own, but here is a summary list:
  === Screen 1 ===
- - chooseExamplePictureFn - called when the user clicks on one of the example images
  - uploadPictureFn - called when the user uploads a picture of their own
  - checkSegmentation - called when the above functions return so we know when the images have been segmented
  - set_fg_false - calls the state tracker and sets that the foreground has not been selected.
@@ -27,53 +26,6 @@ of the actions the end-user will take.  Each has a description of its own, but h
  - keyPressed - called when a key is pressed.  Used to implement undo/redo key capture.
  - detectTouchscreen - called when the document loads, detects if the device is a touchscreen
 */
-
-function chooseExamplePictureFn(event, fg) {
-	/*
-	Args:
-		event - the click event
-		fg: bool - whether the example image chosen is for the foreground or background
-	Returns:
-		None
-	Operation:
-		Sends AJAX request to server telling it to start processing the appropriate image.
-		AJAX will return wil URL of example image, which is then downloaded to be shown to the user.
-		Modifies state and calls the state tracker.
-	*/
-	var egNumber = parseInt(event.target.classList[1].slice(-1)) - 1;
-	if (fg) {
-		fg_segmented = false;
-		var toSend = {'fg_url': egNumber};
-		$.ajax({
-			type: "POST",
-			url: "cgi-bin/exampleImage.py",
-			data: toSend,
-			success: function(data) {
-				set_fg_true(data.slice(0,-1)); // Remove the training \n character
-			},
-			error: function(xhr, status, error) {
-				console.log(status);
-				console.log(error);
-			}
-		});
-	}
-	else	{
-		bg_segmented = false;
-		var toSend = {'bg_url': egNumber};
-		$.ajax({
-			type: "POST",
-			url: "cgi-bin/exampleImage.py",
-			data: toSend,
-			success: function(data) {
-				set_bg_true(data.slice(0,-1)); // Remove the training \n character
-			},
-			error: function(xhr, status, error) {
-				console.log(status);
-				console.log(error);
-			}
-		});
-	}
-}
 
 function uploadPictureFn(form, fg) {
 	/*
@@ -122,8 +74,9 @@ function checkSegmentation(what) {
 	console.log("Check Segmentation called");
 	// We now make another AJAX call with returns when the image has finished segmenting
 	var toSend;
-	if (what == 'fg_url') toSend = {'fg_url': $('#opt2ImageLeft').attr('src')}
-	else if (what == 'bg_url') toSend = {'bg_url': $('#opt2ImageRight').attr('src')}
+	if (what == 'fg_url') toSend = {'fg_url': $(tmpFGimg).attr("src")}
+	else if (what == 'bg_url') toSend = {'bg_url': $(tmpBGimg).attr("src")}
+	console.log(toSend);
 	$.ajax({
 		type: "POST",
 		url: "cgi-bin/segCheck.py",
@@ -204,12 +157,37 @@ function gumpifyFn() {
 				// Load images and construct screen 2
 				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs, data.quotation);
 				// Set instructions list text
-				var foundList = $('#foundList');
+				// var foundList = $('#foundList');
+				// for (var url in data.labels) {
+				// 	var toAppend = $('<li />');
+				// 	toAppend.text(data.labels[url].name + " (" + Math.round(parseFloat(data.labels[url].confidence)*100) + "% confidence)");
+				// 	foundList.append(toAppend);
+				// }
+				var foundList = $('#headerTextSub');
+				var totalObjects = 0;
 				for (var url in data.labels) {
-					var toAppend = $('<li />');
-					toAppend.text(data.labels[url].name + " (" + Math.round(parseFloat(data.labels[url].confidence)*100) + "% confidence)");
-					foundList.append(toAppend);
+					// Get name
+					var name = data.labels[url].name
+					// Capitalise first latter
+					name = name.charAt(0).toUpperCase() + name.slice(1);
+					// Get confidence
+					var conf = Math.round(parseFloat(data.labels[url].confidence)*100);
+					// Put together
+					var toAppend = name + ": " + conf + "% confident; "
+					// Append to list
+					foundList.text(foundList.text() + toAppend);
+					// Increment totalObjects
+					totalObjects++;
 				}
+				// Remove the tailing "; " and replace with ".".
+				foundList.text(foundList.text().slice(0, -2) + ".");
+				// Set the main heading text
+				if (totalObjects == 1)	word = " object";
+				else					word = " objects";
+				$('#headerTextMain').text("We've found " + totalObjects  + word + " in the background.  Click on the objects to send them forwards and back.")
+				// Show the appropriate header
+				$('#headerOption1').hide();
+				$('#headerOption2').show();
 			}
 		},
 		dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
@@ -282,6 +260,7 @@ function downloadButtonFn() {
 					// Draw the result image to the canvas
 					ctx.drawImage(tmpImg, 0, 0, tmpImg.width, tmpImg.height);
 					// Add the meme-like text
+					$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "none"});
 					html2canvas(document.getElementById('overlayTextContainer'), {backgroundColor: null}).then(function(textCanvas) {
 						ctx.globalCompositeOperation = "source-over";
 						ctx.drawImage(textCanvas, 0, 0);
@@ -320,7 +299,7 @@ function editButtonFn() {
 	Operation:
 		Simply toggles the visibility of the colour correction sliders.
 	*/
-	var toToggle = $('#editCommands');
+	var toToggle = $('#editCommands, #triangle');
 	if (toToggle.css("visibility") == "hidden") {
 		toToggle.css("visibility", "visible");
 	}
@@ -341,11 +320,15 @@ function changeImagesFn() {
 	// Unhide screen 1; hide screen 2
 	$('#content-screen1').css("display", "flex");
 	$('#content-screen2').hide();
-	// Reset title location to original
-	$('.vCenterPane').css({"justify-content": 'center'});
+	// Reset the title bar
+	$('#headerOption2').hide();
+	$('#headerOption1').css("display", "flex");
 	// Reset screen 2 to original
 	$('.resultBackground, #resultForeground, #overlayTextContainer').remove();
 	$('#foundList').empty();
+	overlay_pos = [0, 0];
+	overlay_scale = [0.9, 0.1];
+	$('#headerTextSub').text("");
 	// Reset some state
 	fg_loaded = false;
 	bg_loaded = false;

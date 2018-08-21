@@ -6,7 +6,7 @@ Author : Patrick Taylor
 *******************************************************************************/
 
 /*
-This file tracks the state of the first screen.  It sets/disables animations, enables/disables the gumpify button,
+This file tracks the state of the first screen.  Enables/disables the gumpify button,
 shows the selection pane or selected image, all with respect to what the user has done.
 */
 
@@ -14,6 +14,8 @@ shows the selection pane or selected image, all with respect to what the user ha
 /*
 Some global tracking state
 */
+var tmpBGimg = new Image();
+var tmpFGimg = new Image();
 var fg_selected = false;
 var bg_selected = false;
 var fg_segmented = false;
@@ -36,23 +38,27 @@ function applyState(fg_changed, bg_changed, data) {
 		Deals with the following states:
 			- fg_selected
 			- bg_selected
-			- fg_selected && !bg_selected
 			- bg_selected && fg_selected && fg_segmented && bg_segmented
 	*/
 
 	if (fg_selected) {
 	// If the foreground is selected: stop animations, and display selected image
-		// Stop animations
-		$('.borderLineL.borderLineLeft, .borderLineR.borderLineLeft, .borderLineT.borderLineLeft, .borderLineB.borderLineLeft').stop(true); // stopall=true
-		resetAnimationState(".borderLineLeft");
 		// Set the image to display if necessary
 		if (fg_changed) {
 			$('#option1Left').css({"display": "none"});
 			$('#option2Left').css({"display": "flex"});
-			$('#opt2ImageLeft').attr("src", data);
+			// Set internal state
 			fg_url = data;
 			console.log(fg_url);
+			// Load the image
+			tmpFGimg.onload = function() {
+				$('#opt2ImageLeft').css("background-image", "url(\""+tmpFGimg.src+"\")");	
+				checkSegmentation('fg_url');
+			};
+			tmpFGimg.src = data;
 		}
+		// Set colour of box
+		$('#uploadForeground').css("background-color", "rgb(237, 237, 237)");
 	}
 	else {
 	// If the foreground isn't selected: reset the form, show the selection pane, set animations going
@@ -61,9 +67,8 @@ function applyState(fg_changed, bg_changed, data) {
 		// Revert layout
 		$('#option1Left').css({"display": "block"});
 		$('#option2Left').css({"display": "none"});
-		// Start animations
-		sideSwoosh('.borderLineL', '.borderLineLeft');
-		topBottomSwoosh('.borderLineB', '.borderLineLeft');
+		// Set colour of box
+		$('#uploadForeground').css("background-color", "rgb(216, 162, 255)");
 	}
 
 	if (bg_selected) {
@@ -72,9 +77,17 @@ function applyState(fg_changed, bg_changed, data) {
 		if (bg_changed) {
 			$('#option1Right').css({"display": "none"});
 			$('#option2Right').css({"display": "flex"});
-			$('#opt2ImageRight').attr("src", data);
+			// Set internal state
 			bg_url = data;
+			// Load the background image
+			tmpBGimg.onload = function() {
+				$('#opt2ImageRight').css("background-image", "url(\""+tmpBGimg.src+"\")");	
+				checkSegmentation('bg_url');
+			};
+			tmpBGimg.src = data;
 		}
+		// Set colour of box
+		$('#uploadBackground').css("background-color", "rgb(237, 237, 237)");
 	}
 	else {
 	// If the background image isn't selected: reset the form, show the selection pane, set animations going
@@ -83,51 +96,30 @@ function applyState(fg_changed, bg_changed, data) {
 		// Revert layout
 		$('#option1Right').css({"display": "block"});
 		$('#option2Right').css({"display": "none"});
-		// Start animations
-		sideSwoosh('.borderLineL', '.borderLineRight');
-		topBottomSwoosh('.borderLineB', '.borderLineRight');
-	}
-
-	// Deal with fg selected bg not selected
-	if (fg_selected && !bg_selected) {
-	/* If the foreground is selected, but the background isn't: set background animations going (we don't set them
-	going when checking for just background because we don't want both the foreground and background animations going
-	at once) */
-		// Start animations
-		sideSwoosh('.borderLineL', '.borderLineRight');
-		topBottomSwoosh('.borderLineB', '.borderLineRight');
-	}
-	else {
-	// If the foreground isn't selected or the background is selected: stop the background animations
-		// Stop animations
-		$('.borderLineL.borderLineRight, .borderLineR.borderLineRight, .borderLineT.borderLineRight, .borderLineB.borderLineRight').stop(true); // stopall=true
-		resetAnimationState(".borderLineRight");
+		// Set colour of box
+		$('#uploadBackground').css("background-color", "rgb(216, 162, 255)");
 	}
 
 	// Check if we can enable the Gumpify button - only when both images are both selected and segmented
 	if (bg_selected && fg_selected && fg_segmented && bg_segmented) {
 		// Enable the Gumpify button
-		$('#gumpifyButton').prop('disabled', false);
-		// Style the text and circles to an appropriate colour
-		$('#gumpifyPane').css({color: 'rgb(141,135,255)'});
-		$('.cornerCircleStep3').css({"background-color": 'rgb(141,135,255)'})
+		$('#gumpifyButton').click(gumpifyFn);
+		// Style the button to an appropriate colour
+		$('#gumpifyButton').css({"background-color": 'rgb(216,162,255)'});
+		// Set cursor style
+		$('#gumpifyButton').css("cursor", "pointer");
 		// Set text
-		$('#Step3').text("Step 3...");
-		// Set the gumpify animations going
-		sideSwoosh('.borderLineL', '.borderLineStep3');
-		topBottomSwoosh	('.borderLineB', '.borderLineStep3');
+		$('#gumpifyButtonText').text("Gumpify!");
 	}
 	else {
 		// Disable the Gumpify button
-		$('#gumpifyButton').prop('disabled', false); // TODO: replace false with true here to ensure button is disable when no images uploaded
-		// Style the text and circles to grey
-		$('#gumpifyPane').css({color: 'rgb(135,135,135)'});
-		$('.cornerCircleStep3').css({"background-color": 'rgb(135,135,135)'});
+		$('#gumpifyButton').off();
+		// Style the button to grey
+		$('#gumpifyButton').css({"background-color": 'rgb(237,237,237)'});
+		// Set cursor style
+		$('#gumpifyButton').css("cursor", "not-allowed");
 		// Set text
-		if (fg_selected && bg_selected) $('#Step3').text("Step 3... (just a sec, we're processing your images)");
-		else 							$('#Step3').text("Step 3 ...");
-		// Stop the gumpify animations	
-		$('.borderLineL.borderLineStep3, .borderLineR.borderLineStep3, .borderLineT.borderLineStep3, .borderLineB.borderLineStep3').stop(true); // stopall=true
-		resetAnimationState(".borderLineStep3");
+		if (fg_selected && bg_selected) $('#gumpifyButtonText').text("Just a min, we're processing your images");
+		else 							$('#gumpifyButtonText').text("Upload images to Gumpify");
 	}
 }

@@ -11,6 +11,34 @@ certain dimensions; background images (and associated positioning); text align, 
 opacity; cursor style.
 */
 
+/* === CSS for the header === */
+#headerOption2 {
+	background-color: rgb(216, 162, 255);
+}
+
+#headerClose {
+	background-image: url("SharedResources/Gumpifier_Image_Assets/Exit icon.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+
+	cursor: pointer;
+}
+
+#headerTextMain {
+	margin-bottom: 2%;
+}
+
+#headerTextMain, #headerTextSub {
+	text-align: left;
+	padding-left: 2%;
+}
+
+#headerTextSub {
+	font-size: 90%;
+	overflow: auto;
+}
+
 /* Original opacity for all masks was 0.7 */
 .mask {
 	opacity: 0.8;
@@ -78,6 +106,64 @@ pointer-events capturing remains correct */
 
 #overlayTextDragIconTL:hover, #overlayTextDragIconBR:hover {
 	cursor: move;
+}
+
+/* === CSS for the commands bar and buttons === */
+#canvasCommandsOuter {
+	margin: 0.5vw 0;
+}
+
+.commandButton {
+	background-color: rgb(237, 237, 237);
+	border-radius: 1vw;
+	margin: 0 0.5vw;
+	cursor: pointer;
+	font-family: "Lato", sans-serif;
+}
+
+#commandButtonRedo {
+	margin-right: 0;
+}
+
+.commandIcon {
+	width: 3vw;
+
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#finalCommands {
+	padding-bottom: 2vw;
+	padding-top: 2vw;
+}
+
+.finalButton {
+	background-color: rgb(237, 237, 237);
+	color: black;
+	border: none;
+	padding: 15px 40px;
+	border-radius: 20px;
+	cursor: pointer;
+	margin: 0 1vw;
+	font-family: "Lato", sans-serif;
+}
+
+#commandIconEdit {background-image: url("SharedResources/Gumpifier_Image_Assets/Edit icon.png");}
+#commandIconUndo {background-image: url("SharedResources/Gumpifier_Image_Assets/Undo icon.png");}
+#commandIconRedo {background-image: url("SharedResources/Gumpifier_Image_Assets/Redo icon.png");}
+
+/* === CSS for the colour correction box === */
+#editCommands {
+	background-color: rgb(237, 237, 237);
+	padding: 20%;
+	border-radius: 20px;
+	font-family: "Lato", sans-serif;
+	cursor: auto;
+}
+
+#triangle {
+	cursor: auto;
 }
 
 /* === CSS for the instructions text === */

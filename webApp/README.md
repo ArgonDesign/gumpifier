@@ -34,6 +34,7 @@ Layout and style are separate for both screen 1 and screen 2.
 - `gumpifierStyle.css`
 - `screen2Layout.css`
 - `screen2Style.css`
+- `rangeStyle.css`
 
 ### js
 

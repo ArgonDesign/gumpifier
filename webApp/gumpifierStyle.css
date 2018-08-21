@@ -18,130 +18,109 @@ h1 {
 }
 
 header {
-	border-bottom: 1px solid; /* Width, style, color */
+	background-color: rgb(198, 198, 198);
+	font-family: 'Lato', sans-serif;
+	font-size: 130%;
 }
 
-/* === Initial overlay === */
-#initOverlay {
-	background-color: white;
-}
-
-.initLogo {
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
-}
-
-#initArgonLogo {background-image: url("SharedResources/argonLogo.jpg");}
-#initDovetailedLogo {background-image: url("SharedResources/dovetailedLogo.jpg");}
-#initGumpifierLogo {background-image: url("SharedResources/gumpifierLogo.png");}
-
-#initArgonLogo {opacity: 1.0;}
-#initDovetailedLogo	{opacity: 0.0;}
-#initGumpifierLogo	{opacity: 0.0;}
-
-/* === Circles at corners of main boxes and overlapping content pane === */
-.cornerCircle {
-	/* Size */
-	width: 2vw;
-	height: 2vw;
-	border-radius: 1vw;
-}
-
-.overlapPane {
-	margin: 1vw;
-}
-
-.cornerCircleLeft {
-	background-color: rgb(165,75,255);
-}
-
-.cornerCircleRight {
-	background-color: rgb(130,91,232);
-}
-
-.cornerCircleStep3 {
-	/*background-color: rgb(141,135,255);*/
-	background-color: rgb(135,135,135);
-}
-
-/* === Border lines at edges of main boxes === */
-.borderLineB, .borderLineT {height: 1px;}
-.borderLineL, .borderLineR {width: 1px;}
-
-.borderLineLeft {
-	background-color: rgb(165,75,255);
-}
-
-.borderLineRight {
-	background-color: rgb(130,91,232);
-}
-
-.borderLineStep3 {
-		background-color: rgb(141,135,255);	
-}
-
- /* === Example images === */
- .grid-item {
- 	background-size: cover;
- 	background-repeat: no-repeat;
- 	background-position: center;
- }
-
- .grid-item:hover {
- 	cursor: pointer;
- }
-
-/* Actual background URLs set in Javascript - this is just an example
-.item1.left {background-image: url("SharedResources/ExampleImages/FG_Poirot.jpg");} */
-
-/* === Upload buttons === */
-.uploadButton {
+#headerLogo {
+	background-image: url("SharedResources/Gumpifier Logo Cropped.png");
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-image: url("SharedResources/Upload.png");
-	display: block;
-	width: 60%;
-	height: 2em;
-	background-color: grey;
+	height: 7vh;
+	width: 100%;
+	margin-bottom: 1vh;
 }
-.uploadButton:hover {
+
+.uploadSquareMargin {
+	margin: 0 7%;
+}
+
+.uploadSquare {
+	width: 20vw;
+	height: 20vw;
+	border-radius: 5%;
+	background-color: rgb(237, 237, 237);
+}
+
+.uploadIcon {
+	background-image: url("SharedResources/Gumpifier_Image_Assets/Upload icon.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 100%;
+	height: 70%;
+}
+
+#backgroundForm, #foregroundForm {
+	height: 30%;
+}
+
+#foregroundUploadButton, #backgroundUploadButton {
+	font-family: 'Lato', sans-serif;
+}
+
+.uploadSquare *:hover {
 	cursor: pointer;
 }
 
-.overlapPane {
-	background-color: rgb(230,230,230);
+.uploadButton {
+	background-color: white;
+	/* Margin: top/bottom left/right */
+	margin: 7% 10%;
+	border-radius: 20px;
 }
 
-/* === Style the instruction text: font, size, colour, alignment, etc*/
-.vCenterPane {
-	text-align: center;
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
-	font-size: 130%;
+#opt2ImageRight, #opt2ImageLeft {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
-#vCenterPaneLeft {
-	color: rgb(165,75,255);	
+#opt2OverlayRight, #opt2OverlayLeft {
+	visibility: hidden;
+	background-color: rgba(255, 255, 255, 0.5);
 }
 
-#vCenterPaneRight {
-	color: rgb(130,91,232);
+#option2Right:hover>#opt2OverlayRight, #option2Left:hover>#opt2OverlayLeft {
+	visibility: visible;
 }
 
-#gumpifyPane {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
-	font-size: 130%;
-	color: rgb(135,135,135);
+.opt2OverlayText {
+	background-color: white;
+	height: 20%;
+	margin: 0 10%;
+	border-radius: 20px;
+	font-family: 'Lato', sans-serif;
+}
+
+#gumpifyButton {
+	height: 5vh;
+	width: calc(20vw + 20vw + 14%);
+	background-color: rgb(216, 162, 255);
+	margin-top: 7%;
+	border-radius: 20px;
+}
+
+#gumpifyButtonIcon {
+	width: 3em;
+	height: 3em;
+	background-image: url("SharedResources/Gumpifier_Image_Assets/noun_Ping Pong Paddle Racket_970290_flip.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#gumpifyButtonText {
+	font-family: 'Playfair Display', serif;
 }
 
 /* === Footer delimiter, padding, font, colour === */
-.footer {
-	border-top: 1px solid; /* Width, style, color */
+#footer {
 	padding-top: 0.5%;
 	padding-bottom: 0.5%;
+	background-color: rgb(198, 198, 198);
 }
 
 .footerElement {
@@ -152,9 +131,19 @@ header {
 }
 
 #argonLogo {
-	color: rgb(165,75,255);
+	background-image: url("SharedResources/argonLogo.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 1em;
+	height: 1em;
 }
 
 #dovetailedLogo {
-	color: rgb(130,91,232);
+	background-image: url("SharedResources/Dovetailed Logo Small.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 1em;
+	height: 1em;
 }

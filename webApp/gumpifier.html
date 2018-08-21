@@ -13,11 +13,14 @@ Author : Patrick Taylor
 	<!-- Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 	<!-- Stylesheets -->
 	<link rel="stylesheet" href="gumpifierStyle.css">
 	<link rel="stylesheet" href="gumpifierLayout.css">
 	<link rel="stylesheet" href="screen2Layout.css">
 	<link rel="stylesheet" href="screen2Style.css">
+	<link rel="stylesheet" href="rangeStyle.css">
 	<link href="jquery-ui-1.12.1.custom/jquery-ui.css" rel="stylesheet">
 	<!-- External Libraries -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -48,225 +51,193 @@ Author : Patrick Taylor
 		</div>
 	</div> -->
 
-	<header><h1>The Gumpifier</h1></header>
+	<header>
+		<div id="headerOption1">
+			<div id="headerLogo"></div>
+			Put yourself into any photo with the power of AI!
+		</div>
+		<div id="headerOption2"  style="display: none;">
+			<div id="headerLeft">
+				<div id="headerTextMain">
+					We've found 3 objects in the background.  Click on the objects to send them forwards and back.
+				</div>
+				<div id="headerTextSub">
+				</div>
+			</div>
+			<div id="headerRight">
+				<div id="headerClose">
+				</div>
+			</div>
+		</div>
+	</header>
 
 	<div id="content-screen1">
-		<div id="imageUploads">
-			<div class="col-mobile circlePane outerContent" id="circlePaneLeft">
-				<div class="cornerCircle cornerCircleTL cornerCircleLeft"></div>
-				<div class="cornerCircle cornerCircleTR cornerCircleLeft"></div>
-				<div class="cornerCircle cornerCircleBL cornerCircleLeft"></div>
-				<div class="cornerCircle cornerCircleBR cornerCircleLeft"></div>
+		<div id="screen1-row1">
+			<div class="uploadSquareMargin">
+				<div id="uploadBackground" class="uploadSquare">
+					<div id="option1Right">
+						<div class="uploadIcon" id="backgroundUploadIcon"></div>
+						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="backgroundForm">
+							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
+							<input type="file" name="bgimage" accept="image/*" id="backgroundUploadInput">
+							<label for="backgroundUploadInput" class="uploadButton" id="backgroundUploadButton">Upload background</label>
+						</form>
+					</div>
 
-				<div class="overlapPane">
-					<div class="borderLine borderLineB borderLineLeft"></div>
-					<div class="borderLine borderLineL borderLineLeft"></div>
-					<div class="borderLine borderLineR borderLineLeft"></div>
-					<div class="borderLine borderLineT borderLineLeft"></div>
-
-					<div class="vCenterPane" id="vCenterPaneLeft">
-
-						<div id="option1Left">
-							Step 1: A picture of a person<br>
-							Either choose an example...<br>
-							<div class="grid-container">
-								<!-- DO NOT change the order of the classes in the following divs, or the value of 'item{1,2,3,4}' without ammending the relevent JS -->
-								<div class="grid-item item1 left"></div>
-								<div class="grid-item item2 left"></div>
-								<div class="grid-item item3 left"></div>
-								<div class="grid-item item4 left"></div>
-							</div>
-							<br>... or upload your own
-							<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
-								<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
-								<input type="file" name="fgimage" accept="image/*" id="foregroundUploadButton">
-								<label for="foregroundUploadButton" class="uploadButton"></label>
-							</form>
-						</div>
-
-						<div id="option2Left">
-							<div id="opt2vLeft">
-								Currently selected picture<br><br>
-								<img id="opt2ImageLeft""><br>
-								<input type="button" value="Choose again" id="chooseAgainFG">
+					<div id="option2Right">
+						<div id="opt2ImageRight"></div>
+						<div id="opt2OverlayRight">
+							<div class="opt2OverlayText">
+								Upload background
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
-			<div id="bgUploadPane" class="circlePane">
-				<div class="cornerCircle cornerCircleTL cornerCircleRight"></div>
-				<div class="cornerCircle cornerCircleTR cornerCircleRight"></div>
-				<div class="cornerCircle cornerCircleBL cornerCircleRight"></div>
-				<div class="cornerCircle cornerCircleBR cornerCircleRight"></div>
+			<div class="uploadSquareMargin">
+				<div id="uploadForeground" class="uploadSquare">
+					<div id="option1Left">
+						<div class="uploadIcon" id="foregroundUploadIcon"></div>
+						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
+							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
+							<input type="file" name="fgimage" accept="image/*" id="foregroundUploadInput">
+							<label for="foregroundUploadInput" class="uploadButton" id="foregroundUploadButton">Upload foreground</label>
+						</form>
+					</div>
 
-				<div class="overlapPane">
-					<div class="borderLine borderLineB borderLineRight"></div>
-					<div class="borderLine borderLineL borderLineRight"></div>
-					<div class="borderLine borderLineR borderLineRight"></div>
-					<div class="borderLine borderLineT borderLineRight"></div>
-
-					<div class="vCenterPane" id="vCenterPaneRight">
-
-						<div id="option1Right">
-							Step 2: A background picture<br>
-							Either choose an example ...<br>
-							<div class="grid-container">
-								<!-- DO NOT change the order of the classes in the following divs, or the value of 'item{1,2,3,4}' without ammending the relevent JS -->
-								<div class="grid-item item1 right"></div>
-								<div class="grid-item item2 right"></div>
-								<div class="grid-item item3 right"></div>
-								<div class="grid-item item4 right"></div>
-							</div>
-							<br>... or upload your own
-							<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="backgroundForm">
-								<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
-								<input type="file" name="bgimage" accept="image/*" id="backgroundUploadButton">
-								<label for="backgroundUploadButton" class="uploadButton"></label>
-							</form>
-						</div>
-
-						<div id="option2Right">
-							<div id="opt2vRight">
-								Currently selected picture<br><br>
-								<img id="opt2ImageRight"><br>
-								<input type="button" value="Choose again" id="chooseAgainBG">
+					<div id="option2Left">
+						<div id="opt2ImageLeft"></div>
+						<div id="opt2OverlayLeft">
+							<div class="opt2OverlayText">
+								Upload foreground
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="gumpifyArea">
-			<div id="gumpifyPane" class="circlePane">
-				<div class="cornerCircle cornerCircleTL cornerCircleStep3"></div>
-				<div class="cornerCircle cornerCircleTR cornerCircleStep3"></div>
-				<div class="cornerCircle cornerCircleBL cornerCircleStep3"></div>
-				<div class="cornerCircle cornerCircleBR cornerCircleStep3"></div>
-
-				<div class="overlapPane">
-					<div class="borderLine borderLineB borderLineStep3"></div>
-					<div class="borderLine borderLineL borderLineStep3"></div>
-					<div class="borderLine borderLineR borderLineStep3"></div>
-					<div class="borderLine borderLineT borderLineStep3"></div>
-
-					<div class="vCenterPane">
-						<div id="Step3">
-							Step 3...
-						</div>
-						<input type="Button" disabled id="gumpifyButton" value="Gumpify">
-					</div>
+		<div id="screen1-row2">
+			<div id="gumpifyButton">
+				<div id="gumpifyButtonContent">
+					<div id="gumpifyButtonIcon"></div>
+					<div id="gumpifyButtonText">Gumpify!</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div id="content-screen2">
-		<div id="canvasCommands">
-			<div id="canvasCommandsLeft">
-				<input type="button" value="Edit" id="editButton">
-				<div id="editCommands">
-					Brightness <input type="range" min="-100" max="100" step="1" value="0" id="brightnessSlider">
-					Temperature <input type="range" min="0" max="40000" step="1" value="6000" id="whiteBalanceSlider">
+		<div id="canvasCommandsOuter">
+			<div id="canvasCommands">
+				<!-- <div id="colourControlsContainer"> -->
+					<div class="commandButton" id="commandButtonEdit">
+						<div class="commandIcon" id="commandIconEdit"></div>
+						<div class="commandText" id="commandTextEdit">Tweak colour</div>
+						<div id="triangle"></div>
+						<div id="editCommands">
+							<div class="editCommand">
+								<span class="editCommandSpan">Temperature&nbsp;</span><input type="range" min="0" max="40000" step="1" value="6000" id="whiteBalanceSlider">
+							</div>
+							<div class="editCommand">
+								<span class="editCommandSpan">Brightness&nbsp;</span><input type="range" min="-100" max="100" step="1" value="0" id="brightnessSlider">
+							</div>
+						</div>
+					</div>
+					
+				<!-- </div> -->
+				<div class="commandButton" id="commandButtonUndo">
+					<div class="commandIcon" id="commandIconUndo"></div>
+					<div class="commandText" id="commandTextUndo">Undo</div>
 				</div>
-			</div>
-			<div id="canvasCommandsRight">
-				<input type="button" value="Undo" id="undoButton">
-				<input type="button" value="Redo" id="redoButton">
-			</div>
-		</div>
-		<div class="col-mobile circlePane" id="circlePaneLeft">
-			<div class="cornerCircle cornerCircleTL cornerCircleLeft"></div>
-			<div class="cornerCircle cornerCircleTR cornerCircleLeft"></div>
-			<div class="cornerCircle cornerCircleBL cornerCircleLeft"></div>
-			<div class="cornerCircle cornerCircleBR cornerCircleLeft"></div>
-
-			<div class="overlapPane">
-				<div class="vCenterPane" id="vCenterPaneLeft">
-					<div id="vCenterPaneLeftTitle">
-						Your Gumpified Image<br>
-					</div>
-					<div id="resultPane">
-						<div id="containerForeground"></div>
-
-						<!-- ==================================================================================
-						Images of the following form will be inserted here using JS. 
-						Note the constrution of the foreground divs: an outer div is draggable and an inner div
-						is resizable
-						=================================================================================== -->
-
-						<!-- 
-						<div class="resultBackground behind">
-							<div class="resultBackgroundInner">
-								<img class="backgroundImage" id="first">
-							</div>
-						</div>
-						-->
-						<!-- 
-						<div class="resultBackground behind">
-							<div class="resultBackgroundInner">
-								<img class="backgroundImage">
-							</div>
-							<div class="resultBackgroundInner maskDiv">
-								<img class="backgroundImage mask">
-							</div>
-						</div>
-						-->
-						<!--
-						<div id="resultForeground" class="result">
-							<div id="resultForegroundInner">
-								<div id="resultForegroundDragDiv">
-									<div class="ui-wrapper">
-										<canvas id="foregroundImage">
-									</div>
-								</div>
-							</div>
-							<div id="resultForegroundWidgets">
-								...
-							</div>
-						</div>
-						-->
-						<!--
-						<div id="overlayTextContainer">
-							<div id="overlayTextDiv">
-								<div id="overlayTextDragIconTL"></div>
-								<div id="overlayTextDragIconBR"></div>
-								<div class="ui-wrapper">
-									<textarea id="overlayText"></textarea>
-								</div>
-							</div>
-						</div>
-						-->
-					</div>
-					<div id="instructions">
-						<div id="instructionsText">
-							I've found these objects in the background:<br>
-							<ul id="foundList"><!-- Populated in JS --></ul>
-							In the editor you can:
-							<ul>
-								<li>Move the inserted picture around, and make is bigger and smaller</li>
-								<li>Click on a background image to toggle whether it is in front or behind the inserted image</li>
-								<li>Change the brightness and temperature of the inserted image to make it blend in better</li>
-								<li>Change the meme text</li>
-								<li>Download the final image</li>
-							</ul>
-							<input type="button" value="Got it!" id="gotItButton">
-						</div>
-					</div>
+				<div class="commandButton" id="commandButtonRedo">
+					<div class="commandIcon" id="commandIconRedo"></div>
+					<div class="commandText" id="commandTextRedo">Redo</div>
 				</div>
 			</div>
 		</div>
+		
+		<div id="resultPaneOuter">
+			<div id="resultPane">
+				<div id="containerForeground"></div>
+
+				<!-- ==================================================================================
+				Images of the following form will be inserted here using JS. 
+				Note the constrution of the foreground divs: an outer div is draggable and an inner div
+				is resizable
+				=================================================================================== -->
+
+				<!-- 
+				<div class="resultBackground behind">
+					<div class="resultBackgroundInner">
+						<img class="backgroundImage" id="first">
+					</div>
+				</div>
+				-->
+				<!-- 
+				<div class="resultBackground behind">
+					<div class="resultBackgroundInner">
+						<img class="backgroundImage">
+					</div>
+					<div class="resultBackgroundInner maskDiv">
+						<img class="backgroundImage mask">
+					</div>
+				</div>
+				-->
+				<!--
+				<div id="resultForeground" class="result">
+					<div id="resultForegroundInner">
+						<div id="resultForegroundDragDiv">
+							<div class="ui-wrapper">
+								<canvas id="foregroundImage">
+							</div>
+						</div>
+					</div>
+					<div id="resultForegroundWidgets">
+						...
+					</div>
+				</div>
+				-->
+				<!--
+				<div id="overlayTextContainer">
+					<div id="overlayTextDiv">
+						<div id="overlayTextDragIconTL"></div>
+						<div id="overlayTextDragIconBR"></div>
+						<div class="ui-wrapper">
+							<textarea id="overlayText"></textarea>
+						</div>
+					</div>
+				</div>
+				-->
+			</div>
+			<div id="instructions">
+				<div id="instructionsText">
+					I've found these objects in the background:<br>
+					<ul id="foundList"><!-- Populated in JS --></ul>
+					In the editor you can:
+					<ul>
+						<li>Move the inserted picture around, and make is bigger and smaller</li>
+						<li>Click on a background image to toggle whether it is in front or behind the inserted image</li>
+						<li>Change the brightness and temperature of the inserted image to make it blend in better</li>
+						<li>Change the meme text</li>
+						<li>Download the final image</li>
+					</ul>
+					<input type="button" value="Got it!" id="gotItButton">
+				</div>
+			</div>
+		</div>
+
 		<div id="finalCommands">
-			<input type="button" value="Download" id="downloadButton">
-			<input type="button" value="Change Images" id="changeImagesButton">
+			<input type="button" value="Download" id="downloadButton" class="finalButton">
+			<input type="button" value="Begin New" id="changeImagesButton" class="finalButton">
 		</div>
+
 	</div>
 
-	<div class=footer>
-		<div class="col-6 footerElement" id="argonLogo">Argon Design</div>
-		<div class="col-6 footerElement" id="dovetailedLogo">Dovetailed</div>
+	<div id=footer>
+		<div class="footerText">A collaboration between&nbsp;</div>
+		<a href="http://www.argondesign.com/"><div id="argonLogo"></div></a>
+		<div class="footerText">&nbsp;and&nbsp;</div>
+		<a href="https://www.dovetailed.co/"><div id="dovetailedLogo"></div></a>
 	</div>
 
 </body>
