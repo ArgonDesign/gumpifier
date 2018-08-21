@@ -40,14 +40,16 @@ class TF_Socket():
 		# This method avoids race conditions
 		if not os.path.exists('portConfig.txt'):
 			port = 7999
-			try:
-				self.serversocket.bind(('localhost', port))
-			except socket.error as e:
-				if e.errno == errno.EADDRINUSE:
-					port += 1
-				else:
-					# something else raised the socket.error exception
-					raise
+			while True:
+				try:
+					self.serversocket.bind(('localhost', port))
+					break
+				except socket.error as e:
+					if e.errno == errno.EADDRINUSE:
+						port += 1
+					else:
+						# something else raised the socket.error exception
+						raise
 			with open("portConfig.txt", "w") as f:
 				f.write(str(port))
 			print("First run - %s is the chosen port. Change in portConfig.txt" % port)
