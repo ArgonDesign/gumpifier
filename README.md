@@ -29,11 +29,11 @@ If the port TF_server.py attempts to use is in use, you can change it in `portCo
 
 ### Set the http server going (built on Ubuntu)
 
-See information in repo/uWSGI/README.md for help on building uWSGI.
+See information in repo/uWSGI/README.md for help on building uWSGI for a different system.
 
 1. In a different console window: `cd` into the repo and activate the venv
 2. `cd uWSGI`
-3. `./uwsgi --http --ini config.ini`
+3. `./uwsgi --http --ini config.ini`.  You can configure the port from which the website is served be changing 'config.ini'.
 
 ## Files and directory listing
 
