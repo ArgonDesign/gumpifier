@@ -329,10 +329,10 @@ function windowScale(possibleEvent) {
 
 	// Size the instruction text
 	var resultForeground = $('#resultForeground');
-	// $('#instructions').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
-	// 					left: resultForeground.position().left,
-	// 					width: resultForeground.width(),
-	// 					height: resultForeground.height()});
+	$('#instructions').css({top: resultForeground.position().top + $('#vCenterPaneLeftTitle').height(),
+						left: resultForeground.position().left,
+						width: resultForeground.width(),
+						height: resultForeground.height()});
 
 	// Size the hover detector div
 	$('#hoverDetector').css({top: resultForeground.position().top,
@@ -428,7 +428,7 @@ function initWhenImagesLoaded() {
 	overlay_pos[1] = 20 / $('#first').height();
 
 	// Show the overlay text
-	// $('#instructions').css("display", "flex");
+	$('#instructions').css("display", "flex");
 }
 
 /*==============================

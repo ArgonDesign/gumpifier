@@ -157,14 +157,10 @@ function gumpifyFn() {
 				$('#whiteBalanceSlider').val(data.colour_correction.white_balance);
 				// Load images and construct screen 2
 				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs, data.quotation);
+
+				// === Set and display instructions text
 				// Set instructions list text
-				// var foundList = $('#foundList');
-				// for (var url in data.labels) {
-				// 	var toAppend = $('<li />');
-				// 	toAppend.text(data.labels[url].name + " (" + Math.round(parseFloat(data.labels[url].confidence)*100) + "% confidence)");
-				// 	foundList.append(toAppend);
-				// }
-				var foundList = $('#headerTextSub');
+				var foundList = $('#foundList');
 				var totalObjects = 0;
 				for (var url in data.labels) {
 					// Get name
@@ -174,21 +170,43 @@ function gumpifyFn() {
 					// Get confidence
 					var conf = Math.round(parseFloat(data.labels[url].confidence)*100);
 					// Put together
-					var toAppend = name + ": " + conf + "% confident; "
+					var appendText = name + ": " + conf + "% confident; "
 					// Append to list
-					foundList.text(foundList.text() + toAppend);
+					var toAppend = $('<li />');
+					toAppend.text(appendText);
+					foundList.append(toAppend);
 					// Increment totalObjects
 					totalObjects++;
 				}
+				if (totalObjects == 1)	$('#singularOrPlural').text("object");
+				else					$('#singularOrPlural').text("objects");
+				$('#numberOfObjects').text(totalObjects);
+
+				// === Set and display purple header instructions text
+				// var foundList = $('#headerTextSub');
+				// for (var url in data.labels) {
+				// 	// Get name
+				// 	var name = data.labels[url].name
+				// 	// Capitalise first latter
+				// 	name = name.charAt(0).toUpperCase() + name.slice(1);
+				// 	// Get confidence
+				// 	var conf = Math.round(parseFloat(data.labels[url].confidence)*100);
+				// 	// Put together
+				// 	var toAppend = name + ": " + conf + "% confident; "
+				// 	// Append to list
+				// 	foundList.text(foundList.text() + toAppend);
+				// 	// Increment totalObjects
+				// 	totalObjects++;
+				// }
 				// Remove the tailing "; " and replace with ".".
-				foundList.text(foundList.text().slice(0, -2) + ".");
+				// foundList.text(foundList.text().slice(0, -2) + ".");
 				// Set the main heading text
-				if (totalObjects == 1)	word = " object";
-				else					word = " objects";
-				$('#headerTextMain').text("We've found " + totalObjects  + word + " in the background.  Click on the objects to send them forwards and back.")
-				// Show the appropriate header
-				$('#headerOption1').hide();
-				$('#headerOption2').show();
+				// if (totalObjects == 1)	word = " object";
+				// else					word = " objects";
+				// $('#headerTextMain').text("We've found " + totalObjects  + word + " in the background.  Click on the objects to send them forwards and back.")
+				// // Show the appropriate header
+				// $('#headerOption1').hide();
+				// $('#headerOption2').show();
 			}
 		},
 		dataType: "json", // Could omit this because jquery correctly guesses JSON anyway

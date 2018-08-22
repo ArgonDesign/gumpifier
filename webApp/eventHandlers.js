@@ -53,7 +53,7 @@ $(document).ready(function() {
 
 	/* === Screen 2 === */
 	// 'Got it!' button to make the instruction text disappear
-	// $('#gotItButton').click(function() {$('#instructions').hide()});
+	$('#gotItButton').click(function() {$('#instructions').hide()});
 
 	// The hover detector show and hides the UI elements, but must pass clicks through
 	// $('#hoverDetector').hover(function(event) {showMasks; clickThroughHover(event);}, function(event) {hideMasks; clickThroughHover(event);});

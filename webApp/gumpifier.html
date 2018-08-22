@@ -73,7 +73,7 @@ Author : Patrick Taylor
 			<div id="headerLogo"></div>
 			Put yourself into any photo with the power of AI!
 		</div>
-		<div id="headerOption2"  style="display: none;">
+		<!-- <div id="headerOption2"  style="display: none;">
 			<div id="headerLeft" class="flex-col-center">
 				<div id="headerTextMain">
 					We've found 3 objects in the background.  Click on the objects to send them forwards and back.
@@ -85,7 +85,7 @@ Author : Patrick Taylor
 				<div id="headerClose">
 				</div>
 			</div>
-		</div>
+		</div> -->
 	</header>
 
 	<div id="content-screen1" class="flex-col-center">
@@ -228,7 +228,7 @@ Author : Patrick Taylor
 			</div>
 			<div id="instructions" class="flex-col-center">
 				<div id="instructionsText">
-					I've found these objects in the background:<br>
+					I've found <span id="numberOfObjects"></span> <span id="singularOrPlural"></span> in the background:<br>
 					<ul id="foundList"><!-- Populated in JS --></ul>
 					In the editor you can:
 					<ul>

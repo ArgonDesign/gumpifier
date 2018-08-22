@@ -173,7 +173,8 @@ pointer-events capturing remains correct */
 }
 
 #instructionsText {
-	font-family: 'Quicksand', sans-serif;
+	font-family: 'Lato', sans-serif;
+	text-align: center;
 }
 
 #instructionsText>ul {
