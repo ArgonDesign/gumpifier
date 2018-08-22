@@ -36,6 +36,13 @@ class TF_Socket():
 		"""
 		self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+		# When we restart the TF server, the port might wait 30-120s before the socket is freed.  We set this property
+		# to allow its reuse when Ctrl+C is pressed.  This isn't too dangerous, although makes TCP ever so slightly
+		# less reliable.  See these links:
+		# https://stackoverflow.com/questions/27360218/how-to-close-socket-connection-on-ctrl-c-in-a-python-programme
+		# https://stackoverflow.com/questions/3229860/what-is-the-meaning-of-so-reuseaddr-setsockopt-option-linux
+		self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 		# Check if portConfig exists - if not, find a port and save it
 		# This method avoids race conditions
 		if not os.path.exists('portConfig.txt'):
