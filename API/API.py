@@ -17,6 +17,8 @@ import time, random, os, shadows
 from scipy.spatial import ConvexHull
 from scipy.ndimage.morphology import binary_erosion
 import colour
+from collections import OrderedDict
+from operator import itemgetter
 # TODO: Do some clever processing to see what images are actually in front and which are behind?
 class API:
     def __init__(self):
@@ -208,6 +210,15 @@ class API:
             else:
                 background.append(url)
             labels[url] = {"name": bg_pred.coco_class_names[classes[n]], "confidence": str(scores[n])}
+        labels = OrderedDict(
+            sorted(
+                sorted(labels.items(), key = lambda x: x[1]["confidence"]),
+                key = lambda x: x[1]["name"])
+            )
+        with open("test.txt", "w") as f:
+            f.write(str(labels) + "\n")
+            json.dump(labels, f)
+        print (labels)
         return foreground, background, labels
 
     def save_img_get_url(self, img):
