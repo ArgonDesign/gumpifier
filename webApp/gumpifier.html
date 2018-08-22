@@ -36,9 +36,13 @@ Author : Patrick Taylor
 	<script src="stateTracker.js"></script>
 	<script src="colourFunctions.js"></script>
 	<script src="undo.js"></script>
+	<!-- Development -->
+	<link rel="stylesheet" href="dev.css">
+	<script src="dev.js"></script>
 </head>
 <body>
 
+<!-- Initial animated ovelay -->
 <!-- 	<div id='initOverlay'>
 		<div id="initArgonLogoContainer" class="initLogoContainer">
 			<div id="initArgonLogo" class="initLogo"></div>
@@ -51,6 +55,19 @@ Author : Patrick Taylor
 		</div>
 	</div> -->
 
+<!-- Developer options -->
+	<div id="dev">
+		<input type="checkbox" id="devEnable">
+		<div id="devMore">
+			<input type="checkbox" id="devContainOrCoverR">CoverBG
+			<input type="checkbox" id="devContainOrCoverL">CoverFG<br>
+			<input type="checkbox" id="devWidgetBorder">Blue border
+			<input type="number" id="devWidgetBorderThickness" min="1" max="10" value="1">Border thickness
+			<input type="checkbox" id="devScaleColour">Handle colour white
+		</div>
+	</div>
+
+<!-- Main page -->
 	<header>
 		<div id="headerOption1" class="flex-col-center">
 			<div id="headerLogo"></div>
