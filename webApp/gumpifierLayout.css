@@ -91,7 +91,7 @@ header {
 	display: none;
 }
 
-#option1Right, #option1Left {
+#option1Left, #option1Right {
 	width: 100%;
 	height: 100%;
 }
@@ -109,16 +109,16 @@ header {
     text-align: center;
 }
 
-#option2Right, #opt2ImageRight, #option2Left, #opt2ImageLeft, #opt2OverlayRight, #opt2OverlayLeft {
+#option2Left, #opt2ImageLeft, #option2Right, #opt2ImageRight, #opt2OverlayLeft, #opt2OverlayRight {
 	width: 100%;
 	height: 100%;
 }
 
-#option2Right, #option2Left {
+#option2Left, #option2Right {
 	position: relative;
 }
 
-#opt2OverlayRight, #opt2OverlayLeft {
+#opt2OverlayLeft, #opt2OverlayRight {
 	z-index: 1;
 	position: absolute;
 	top: 0;

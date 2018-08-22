@@ -45,14 +45,14 @@ function applyState(fg_changed, bg_changed, data) {
 	// If the foreground is selected: stop animations, and display selected image
 		// Set the image to display if necessary
 		if (fg_changed) {
-			$('#option1Left').css({"display": "none"});
-			$('#option2Left').css({"display": "flex"});
+			$('#option1Right').css({"display": "none"});
+			$('#option2Right').css({"display": "flex"});
 			// Set internal state
 			fg_url = data;
 			console.log(fg_url);
 			// Load the image
 			tmpFGimg.onload = function() {
-				$('#opt2ImageLeft').css("background-image", "url(\""+tmpFGimg.src+"\")");	
+				$('#opt2ImageRight').css("background-image", "url(\""+tmpFGimg.src+"\")");	
 				checkSegmentation('fg_url');
 			};
 			tmpFGimg.src = data;
@@ -65,8 +65,8 @@ function applyState(fg_changed, bg_changed, data) {
 		// Reset the form
 		document.getElementById("foregroundForm").reset();
 		// Revert layout
-		$('#option1Left').css({"display": "block"});
-		$('#option2Left').css({"display": "none"});
+		$('#option1Right').css({"display": "block"});
+		$('#option2Right').css({"display": "none"});
 		// Set colour of box
 		$('#uploadForeground').css("background-color", "rgb(216, 162, 255)");
 	}
@@ -75,13 +75,13 @@ function applyState(fg_changed, bg_changed, data) {
 	// If the background image is selected: display the image
 		// Set the image to display if necessary
 		if (bg_changed) {
-			$('#option1Right').css({"display": "none"});
-			$('#option2Right').css({"display": "flex"});
+			$('#option1Left').css({"display": "none"});
+			$('#option2Left').css({"display": "flex"});
 			// Set internal state
 			bg_url = data;
 			// Load the background image
 			tmpBGimg.onload = function() {
-				$('#opt2ImageRight').css("background-image", "url(\""+tmpBGimg.src+"\")");	
+				$('#opt2ImageLeft').css("background-image", "url(\""+tmpBGimg.src+"\")");	
 				checkSegmentation('bg_url');
 			};
 			tmpBGimg.src = data;
@@ -94,8 +94,8 @@ function applyState(fg_changed, bg_changed, data) {
 		// Reset the form
 		document.getElementById("backgroundForm").reset();
 		// Revert layout
-		$('#option1Right').css({"display": "block"});
-		$('#option2Right').css({"display": "none"});
+		$('#option1Left').css({"display": "block"});
+		$('#option2Left').css({"display": "none"});
 		// Set colour of box
 		$('#uploadBackground').css("background-color", "rgb(216, 162, 255)");
 	}

@@ -93,18 +93,18 @@ header {
 	border-radius: 20px;
 }
 
-#opt2ImageRight, #opt2ImageLeft {
+#opt2ImageLeft, #opt2ImageRight {
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
-#opt2OverlayRight, #opt2OverlayLeft {
+#opt2OverlayLeft, #opt2OverlayRight {
 	visibility: hidden;
 	background-color: rgba(255, 255, 255, 0.5);
 }
 
-#option2Right:hover>#opt2OverlayRight, #option2Left:hover>#opt2OverlayLeft {
+#option2Left:hover>#opt2OverlayLeft, #option2Right:hover>#opt2OverlayRight {
 	visibility: visible;
 }
 

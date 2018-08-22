@@ -21,8 +21,8 @@ $(document).ready(function() {
 
 	/* === Screen 1 === */
 	// Choose example images
-	$('.grid-item.left').click(function(event) {chooseExamplePictureFn(event, true);});
-	$('.grid-item.right').click(function(event) {chooseExamplePictureFn(event, false);});
+	// $('.grid-item.left').click(function(event) {chooseExamplePictureFn(event, true);});
+	// $('.grid-item.right').click(function(event) {chooseExamplePictureFn(event, false);});
 
 	// Upload own foreground image button
 	$('#foregroundForm').submit(function() {return uploadPictureFn($('#foregroundForm'), true);});
@@ -40,9 +40,9 @@ $(document).ready(function() {
 	$('#backgroundUploadIcon').click(function() {$('#backgroundUploadButton').click();});
 	$('#foregroundUploadIcon').click(function() {$('#foregroundUploadButton').click();});
 
-	// Bring up 'upload own image' form when the user chooses a new image, having chosen one alread
-	$('#opt2OverlayLeft').click(function() {$('#foregroundUploadButton').click();});
-	$('#opt2OverlayRight').click(function() {$('#backgroundUploadButton').click();});
+	// Bring up 'upload own image' form when the user chooses a new image, having chosen one already
+	$('#opt2OverlayRight').click(function() {$('#foregroundUploadButton').click();});
+	$('#opt2OverlayLeft').click(function() {$('#backgroundUploadButton').click();});
 
 	// Choose again buttons
 	$('#chooseAgainFG').click(set_fg_false);
