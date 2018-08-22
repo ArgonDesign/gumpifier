@@ -215,9 +215,6 @@ class API:
                 sorted(labels.items(), key = lambda x: x[1]["confidence"], reverse=True),
                 key = lambda x: x[1]["name"])
             )
-        with open("test.txt", "w") as f:
-            f.write(str(labels) + "\n")
-            json.dump(labels, f)
         print (labels)
         return foreground, background, labels
 
