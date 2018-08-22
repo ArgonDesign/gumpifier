@@ -212,7 +212,7 @@ class API:
             labels[url] = {"name": bg_pred.coco_class_names[classes[n]], "confidence": str(scores[n])}
         labels = OrderedDict(
             sorted(
-                sorted(labels.items(), key = lambda x: x[1]["confidence"]),
+                sorted(labels.items(), key = lambda x: x[1]["confidence"], reverse=True),
                 key = lambda x: x[1]["name"])
             )
         with open("test.txt", "w") as f:
