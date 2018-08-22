@@ -18,7 +18,8 @@ opacity; cursor style.
 
 #headerClose {
 	background-image: url("SharedResources/Gumpifier_Image_Assets/Exit icon.png");
-	background-size: contain;
+	/*background-size: contain;*/
+	background-size: 50%;
 	background-repeat: no-repeat;
 	background-position: center;
 
