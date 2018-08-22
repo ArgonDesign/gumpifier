@@ -26,6 +26,7 @@ import cgitb; cgitb.enable() # Traceback enable
 import json
 from TF_interface import sendData
 import traceback
+from collections import OrderedDict
 
 form = cgi.FieldStorage()
 
@@ -95,7 +96,8 @@ if DEBUG:
 
 # === Option 4 Ask the TF server to give us the data === #
 def jsonConverter(importedJSON):
-	importedJSON = json.loads(importedJSON)
+	# The 'labels' field is ordered so we decode it into an odered dict
+	importedJSON = json.loads(importedJSON, object_pairs_hook=OrderedDict)
 	# There are differences between what the TF_server returns and what the frontend expects.  We do the processing
 	# of the JSON here in place so that any new JSON fields added in the future are passed through
 	importedJSON['BG_segment_URLs'] = importedJSON['background'] + importedJSON['foreground']
