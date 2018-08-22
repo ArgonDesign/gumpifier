@@ -19,13 +19,15 @@ The Gumpifier is a collaborative project between Argon Design and Dovetailed whi
 
    Linux: `pip install git+https://github.com/waleedka/coco.git#subdirectory=PythonAPI`
 
-7. `python3 API/Mask_RCNN/setup.py install`
+7. `cd API/Mask_RCNN/`
+
+8. `python3 setup.py install`
 
 ### Set the Tensorflow server running
 
 1. `python TF_server.py`
 
-If the port TF_server.py attempts to use is in use, you can change it in `portConfig.txt`
+TF_server.py will search for a free port and save it in portConfig.txt.  TF_interface.py reads this value and uses it to communicate with TF_server.py.  If you want to run TF_server.py on a different port, you can change portConfig.txt and restart TF_server.py.
 
 ### Set the http server going (built on Ubuntu)
 

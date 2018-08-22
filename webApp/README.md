@@ -42,6 +42,8 @@ A good way work out what happens when the user presses a button or another event
 
 Some functions are not bound in `eventHandlers.js` - notably ones which relate to dynamically created elements (e.g. drag and resize events for the foreground and meme textarea).
 
+Most js files contain an extended comment at the start with an index of functions contained in them and a brief description of each.
+
 **Both Screens**
 
 * `eventHandlers.js` - binds many events to functions.
