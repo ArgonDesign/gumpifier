@@ -212,8 +212,8 @@ class API:
             labels[url] = {"name": bg_pred.coco_class_names[classes[n]], "confidence": str(scores[n])}
         labels = OrderedDict(
             sorted(
-                sorted(labels.items(), key = lambda x: x[1]["confidence"], reverse=True),
-                key = lambda x: x[1]["name"])
+                sorted(labels.items(), key = lambda x: x[1]["name"]),
+                key = lambda x: round(float(x[1]["confidence"]) * 100), reverse=True)
             )
         print (labels)
         return foreground, background, labels
