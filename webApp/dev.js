@@ -10,12 +10,12 @@ $(document).ready(function() {
 
 	// Bind contain/cover properties
 	$('#devContainOrCoverR').click(function() {
-		if (this.checked)	$('#opt2ImageRight').css("background-size", "cover");
-		else				$('#opt2ImageRight').css("background-size", "contain");
-	});
-	$('#devContainOrCoverL').click(function() {
 		if (this.checked)	$('#opt2ImageLeft').css("background-size", "cover");
 		else				$('#opt2ImageLeft').css("background-size", "contain");
+	});
+	$('#devContainOrCoverL').click(function() {
+		if (this.checked)	$('#opt2ImageRight').css("background-size", "cover");
+		else				$('#opt2ImageRight').css("background-size", "contain");
 	});
 
 	// Widget border outline
