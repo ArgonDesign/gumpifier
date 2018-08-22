@@ -342,10 +342,10 @@ function windowScale(possibleEvent) {
 
 	// Size the overlayTextContainer in a similar fashion
 	var overlayTextContainer = $('#resultForeground');
-	$('#overlayTextContainer').css({top: resultForeground.position().top - 20,
-									left: resultForeground.position().left - 20,
-									width: resultForeground.width() + 20,
-									height: resultForeground.height() + 20});
+	$('#overlayTextContainer').css({top: resultForeground.position().top - 27,
+									left: resultForeground.position().left - 27,
+									width: resultForeground.width() + 27,
+									height: resultForeground.height() + 27});
 
 	// Size the text
 	scaleAndPositionOverlayText();
