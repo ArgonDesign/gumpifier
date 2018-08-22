@@ -126,5 +126,5 @@ header {
 }
 
 .opt2OverlayText {
-	display: flex;
+	text-align: center;
 }
