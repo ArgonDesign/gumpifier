@@ -635,9 +635,10 @@ function getAndTriggerClickedImage(event, img) {
 
 function sendBehind() {
 	/*
-	Send the selected layer behind the foreground layer
+	Send the selected layer behind the foreground layer.  Notably, send it right to the back so it doesn't
+	inadvertantly hide a smaller layer.
 	*/
-	$('#resultForeground').before(selectedLayerDiv);
+	$('#containerForeground').after(selectedLayerDiv);
 	$('#resultPane').prepend($('#first').parent().parent());
 }
 
