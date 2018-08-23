@@ -1,6 +1,10 @@
 /* Note the CSS here will apply across the website.  Make sure to specify the blog post classes and ids well by
-using something like '#blogPost>.....' */
+using something like '#privacyNotice>.....' */
 
-#blogPost>h1 {
+#privacyNotice>h1 {
 	font-family: "Roboto", sans-serif;
+}
+
+#privacyNotice>ul {
+	font-family: "Roboto", sans-serif;	
 }

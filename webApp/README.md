@@ -24,7 +24,9 @@ This folder contains code for the frontend (HTML, CSS, JS), the CGI scripts (PY)
 
 ### html
 
+- `blogPost.html` - the text for the blog post about the project
 - `gumpifier.html` - the base html file for the webApp.
+- `privacyNotice.html` - the text for the privacy notice.
 
 ### css
 
@@ -35,6 +37,8 @@ Layout and style are separate for both screen 1 and screen 2.
 - `screen2Layout.css`
 - `screen2Style.css`
 - `rangeStyle.css`
+- `blogPost.css`
+- `privacyNotice.css`
 
 ### js
 
