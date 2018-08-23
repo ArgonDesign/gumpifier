@@ -112,24 +112,22 @@ sizing and pointer events.
 /* === CSS for the buttons === */
 #canvasCommandsOuter {
 	position: relative;
-	height: 3vw;
 }
 
 #canvasCommands {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-end;
+	display: inline-block;
+	width: 100%;
+}
 
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	/*right: set by windowScale() JS function*/
+.commandButton {
+	display: flex;
+	float: right;
 }
 
 .commandIcon{
 	float: left;
-	height: 100%;
+	width: 1.5em;
+	height: 1.5em;
 }
 
 .commandText {
@@ -174,6 +172,7 @@ sizing and pointer events.
 
 .editCommandSpan {
 	width: 100%;
+	padding-right: 20px;
 }
 
 #finalCommands			{text-align: center;}

@@ -383,7 +383,7 @@ function windowScale(possibleEvent) {
 	scaleAndPositionOverlayText();
 
 	// Position the Edit, Undo and Redo buttons right aligned with the main image
-	$('#canvasCommands').css("right", $('#first').position().left + "px"); // Left is same as right because #first is centered.
+	$('#canvasCommands').css("width", "calc(100vw - " + $('#first').position().left + "px)"); // Left is same as right because #first is centered.
 }
 
 function initWhenImagesLoaded() {

@@ -150,29 +150,26 @@ Author : Patrick Taylor
 	<div id="content-screen2" class="flex-col-center">
 		<div id="canvasCommandsOuter">
 			<div id="canvasCommands">
-				<!-- <div id="colourControlsContainer"> -->
-					<div class="commandButton" id="commandButtonEdit">
-						<div class="commandIcon" id="commandIconEdit"></div>
-						<div class="commandText flex-col-center" id="commandTextEdit">Tweak colour</div>
-						<div id="triangle"></div>
-						<div id="editCommands">
-							<div class="editCommand">
-								<span class="editCommandSpan">Temperature&nbsp;</span><input type="range" min="0" max="40000" step="1" value="6000" id="whiteBalanceSlider">
-							</div>
-							<div class="editCommand">
-								<span class="editCommandSpan">Brightness&nbsp;</span><input type="range" min="-100" max="100" step="1" value="0" id="brightnessSlider">
-							</div>
-						</div>
-					</div>
-					
-				<!-- </div> -->
+				<div class="commandButton" id="commandButtonRedo">
+					<div class="commandIcon" id="commandIconRedo"></div>
+					<div class="commandText flex-col-center" id="commandTextRedo">Redo</div>
+				</div>
 				<div class="commandButton" id="commandButtonUndo">
 					<div class="commandIcon" id="commandIconUndo"></div>
 					<div class="commandText flex-col-center" id="commandTextUndo">Undo</div>
 				</div>
-				<div class="commandButton" id="commandButtonRedo">
-					<div class="commandIcon" id="commandIconRedo"></div>
-					<div class="commandText flex-col-center" id="commandTextRedo">Redo</div>
+				<div class="commandButton" id="commandButtonEdit">
+					<div class="commandIcon" id="commandIconEdit"></div>
+					<div class="commandText flex-col-center" id="commandTextEdit">Tweak colour</div>
+					<div id="triangle"></div>
+					<div id="editCommands">
+						<div class="editCommand">
+							<span class="editCommandSpan">Temperature&nbsp;</span><input type="range" min="0" max="40000" step="1" value="6000" id="whiteBalanceSlider">
+						</div>
+						<div class="editCommand">
+							<span class="editCommandSpan">Brightness&nbsp;</span><input type="range" min="-100" max="100" step="1" value="0" id="brightnessSlider">
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
