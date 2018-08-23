@@ -129,6 +129,9 @@ function gumpifyFn() {
 	changeScreens.showScreen2();
 	// Change the title location to the top of the rectangles
 	$('.vCenterPane').css({"justify-content": 'flex-start'});
+	// Hide the header sub text and change height of header
+	$('#headerSubText').hide()
+	$('header').css("height", "10vh");
 	// Provide a loading message
 	$('#vCenterPaneLeftTitle').text("Loading...");
 	// Once the basics of screen 2 have been set it's now safe to send the AJAX request to the server and load the
@@ -376,6 +379,9 @@ function changeImagesFn() {
 	// Reset the title bar
 	$('#headerOption2').hide();
 	$('#headerOption1').css("display", "flex");
+	// Hide the header sub text and change height of header
+	$('#headerSubText').show()
+	$('header').css("height", "15vh");
 	// Reset screen 2 to original
 	$('.resultBackground, #resultForeground, #overlayTextContainer, #overlayTextPosition').remove();
 	$('#foundList').empty();
