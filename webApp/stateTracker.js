@@ -68,7 +68,7 @@ function applyState(fg_changed, bg_changed, data) {
 		$('#option1Right').css({"display": "block"});
 		$('#option2Right').css({"display": "none"});
 		// Set colour of box
-		$('#uploadForeground').css("background-color", "rgb(216, 162, 255)");
+		$('#uploadForeground').css("background-color", "rgb(194, 145, 229)");
 	}
 
 	if (bg_selected) {
@@ -97,7 +97,7 @@ function applyState(fg_changed, bg_changed, data) {
 		$('#option1Left').css({"display": "block"});
 		$('#option2Left').css({"display": "none"});
 		// Set colour of box
-		$('#uploadBackground').css("background-color", "rgb(216, 162, 255)");
+		$('#uploadBackground').css("background-color", "rgb(194, 145, 229)");
 	}
 
 	// Check if we can enable the Gumpify button - only when both images are both selected and segmented
@@ -105,7 +105,7 @@ function applyState(fg_changed, bg_changed, data) {
 		// Enable the Gumpify button
 		$('#gumpifyButton').click(gumpifyFn);
 		// Style the button to an appropriate colour
-		$('#gumpifyButton').css({"background-color": 'rgb(216,162,255)'});
+		$('#gumpifyButton').css({"background-color": 'rgb(194, 145, 229)'});
 		// Set cursor style
 		$('#gumpifyButton').css("cursor", "pointer");
 		// Set text

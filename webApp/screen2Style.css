@@ -13,7 +13,7 @@ opacity; cursor style.
 
 /* === CSS for the header === */
 #headerOption2 {
-	background-color: rgb(216, 162, 255);
+	background-color: rgb(194, 145, 229);
 }
 
 #headerClose {
@@ -137,7 +137,7 @@ pointer-events capturing remains correct */
 }
 
 .finalButton {
-	background-color: rgb(237, 237, 237);
+	background-color: rgb(194, 145, 229);
 	color: black;
 	border: none;
 	padding: 15px 40px;
@@ -147,7 +147,7 @@ pointer-events capturing remains correct */
 	font-family: "Lato", sans-serif;
 }
 
-#commandIconEdit {background-image: url("SharedResources/Gumpifier_Image_Assets/Edit icon.png");}
+#commandIconEdit {background-image: url("SharedResources/Gumpifier_Image_Assets/Palette icon.png");}
 #commandIconUndo {background-image: url("SharedResources/Gumpifier_Image_Assets/Undo icon.png");}
 #commandIconRedo {background-image: url("SharedResources/Gumpifier_Image_Assets/Redo icon.png");}
 
@@ -166,14 +166,39 @@ pointer-events capturing remains correct */
 
 /* === CSS for the instructions text === */
 #instructions {
-	background-color: rgba(255, 255, 255, 0.9);
+	background-color: rgba(194, 145, 229, 0.95);
 }
 
-#instructionsText {
+#instructionsHeader {
+	height: 3em;
+}
+
+#instructionsCloseIcon {
+	background-image: url("SharedResources/Gumpifier_Image_Assets/Exit icon.png");
+	height: 3em;
+	width: 3em;
+}
+
+#instructionsCloseIcon:hover {
+	cursor: pointer;
+}
+
+.instructionsText {
 	font-family: 'Lato', sans-serif;
-	text-align: center;
+	text-align: left;
+	padding: 20px;
+	font-size: 120%;
 }
 
 #instructionsText>ul {
 	list-style-position: inside;
+}
+
+#instructionsTextLeft {
+	border-width: 2px;
+    border-style: solid;
+    border-image: linear-gradient(to bottom, black, black 75%, transparent 75%) 1;
+    border-left: 0;
+    border-top: 0;
+    border-bottom: 0;
 }

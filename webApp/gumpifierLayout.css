@@ -77,16 +77,23 @@ header {
 	height: 100%;
 }
 
-#content-screen1, #content-screen2 {
+/* === Screens === */
+#content-screen1, #content-screen2, #content-screenP, #content-screenB {
 	/* Child properties */
 	flex-grow: 5;
 }
 
-#content-screen2 {
+#content-screen2, #content-screenP, #content-screenB {
 	display: none;
 	flex-flow: column;
 }
 
+/* === Privacy and blog post screens === */
+.returnFromSubScreen {
+	width: fit-content;
+}
+
+/* === Screen 1 === */
 #foregroundUploadInput, #backgroundUploadInput {
 	display: none;
 }
@@ -127,4 +134,19 @@ header {
 
 .opt2OverlayText {
 	text-align: center;
+}
+
+/* === Footer === */
+#footer {
+	text-align: center;
+}
+
+#footerRight {
+	float: right;
+}
+
+#privacyIcon {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 }

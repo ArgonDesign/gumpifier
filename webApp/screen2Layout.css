@@ -228,12 +228,27 @@ sizing and pointer events.
 #instructions {
 	position: absolute;
 	z-index: 91; /* This brings the instructions in front of the JQueryUI scale handles */
-	display: none /* Have this initially then display when images have loaded */
+	display: none; /* Have this initially then display when images have loaded */
+	flex-direction: column;
+}
+
+#instructionsCloseIcon {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+
+	float: right;
 }
 
 #instructionsText {
 	max-height: 100%;
 	overflow: auto;
+	flex-grow: 1;
+
+	display: flex;
+	flex-direction: row;
+
+	text-align: left;
 }
 
 /* === Hover detector === */

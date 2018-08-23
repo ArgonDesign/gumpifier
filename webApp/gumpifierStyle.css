@@ -12,7 +12,7 @@ certain dimensions; background images (and associated positioning); text align, 
 
 /* === Main Header font and delimiter === */
 h1 {
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Lato', sans-serif;
 	font-weight: 100;
 	text-align: center;
 }
@@ -119,22 +119,13 @@ header {
 #gumpifyButton {
 	height: 5vh;
 	width: calc(20vw + 20vw + 14%);
-	background-color: rgb(216, 162, 255);
+	background-color: rgb(194, 145, 229);
 	margin-top: 7%;
 	border-radius: 20px;
 }
 
-#gumpifyButtonIcon {
-	width: 3em;
-	height: 3em;
-	background-image: url("SharedResources/Gumpifier_Image_Assets/noun_Ping Pong Paddle Racket_970290_flip.png");
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
 #gumpifyButtonText {
-	font-family: 'Playfair Display', serif;
+	font-family: 'Lato', sans-serif;
 }
 
 /* === Footer delimiter, padding, font, colour === */
@@ -145,7 +136,7 @@ header {
 }
 
 .footerText {
-	font-family: "Playfair Display", serif;
+	font-family: "Lato", sans-serif;
 }
 
 #argonLogo {
@@ -153,8 +144,8 @@ header {
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
-	width: 1em;
-	height: 1em;
+	width: 1.5em;
+	height: 1.5em;
 }
 
 #dovetailedLogo {
@@ -162,6 +153,20 @@ header {
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
-	width: 1em;
-	height: 1em;
+	width: 1.5em;
+	height: 1.5em;
+}
+
+#footerRight:hover {
+	cursor: pointer;
+}
+
+#privacyNoticeButton {
+	font-family: "Lato", sans-serif;
+}
+
+#privacyIcon {
+	background-image: url("SharedResources/Gumpifier_Image_Assets/Privacy icon.png");
+	width: 1.5em;
+	height: 1.5em;
 }

@@ -340,7 +340,7 @@ class API:
         image = bg_pred.make_image_transparent(image)
         image[:, :, 3] = 255
         mask_fill = []
-        fill_color = (216, 162, 255, 255)
+        fill_color = (194, 145, 229, 255)
         for n in range(masks.shape[2]):
             mask = masks[:, :, n]
             img = bg_pred._apply_mask(image, mask)

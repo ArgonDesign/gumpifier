@@ -10,10 +10,7 @@ Author : Patrick Taylor
 <html>
 <head>
 	<title>The Gumpifier</title>
-	<!-- Fonts -->
-	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
+	<!-- Typefaces -->
 	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 	<!-- Stylesheets -->
 	<link rel="stylesheet" href="gumpifierStyle.css">
@@ -88,6 +85,14 @@ Author : Patrick Taylor
 		</div> -->
 	</header>
 
+	<div id="content-screenP">
+		<input type="button" class="returnFromSubScreen" value="Go back">
+	</div>
+
+	<div id="content-screenB">
+		<input type="button" class="returnFromSubScreen" value="Go back">
+	</div>
+
 	<div id="content-screen1" class="flex-col-center">
 		<div id="screen1-row1" class="flex-row-center">
 			<div class="uploadSquareMargin">
@@ -118,7 +123,7 @@ Author : Patrick Taylor
 						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
 							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
 							<input type="file" name="fgimage" accept="image/*" id="foregroundUploadInput">
-							<label for="foregroundUploadInput" class="uploadButton flex-col-center" id="foregroundUploadButton">Upload foreground</label>
+							<label for="foregroundUploadInput" class="uploadButton flex-col-center" id="foregroundUploadButton">Upload photo of a person</label>
 						</form>
 					</div>
 
@@ -126,7 +131,7 @@ Author : Patrick Taylor
 						<div id="opt2ImageRight"></div>
 						<div id="opt2OverlayRight" class="flex-col-center">
 							<div class="opt2OverlayText flex-col-center">
-								Upload foreground
+								Upload photo of a person
 							</div>
 						</div>
 					</div>
@@ -136,7 +141,6 @@ Author : Patrick Taylor
 		<div id="screen1-row2" class="flex-row-center">
 			<div id="gumpifyButton" class="flex-col-center">
 				<div id="gumpifyButtonContent" class="flex-row-center">
-					<div id="gumpifyButtonIcon"></div>
 					<div id="gumpifyButtonText" class="flex-col-center">Gumpify!</div>
 				</div>
 			</div>
@@ -228,21 +232,31 @@ Author : Patrick Taylor
 				</div>
 				-->
 			</div>
-			<div id="instructions" class="flex-col-center">
+
+			<div id="instructions">
+				<div id="instructionsHeader">
+					<div id="instructionsCloseIcon">
+					</div>
+				</div>
 				<div id="instructionsText">
-					I've found <span id="numberOfObjects"></span> <span id="singularOrPlural"></span> in the background:<br>
-					<ul id="foundList"><!-- Populated in JS --></ul>
-					In the editor you can:
-					<ul>
-						<li>Move the inserted picture around, and make is bigger and smaller</li>
-						<li>Click on a background image to toggle whether it is in front or behind the inserted image</li>
-						<li>Change the brightness and temperature of the inserted image to make it blend in better</li>
-						<li>Change the meme text</li>
-						<li>Download the final image</li>
-					</ul>
-					<input type="button" value="Got it!" id="gotItButton">
+					<div id="instructionsTextLeft" class="instructionsText">
+						We've found <span id="numberOfObjects"></span> <span id="singularOrPlural"></span> in the background!<br>
+						Toggle the objects to send them in front of or behind the person.<br><br>
+						<ul id="foundList"><!-- Populated in JS --></ul>	
+					</div>
+					<div id="instructionsTextRight" class="instructionsText">
+						What has the Gumpifier done?<br><br>
+						<ul>
+							<li>Used AI to segment photos</li>
+							<li>Colour corrected image for better matching</li>
+							<li>Inserted a Forrest Gump quotateion for some meme-y fun</li>
+						</ul>
+						<br><br><br>
+						Read more about the story of the Gumpifier <a href="javascript:void(0)" id="blogPostButton">here</a>
+					</div>
 				</div>
 			</div>
+
 			<!-- <div id="hoverDetector">
 			</div> -->
 		</div>
@@ -254,11 +268,19 @@ Author : Patrick Taylor
 
 	</div>
 
-	<div id="footer" class="flex-row-center">
-		<div class="footerText flex-col-center">A collaboration between&nbsp;</div>
-		<a href="http://www.argondesign.com/" class="flex-col-center"><div id="argonLogo"></div></a>
-		<div class="footerText flex-col-center">&nbsp;and&nbsp;</div>
-		<a href="https://www.dovetailed.co/" class="flex-col-center"><div id="dovetailedLogo"></div></a>
+	<div id="footer">
+		<div id="footerRight" class="flex-row-center">
+			<div id="privacyIcon"></div>
+			<div id="privacyNoticeButton" class="flex-col-center">Privacy Notice</div>
+			<!-- <a href="javascript:void(0)" id="privacyNoticeButton" class="flex-col-center">Privacy Notice</a> -->
+		</div>
+		<div id="footerCenter" class="flex-row-center">
+			<div class="footerText flex-col-center">A collaboration between&nbsp;</div>
+			<a href="http://www.argondesign.com/" class="flex-col-center"><div id="argonLogo"></div></a>
+			<div class="footerText flex-col-center">&nbsp;&&nbsp;</div>
+			<a href="https://www.dovetailed.co/" class="flex-col-center"><div id="dovetailedLogo"></div></a>
+		</div>
+		
 	</div>
 
 </body>

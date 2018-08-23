@@ -15,10 +15,19 @@ is detected.
 
 // Event handler binding
 $(document).ready(function() {
-	// Initialization
+	/* === Both screens and initialisation === */
+	// Initialisation
 	applyState();
 	detectTouchscreen();
 
+	// Load the privacy notice and bind the event to show it
+	changeScreens = changeScreensFn();
+	$.get("privacyNotice.html", function(data) {$('#content-screenP').append(data)});
+	$.get("blogPost.html", function(data) {$('#content-screenB').append(data)});
+	$('#footerRight').click(changeScreens.showScreenP);
+	$('#blogPostButton').click(changeScreens.showScreenB);
+	$('.returnFromSubScreen').click(changeScreens.returnFromLetter);
+	
 	/* === Screen 1 === */
 	// Choose example images
 	// $('.grid-item.left').click(function(event) {chooseExamplePictureFn(event, true);});
@@ -53,7 +62,7 @@ $(document).ready(function() {
 
 	/* === Screen 2 === */
 	// 'Got it!' button to make the instruction text disappear
-	$('#gotItButton').click(function() {$('#instructions').hide()});
+	$('#instructionsCloseIcon').click(function() {$('#instructions').hide()});
 
 	// The hover detector show and hides the UI elements, but must pass clicks through
 	// $('#hoverDetector').hover(function(event) {showMasks; clickThroughHover(event);}, function(event) {hideMasks; clickThroughHover(event);});

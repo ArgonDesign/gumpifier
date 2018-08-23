@@ -1,0 +1,5 @@
+/* Note the CSS here will apply across the website.  Make sure to specify the blog post classes and ids well! */
+
+h1 {
+	background-color: red;
+}

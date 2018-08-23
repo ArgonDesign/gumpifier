@@ -26,6 +26,7 @@ of the actions the end-user will take.  Each has a description of its own, but h
  === General ===
  - keyPressed - called when a key is pressed.  Used to implement undo/redo key capture.
  - detectTouchscreen - called when the document loads, detects if the device is a touchscreen
+ - showPrivacyNotice - function used to construct a closure used when the privacy notice/blog post needs to be shown
 */
 
 function uploadPictureFn(form, fg) {
@@ -125,6 +126,7 @@ function gumpifyFn() {
 	// Hide screen 1; unhide screen 2
 	$('#content-screen1').hide();
 	$('#content-screen2').css("display", "flex");
+	changeScreens.showScreen2();
 	// Change the title location to the top of the rectangles
 	$('.vCenterPane').css({"justify-content": 'flex-start'});
 	// Provide a loading message
@@ -370,15 +372,16 @@ function changeImagesFn() {
 	// Unhide screen 1; hide screen 2
 	$('#content-screen1').css("display", "flex");
 	$('#content-screen2').hide();
+	changeScreens.showScreen1();
 	// Reset the title bar
 	$('#headerOption2').hide();
 	$('#headerOption1').css("display", "flex");
 	// Reset screen 2 to original
-	$('.resultBackground, #resultForeground, #overlayTextContainer').remove();
+	$('.resultBackground, #resultForeground, #overlayTextContainer, #overlayTextPosition').remove();
 	$('#foundList').empty();
-	overlay_pos = [0, 0];
+	overlay_pos = [0.05, 0];
 	overlay_scale = [0.9, 0.1];
-	$('#headerTextSub').text("");
+	// $('#headerTextSub').text("");
 	// Reset some state
 	fg_loaded = false;
 	bg_loaded = false;
@@ -450,3 +453,53 @@ function detectTouchscreen() {
 	console.log(mq(query));
 	isTouchscreen = mq(query);
 }
+
+var screen1;
+var screen2;
+var screenP;
+var screenB;
+var changeScreens;
+
+var changeScreensFn = (function() {
+	var screen1 = $('#content-screen1');
+	var screen2 = $('#content-screen2');
+	var screenP = $('#content-screenP');
+	var screenB = $('#content-screenB');
+
+	var currentlyShown = screen1;
+	var lastNumberedScreen = screen1;
+
+	function applyState() {
+		currentlyShown.css("display", "flex");
+		screen1.not(currentlyShown).hide();
+		screen2.not(currentlyShown).hide();
+		screenP.not(currentlyShown).hide();
+		screenB.not(currentlyShown).hide();
+	}
+
+	return {
+		showScreenP: function() {
+			if (currentlyShown == screen1 || currentlyShown == screen2) lastNumberedScreen = currentlyShown;
+			currentlyShown = screenP;
+			applyState();
+		},
+		showScreenB: function() {
+			if (currentlyShown == screen1 || currentlyShown == screen2) lastNumberedScreen = currentlyShown;
+			currentlyShown = screenB;
+			applyState();
+		},
+		showScreen1: function() {
+			currentlyShown = screen1;
+		},
+		showScreen2: function() {
+			currentlyShown = screen2;
+		},
+		returnFromLetter: function() {
+			currentlyShown = lastNumberedScreen;
+			applyState();
+		},
+		peek: function() {
+			console.log(currentlyShown, lastNumberedScreen);
+		}
+	};
+});
