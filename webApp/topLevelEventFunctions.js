@@ -133,7 +133,8 @@ function gumpifyFn() {
 	$('#headerSubText').hide()
 	$('header').css("height", "10vh");
 	// Provide a loading message
-	$('#vCenterPaneLeftTitle').text("Loading...");
+	$('#resultPaneOuter').prepend($('<div />', {"id": "loadingMessage"}));
+	$('#loadingMessage').text("Loading...");
 	// Once the basics of screen 2 have been set it's now safe to send the AJAX request to the server and load the
 	// images
 	$.ajax({
@@ -142,6 +143,9 @@ function gumpifyFn() {
 		data: {	"fg_url": fg_url,
 				"bg_url": bg_url},
 		success: function(data) {
+			// Remove loading message
+			$('#loadingMessage').remove();
+			// Continue
 			if (data.hasOwnProperty("ERROR")) {
 				// If there's a custom error (not an http error), display a message to the user
 				$('#resultPane').text("Something went wrong!");
@@ -385,6 +389,7 @@ function changeImagesFn() {
 	// Reset screen 2 to original
 	$('.resultBackground, #resultForeground, #overlayTextContainer, #overlayTextPosition').remove();
 	$('#foundList').empty();
+	$('#instructions').hide();
 	overlay_pos = [0.05, 0];
 	overlay_scale = [0.9, 0.1];
 	// $('#headerTextSub').text("");
