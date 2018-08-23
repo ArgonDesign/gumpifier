@@ -184,33 +184,27 @@ sizing and pointer events.
 	pointer-events: none;
 }
 
+#overlayTextPosition {
+	position: absolute;
+	pointer-events: none;
+	text-align: left;
+}
+
 #overlayTextDiv {
 	pointer-events: auto;
-	padding-left: 27px;
-	padding-top: 27px;
+	padding: 27px;
 	display: inline-block;
-}
-
-#overlayTextDragIconTL, #overlayTextDragIconBR {
-	width: 27px;
-	height: 27px;
-	position: absolute;
-}
-
-#overlayTextDragIconTL {
-	top: 0;
-	left: 0;
-}
-
-#overlayTextDragIconBR {
-	bottom: -27px;
-	right: -27px;
 }
 
 #overlayText {
 	padding: 0;
 	resize: none;
 	overflow: hidden;
+}
+
+#overlayTextWidgets {
+	position: absolute;
+	pointer-events: auto;
 }
 
 /* === CSS for masks === */
@@ -225,8 +219,8 @@ sizing and pointer events.
 }*/
 
 /* === CSS for the scale grabable buttons === */
-/* Select elements with id containing subset of "CornerScaleDiv" */
-[id*="CornerScaleDiv"] {
+/* Select elements with class containing subset of "CornerScaleDiv" */
+[class*="CornerScaleDiv"] {
 	position: absolute;
 }
 

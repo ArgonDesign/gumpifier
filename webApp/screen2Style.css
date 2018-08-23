@@ -64,8 +64,8 @@ pointer-events capturing remains correct */
 	cursor: move;
 }
 
-/* Select elements with id containing subset of "CornerScaleDiv" */
-[id*="CornerScaleDiv"] {
+/* Select elements with class containing subset of "CornerScaleDiv" */
+[class*="CornerScaleDiv"] {
 	width: 10px; /* If these change, update scaleHandleDim in JS to match */
 	height: 10px; /* If these change, update scaleHandleDim in JS to match */
 	background-color: rgb(165,75,255);
@@ -93,20 +93,17 @@ pointer-events capturing remains correct */
 	display: none;
 }
 
+#overlayTextDiv:hover {
+	cursor: move;
+}
+
 #overlayTextDiv>.ui-wrapper {
 	/* We set 'none' here so html2canvas behaves correctly */
-	border: 1px none rgb(169, 169, 169);
-}
-
-#overlayTextDragIconTL, #overlayTextDragIconBR {
-	background-image: url("SharedResources/GrabArrow.png");
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-#overlayTextDragIconTL:hover, #overlayTextDragIconBR:hover {
-	cursor: move;
+	/*border: 1px none rgb(169, 169, 169);*/
+	border-width: 1px;
+	border-image-source: url("SharedResources/border.png");
+	border-image-slice: 1 1 1 1;
+	border-image-repeat: repeat;
 }
 
 /* === CSS for the commands bar and buttons === */

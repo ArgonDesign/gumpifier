@@ -55,7 +55,7 @@ var fg_img_scale;					// Current scale of the foreground
 var bg_loaded = false;				// Has the very background image loaded
 var fg_loaded = false;				// Has the foreground image loaded
 var selectedLayerDiv;				// The last clicked segment
-var overlay_pos = [0, 0];			// Position of the meme textarea.  It's centered horizontally so [0,0] means center
+var overlay_pos = [0.05, 0];		// Position of the meme textarea.  Init center in conjunction with overlay_scale
 var overlay_scale = [0.9, 0.1];		// Scale of the meme textarea
 
 /* Closure to represent the urls of the example images used.  Exposes the following API:
@@ -201,14 +201,14 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	$(outerDiv).insertAfter(selector);
 
 	// Add scale icons
-	widgetDiv.append($('<div />', {"id": "BRCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-se"}));
-	widgetDiv.append($('<div />', {"id": "RCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-e"}));
-	widgetDiv.append($('<div />', {"id": "TRCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-ne"}));
-	widgetDiv.append($('<div />', {"id": "TCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-n"}));
-	widgetDiv.append($('<div />', {"id": "TLCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-nw"}));
-	widgetDiv.append($('<div />', {"id": "LCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-w"}));
-	widgetDiv.append($('<div />', {"id": "BLCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-sw"}));
-	widgetDiv.append($('<div />', {"id": "BCornerScaleDiv", "class": "ui-resizable-handle ui-resizable-s"}));
+	widgetDiv.append($('<div />', {"class": "BRCornerScaleDiv ui-resizable-handle ui-resizable-se"}));
+	widgetDiv.append($('<div />', {"class": "RCornerScaleDiv ui-resizable-handle ui-resizable-e"}));
+	widgetDiv.append($('<div />', {"class": "TRCornerScaleDiv ui-resizable-handle ui-resizable-ne"}));
+	widgetDiv.append($('<div />', {"class": "TCornerScaleDiv ui-resizable-handle ui-resizable-n"}));
+	widgetDiv.append($('<div />', {"class": "TLCornerScaleDiv ui-resizable-handle ui-resizable-nw"}));
+	widgetDiv.append($('<div />', {"class": "LCornerScaleDiv ui-resizable-handle ui-resizable-w"}));
+	widgetDiv.append($('<div />', {"class": "BLCornerScaleDiv ui-resizable-handle ui-resizable-sw"}));
+	widgetDiv.append($('<div />', {"class": "BCornerScaleDiv ui-resizable-handle ui-resizable-s"}));
 
 	// Load the image and call windowScale to convert it to a canvas and add to the appropriate div
 	hiddenImg = new Image(); // Yuck, global variable
@@ -227,10 +227,10 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 
 	// === Add the overlay text
 	var overlayTextContainer = $('<div />', {"id": "overlayTextContainer"});
+	var overlayTextPosition = $('<div />', {"id": "overlayTextPosition"});
 	var overlayTextDiv = $('<div />', {"id": "overlayTextDiv"});
-	var overlayTextDragIconTL = $('<div />', {"id": "overlayTextDragIconTL", "data-html2canvas-ignore": "true"});
-	var overlayTextDragIconBR = $('<div />', {"id": "overlayTextDragIconBR", "data-html2canvas-ignore": "true"});
 	var overlayText = $('<textarea />', {"id": "overlayText"});
+	var overlayTextWidgets = $('<div />', {"id": "overlayTextWidgets"});
 	
 	// Apply randomly generated quotation text and find appropriate dimensions for the textbox
 	// Uses technique here: https://www.impressivewebs.com/textarea-auto-resize/
@@ -253,7 +253,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	});
 
 	// Make overlay text draggable
-	overlayTextDiv.draggable({containment: "parent"});
+	overlayTextDiv.draggable({containment: $('#overlayTextContainer')});
 	overlayTextDiv.on("dragstart", function() {
 		undoManager.initUndoEvent(new textMoveUndo(overlay_pos, function() {
 			var bg = $('#first');
@@ -261,39 +261,71 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 			this.newPosition[1] = overlay_pos[1];
 		}));
 	});
+	overlayTextDiv.on("drag", function(event, ui) {
+		var offsetH = parseInt($('#overlayTextDiv>.ui-wrapper').css("left"));
+		var offsetV = parseInt($('#overlayTextDiv>.ui-wrapper').css("top"));
+		$('#overlayTextWidgets').css({top: (ui.position.top + offsetV + 27), left: (ui.position.left + offsetH + 27)});
+	});
 	overlayTextDiv.on("dragstop", function() {
 		var bg = $('#first');
-		overlay_pos[0] = parseInt(overlayTextDiv.css("left").slice(0,-2))/bg.width();
-		overlay_pos[1] = parseInt(overlayTextDiv.css("top").slice(0,-2))/bg.height();
+		overlay_pos[0] = (parseInt(overlayTextDiv.css("left").slice(0,-2)) + 27)/bg.width();
+		overlay_pos[1] = (parseInt(overlayTextDiv.css("top").slice(0,-2)) + 27)/bg.height();
 	});
 
 	// Show and hide masks etc when hovered on overlay text
-	overlayTextDiv.hover(showMasks, hideMasks);
+	overlayTextPosition.hover(showMasks, hideMasks);
 
 	// Create overlay text div structure and add
-	overlayTextDiv.append(overlayTextDragIconTL);
-	overlayTextDiv.append(overlayTextDragIconBR);
 	overlayTextDiv.append(overlayText);
-	overlayTextContainer.append(overlayTextDiv);
+	overlayTextPosition.append(overlayTextDiv)
+	overlayTextPosition.append(overlayTextWidgets);
 	$('#resultPane').append(overlayTextContainer);
+	$('#resultPane').append(overlayTextPosition);
+
+	// Add scale icons
+	overlayTextWidgets.append($('<div />', {"class": "BRCornerScaleDiv ui-resizable-handle ui-resizable-se"}));
+	overlayTextWidgets.append($('<div />', {"class": "RCornerScaleDiv ui-resizable-handle ui-resizable-e"}));
+	overlayTextWidgets.append($('<div />', {"class": "TRCornerScaleDiv ui-resizable-handle ui-resizable-ne"}));
+	overlayTextWidgets.append($('<div />', {"class": "TCornerScaleDiv ui-resizable-handle ui-resizable-n"}));
+	overlayTextWidgets.append($('<div />', {"class": "TLCornerScaleDiv ui-resizable-handle ui-resizable-nw"}));
+	overlayTextWidgets.append($('<div />', {"class": "LCornerScaleDiv ui-resizable-handle ui-resizable-w"}));
+	overlayTextWidgets.append($('<div />', {"class": "BLCornerScaleDiv ui-resizable-handle ui-resizable-sw"}));
+	overlayTextWidgets.append($('<div />', {"class": "BCornerScaleDiv ui-resizable-handle ui-resizable-s"}));
 
 	// Make overlay text JQueryUI resizable (default resiable implementation does not allow capture of resize events)
 	overlayText.resizable({
-		handles: "se",
+		alsoResize: '#overlayTextWidgets',
+		handles: {
+			se: $('#overlayTextWidgets>.BRCornerScaleDiv'),
+			e: $('#overlayTextWidgets>.RCornerScaleDiv'),
+			ne: $('#overlayTextWidgets>.TRCornerScaleDiv'),
+			n: $('#overlayTextWidgets>.TCornerScaleDiv'),
+			nw: $('#overlayTextWidgets>.TLCornerScaleDiv'),
+			w: $('#overlayTextWidgets>.LCornerScaleDiv'),
+			sw: $('#overlayTextWidgets>.BLCornerScaleDiv'),
+			s: $('#overlayTextWidgets>.BCornerScaleDiv')
+		},
 		start: function(event, ui) {
-			undoManager.initUndoEvent(new textScaleUndo(overlay_scale.slice(), function() {
+			undoManager.initUndoEvent(new textScaleUndo(overlay_scale, overlay_pos, function() {
 							this.newScale = overlay_scale.slice();
+							this.newPos = overlay_pos.slice();
 						}));
 		},
 		resize: function(event, ui) {
-			var newWidth = ui.originalSize.width + ((ui.size.width - ui.originalSize.width) * 2);
-
 			var bg = $('#first');
-			overlay_scale[0] = newWidth/bg.width();
+			overlay_scale[0] = ui.size.width/bg.width();
 			overlay_scale[1] = ui.size.height/bg.height();
+
 			scaleAndPositionOverlayText();
+
+			$('#overlayTextWidgets').css({	left: overlay_pos[0]*bg.width() + ui.position.left,
+											top:  overlay_pos[1]*bg.height() + ui.position.top});
+		},
+		stop: function(event, ui) {
+			reassertNormalityMeme();
 		}
 	});
+	$('#overlayTextDiv>.ui-wrapper').css("padding", "0");
 }
 
 // We must scale and position the fg image when the window is resized
@@ -344,8 +376,8 @@ function windowScale(possibleEvent) {
 	var overlayTextContainer = $('#resultForeground');
 	$('#overlayTextContainer').css({top: resultForeground.position().top - 27,
 									left: resultForeground.position().left - 27,
-									width: resultForeground.width() + 27,
-									height: resultForeground.height() + 27});
+									width: resultForeground.width() + 2*27,
+									height: resultForeground.height() + 2*27});
 
 	// Size the text
 	scaleAndPositionOverlayText();
@@ -377,14 +409,14 @@ function initWhenImagesLoaded() {
 		alsoResize: "#resultForegroundWidgets",
 		// handles: "all",
 		handles: {
-			se: $('#BRCornerScaleDiv'),
-			e: $('#RCornerScaleDiv'),
-			ne: $('#TRCornerScaleDiv'),
-			n: $('#TCornerScaleDiv'),
-			nw: $('#TLCornerScaleDiv'),
-			w: $('#LCornerScaleDiv'),
-			sw: $('#BLCornerScaleDiv'),
-			s: $('#BCornerScaleDiv')
+			se: $('#resultForegroundWidgets>.BRCornerScaleDiv'),
+			e: $('#resultForegroundWidgets>.RCornerScaleDiv'),
+			ne: $('#resultForegroundWidgets>.TRCornerScaleDiv'),
+			n: $('#resultForegroundWidgets>.TCornerScaleDiv'),
+			nw: $('#resultForegroundWidgets>.TLCornerScaleDiv'),
+			w: $('#resultForegroundWidgets>.LCornerScaleDiv'),
+			sw: $('#resultForegroundWidgets>.BLCornerScaleDiv'),
+			s: $('#resultForegroundWidgets>.BCornerScaleDiv')
 		},
 		start: function(event, ui) {
 			// https://stackoverflow.com/questions/3699125/jquery-ui-resize-only-one-handle-with-aspect-ratio
@@ -425,7 +457,7 @@ function initWhenImagesLoaded() {
 	reassertNormality();
 
 	// Set the initial position of the meme text
-	overlay_pos[1] = 20 / $('#first').height();
+	overlay_pos[1] = 27 / $('#first').height();
 
 	// Show the overlay text
 	$('#instructions').css("display", "flex");
@@ -487,37 +519,42 @@ function setForegroundPane() {
 	resultForeground.css({top: bgY, left: bgX, width: bgWidth, height: bgHeight});
 }
 
-function scaleAndPositionWidgetDiv() {
+function scaleAndPositionWidgetDiv(widgetDiv, reference, pos) {
 	/*
-	The widget div shows the dashed outline and scale handles for the foreground.
+	The widget div shows the dashed outline and scale handles for the foreground and meme text
 	*/
-	var fg = $('#foregroundImage');
+	if (widgetDiv == null) 	widgetDiv = '#resultForegroundWidgets';
+	if (reference == null) 	reference = '#foregroundImage';
+	if (pos == null)		pos = fg_img_pos;
+
+	var ref = $(reference);
 	var bg = $('#first');
 	var bgWidth = bg.width();
 	var bgHeight = bg.height();
 	// Set the location and scale of the widget box
-	$("#resultForegroundWidgets").css({	top: fg_img_pos[1]*bgHeight,
-										left: fg_img_pos[0]*bgWidth,
-										width: fg.width(),
-										height: fg.height()});
+	$(widgetDiv).css({	top: pos[1]*bgHeight,
+						left: pos[0]*bgWidth,
+						width: ref.width(),
+						height: ref.height()});
 
 	// Set the location of the grabable scale buttons
-	var scaleHandleDim = parseInt($('#resultForegroundWidgets>.ui-resizable-handle').css("width").slice(0,-2));
+	var scaleHandleDim = parseInt($(widgetDiv+'>.ui-resizable-handle').css("width").slice(0,-2));
 	var halfScaleHandleDim = scaleHandleDim/2;
 	var bottom = "calc(100% - "+halfScaleHandleDim+"px)";
 	var right = "calc(100% - "+halfScaleHandleDim+"px)";
 	var left = (-halfScaleHandleDim) + "px";
 	var top = (-halfScaleHandleDim) + "px";
 	var halfwayTop = "calc(50% - " + halfScaleHandleDim + "px)";
-	$('#resultForegroundWidgets>.ui-resizable-handle').css({width: scaleHandleDim + "px", height: scaleHandleDim + "px"});
-	$("#BRCornerScaleDiv").css({top: bottom, left: right});
-	$("#RCornerScaleDiv").css({top: "50%", left: right});
-	$("#TRCornerScaleDiv").css({top: top, left: right});
-	$("#TCornerScaleDiv").css({top: top, left: halfwayTop});
-	$("#TLCornerScaleDiv").css({top: top, left: left});
-	$("#LCornerScaleDiv").css({top: "50%", left: left});
-	$("#BLCornerScaleDiv").css({top: bottom, left: left});
-	$("#BCornerScaleDiv").css({top: bottom, left: halfwayTop});
+	var halfwaySide = "calc(50% - " + halfScaleHandleDim + "px)";
+	$(widgetDiv+'>.ui-resizable-handle').css({width: scaleHandleDim + "px", height: scaleHandleDim + "px"});
+	$(widgetDiv+">.BRCornerScaleDiv").css({top: bottom, left: right});
+	$(widgetDiv+">.RCornerScaleDiv").css({top: halfwaySide, left: right});
+	$(widgetDiv+">.TRCornerScaleDiv").css({top: top, left: right});
+	$(widgetDiv+">.TCornerScaleDiv").css({top: top, left: halfwayTop});
+	$(widgetDiv+">.TLCornerScaleDiv").css({top: top, left: left});
+	$(widgetDiv+">.LCornerScaleDiv").css({top: halfwaySide, left: left});
+	$(widgetDiv+">.BLCornerScaleDiv").css({top: bottom, left: left});
+	$(widgetDiv+">.BCornerScaleDiv").css({top: bottom, left: halfwayTop});
 }
 
 function scaleAndPositionOverlayText() {
@@ -525,14 +562,21 @@ function scaleAndPositionOverlayText() {
 	var overlayText = $('#overlayText');
 	var overlayTextUI = $('#overlayTextDiv>.ui-wrapper');
 	var overlayTextDiv = $('#overlayTextDiv');
+	var overlayTextPosition = $('#overlayTextPosition');
 
 	// Get the background width and height
 	var bg = $('#first');
 	var bgWidth = bg.width();
 	var bgHeight = bg.height();
 
+	// Set the position of the position div
+	overlayTextPosition.css({left: bg.position().left, top: bg.position().top, width: bgWidth, height: bgHeight});
+
 	// Set location of the draggable div
-	overlayTextDiv.css({left: (overlay_pos[0]*bgWidth) + "px", top: (overlay_pos[1]*bgHeight) + "px"});
+	overlayTextDiv.css({left: (overlay_pos[0]*bgWidth - 27) + "px",
+						top: (overlay_pos[1]*bgHeight - 27) + "px",
+						width: (overlay_scale[0]*bgWidth + 2*27),
+						height: (overlay_scale[1]*bgHeight + 2*27)});
 
 	// Set the scale
 	overlayText.width(overlay_scale[0]*bgWidth);
@@ -542,6 +586,9 @@ function scaleAndPositionOverlayText() {
 
 	// Set the font size
 	overlayText.css({fontSize: (0.086 * bgHeight) + "px"});
+
+	// And now for the widget div
+	scaleAndPositionWidgetDiv('#overlayTextWidgets', '#overlayTextDiv', overlay_pos);
 }
 
 /*=================================
@@ -658,7 +705,7 @@ function showMasks() {
 	$('.mask').css('visibility', 'visible');
 	$('#resultForegroundWidgets').css('visibility', 'visible');
 	$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "solid"});
-	$('#overlayTextDragIconTL, #overlayTextDragIconBR').css('visibility', 'visible');
+	$('#overlayTextWidgets').css('visibility', 'visible');
 
 	if (isTouchscreen) setTimeout(hideMasks, 5000);
 }
@@ -670,7 +717,7 @@ function hideMasks() {
 	$('.mask').css('visibility', 'hidden');
 	$('#resultForegroundWidgets').css('visibility', 'hidden');
 	$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "none"});
-	$('#overlayTextDragIconTL, #overlayTextDragIconBR').css('visibility', 'hidden');
+	$('#overlayTextWidgets').css('visibility', 'hidden');
 }
 
 function reassertNormality() {
@@ -697,6 +744,30 @@ function reassertNormality() {
 				width: imageWidth,
 				height: imageHeight});
 	image.css({top: 0, left: 0});
+}
+
+function reassertNormalityMeme() {
+	// Version of reassert normality for the meme text
+	var overlayTextUI = $('#overlayTextDiv>.ui-wrapper');
+	var uiTop = overlayTextUI.position().top;
+	var uiLeft = overlayTextUI.position().left;
+	var uiWidth = overlayTextUI.width();
+	var uiHeight = overlayTextUI.height();
+
+	var overlayTextDiv = $('#overlayTextDiv');
+	var textDivTop = overlayTextDiv.position().top;
+	var textDivLeft = overlayTextDiv.position().left;
+
+	// Set the relative positions
+	overlayTextDiv.css({top: textDivTop + uiTop - 27,
+						left: textDivLeft + uiLeft - 27,
+						width: uiWidth + 2*27,
+						height: uiHeight + 2*27});
+	overlayTextUI.css({top: 0, left: 0});
+
+	// Set global state
+	overlay_pos[0] = (textDivLeft + uiLeft)/$('#first').width();
+	overlay_pos[1] = (textDivTop + uiTop)/$('#first').height();
 }
 
 /*=================

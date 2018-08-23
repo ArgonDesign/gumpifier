@@ -185,14 +185,18 @@ var textMoveUndo = function(originalPosition, finaliseOp) {
 	this.finaliseOp = finaliseOp;
 };
 
-var textScaleUndo = function(originalScale, finaliseOp) {
-	this.originalScale = originalScale;
+var textScaleUndo = function(originalScale, originalPosition, finaliseOp) {
+	this.originalScale = originalScale.slice();
+	this.originalPosition = originalPosition.slice();
+	this.newScale = null;
 	this.newScale = null;
 	this.undo = function() {
 		overlay_scale = this.originalScale.slice();
+		overlay_pos = this.originalPosition.slice();
 	};
 	this.redo = function() {
 		overlay_scale = this.newScale.slice();
+		overlay_pos = this.newPosition.slice();
 	};
 	this.finaliseOp = finaliseOp;
 }
