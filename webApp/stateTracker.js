@@ -47,15 +47,20 @@ function applyState(fg_changed, bg_changed, data) {
 		if (fg_changed) {
 			$('#option1Right').css({"display": "none"});
 			$('#option2Right').css({"display": "flex"});
-			// Set internal state
-			fg_url = data;
-			console.log(fg_url);
-			// Load the image
-			tmpFGimg.onload = function() {
-				$('#opt2ImageRight').css("background-image", "url(\""+tmpFGimg.src+"\")");	
-				checkSegmentation('fg_url');
-			};
-			tmpFGimg.src = data;
+			if (data != null) {
+				// Set internal state
+				fg_url = data;
+				console.log(fg_url);
+				// Load the image
+				tmpFGimg.onload = function() {
+					$('#opt2ImageRight').css("background-image", "url(\""+tmpFGimg.src+"\")");	
+					checkSegmentation('fg_url');
+				};
+				tmpFGimg.src = data;
+			}
+			else {
+				fg_segmented = true;
+			}
 		}
 		// Set colour of box
 		$('#uploadForeground').css("background-color", "rgb(237, 237, 237)");
@@ -77,14 +82,20 @@ function applyState(fg_changed, bg_changed, data) {
 		if (bg_changed) {
 			$('#option1Left').css({"display": "none"});
 			$('#option2Left').css({"display": "flex"});
-			// Set internal state
-			bg_url = data;
-			// Load the background image
-			tmpBGimg.onload = function() {
-				$('#opt2ImageLeft').css("background-image", "url(\""+tmpBGimg.src+"\")");	
-				checkSegmentation('bg_url');
-			};
-			tmpBGimg.src = data;
+			console.log(data);
+			if (data != null) {
+				// Set internal state
+				bg_url = data;
+				// Load the background image
+				tmpBGimg.onload = function() {
+					$('#opt2ImageLeft').css("background-image", "url(\""+tmpBGimg.src+"\")");	
+					checkSegmentation('bg_url');
+				};
+				tmpBGimg.src = data;
+			}
+			else {
+				bg_segmented = true;
+			}
 		}
 		// Set colour of box
 		$('#uploadBackground').css("background-color", "rgb(237, 237, 237)");
@@ -103,6 +114,7 @@ function applyState(fg_changed, bg_changed, data) {
 	// Check if we can enable the Gumpify button - only when both images are both selected and segmented
 	if (bg_selected && fg_selected && fg_segmented && bg_segmented) {
 		// Enable the Gumpify button
+		$('#gumpifyButton').off();
 		$('#gumpifyButton').click(gumpifyFn);
 		// Style the button to an appropriate colour
 		$('#gumpifyButton').css({"background-color": 'rgb(194, 145, 229)'});

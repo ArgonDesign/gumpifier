@@ -42,6 +42,7 @@ function uploadPictureFn(form, fg) {
 		Modifies state and calls the state tracker.
 	*/
 	// Submit the form
+	console.log(form);
 	form.ajaxSubmit(function(data) {
 		// We can't get the path to the local file via the form because of security limitations
 		// so we download the file uploaded to the server.
@@ -105,10 +106,13 @@ Returns:
 	None
 Operation:
 	See state tracker.
+	set_bg_false and set_fg_false in reality cause no change.  These functions are called if the user presses 'cancel'
+	on the upload form, or if the server returns a custom error.  Either way, we keep the currently selected photo
+	if there is one, or stay in an unselected state.
 */
-function set_fg_false(data) {fg_selected = false; applyState(true, false, data);}
+function set_fg_false(data) {applyState(true, false, data);}
 function set_fg_true(data) {fg_selected = true; applyState(true, false, data);}
-function set_bg_false(data) {bg_selected = false; applyState(false, true, data);}
+function set_bg_false(data) {applyState(false, true, data);}
 function set_bg_true(data) {bg_selected = true; applyState(false, true, data);}
 
 function gumpifyFn() {

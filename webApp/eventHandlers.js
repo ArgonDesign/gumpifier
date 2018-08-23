@@ -53,12 +53,9 @@ $(document).ready(function() {
 	$('#opt2OverlayRight').click(function() {$('#foregroundUploadButton').click();});
 	$('#opt2OverlayLeft').click(function() {$('#backgroundUploadButton').click();});
 
-	// Choose again buttons
-	$('#chooseAgainFG').click(set_fg_false);
-	$('#chooseAgainBG').click(set_bg_false);
-
 	// Gumpify button
-	$('#gumpifyButton').click(gumpifyFn);
+	// We do not bind this here as it is dynamically bound and unbound depending on whether both images are selected
+	// and segmented.  The function you want, though, is gumpifyFn() in topLevelEventFunctions.js.
 
 	/* === Screen 2 === */
 	// 'Got it!' button to make the instruction text disappear
