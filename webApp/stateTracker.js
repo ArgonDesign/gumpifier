@@ -65,7 +65,7 @@ function applyState(fg_changed, bg_changed, data) {
 		// Reset the form
 		document.getElementById("foregroundForm").reset();
 		// Revert layout
-		$('#option1Right').css({"display": "block"});
+		$('#option1Right').css({"display": "flex"});
 		$('#option2Right').css({"display": "none"});
 		// Set colour of box
 		$('#uploadForeground').css("background-color", "rgb(194, 145, 229)");
@@ -94,7 +94,7 @@ function applyState(fg_changed, bg_changed, data) {
 		// Reset the form
 		document.getElementById("backgroundForm").reset();
 		// Revert layout
-		$('#option1Left').css({"display": "block"});
+		$('#option1Left').css({"display": "flex"});
 		$('#option2Left').css({"display": "none"});
 		// Set colour of box
 		$('#uploadBackground').css("background-color", "rgb(194, 145, 229)");

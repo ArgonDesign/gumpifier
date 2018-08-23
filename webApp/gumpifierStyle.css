@@ -55,12 +55,12 @@ header {
 
 /* === Main content === */
 .uploadSquareMargin {
-	margin: 0 7%;
+	margin: 7%;
 }
 
 .uploadSquare {
-	width: 20vw;
-	height: 20vw;
+	width: 20vmax;
+	height: 20vmax;
 	border-radius: 5%;
 	background-color: rgb(237, 237, 237);
 }
@@ -71,11 +71,7 @@ header {
 	background-repeat: no-repeat;
 	background-position: center;
 	width: 100%;
-	height: 70%;
-}
-
-#backgroundForm, #foregroundForm {
-	height: 30%;
+	flex-grow: 1;
 }
 
 #foregroundUploadButton, #backgroundUploadButton {
@@ -90,7 +86,9 @@ header {
 	background-color: white;
 	/* Margin: top/bottom left/right */
 	margin: 7% 10%;
+	padding: 5px;
 	border-radius: 20px;
+	min-height: 30%;
 }
 
 #opt2ImageLeft, #opt2ImageRight {
@@ -120,7 +118,6 @@ header {
 	height: 5vh;
 	width: calc(20vw + 20vw + 14%);
 	background-color: rgb(194, 145, 229);
-	margin-top: 7%;
 	border-radius: 20px;
 }
 

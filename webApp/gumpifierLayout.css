@@ -94,6 +94,10 @@ header {
 }
 
 /* === Screen 1 === */
+#screen1-row1 {
+	flex-wrap: wrap;
+}
+
 #foregroundUploadInput, #backgroundUploadInput {
 	display: none;
 }
@@ -101,6 +105,8 @@ header {
 #option1Left, #option1Right {
 	width: 100%;
 	height: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
 #backgroundForm, #foregroundForm {
@@ -133,6 +139,10 @@ header {
 }
 
 .opt2OverlayText {
+	text-align: center;
+}
+
+#gumpifyButtonText {
 	text-align: center;
 }
 
