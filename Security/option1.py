@@ -1,5 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+################################################################################
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Module: Gumpifier
+# Author : Patrick Taylor
+################################################################################
 
 import cgi
 
