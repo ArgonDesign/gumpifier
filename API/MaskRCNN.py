@@ -120,6 +120,9 @@ class Prediction():
 
     def get_primary_human(self):
         masks = self.get_human_masks()
+        if (masks.size == 0):
+            raise ValueError("No person detected")
+
         boxes = self.get_human_boxes()
         counts = np.count_nonzero(masks, (0, 1))
         argmax = np.argmax(counts)
