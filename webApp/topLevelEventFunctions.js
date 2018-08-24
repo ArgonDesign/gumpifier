@@ -84,7 +84,7 @@ function checkSegmentation(what) {
 		enabled.  This function sends an AJAX request to the server for a specific image: the request only
 		returns when the image has finished segmenting.  When is does so, we call the state tracker.
 	*/
-	console.log("Check Segmentation called");
+	console.log("Check Segmentation called on " + what);
 	// We now make another AJAX call with returns when the image has finished segmenting
 	var toSend;
 	if (what == 'fg_url') toSend = {'fg_url': $(tmpFGimg).attr("src")}
@@ -95,9 +95,18 @@ function checkSegmentation(what) {
 		url: "cgi-bin/segCheck.py",
 		data: toSend,
 		success: function(data) {
-				console.log(data.done == bg_url);
-				if (what == 'fg_url' && data.done == fg_url) fg_segmented = true;
-				else if (what == 'bg_url' && data.done == bg_url ) bg_segmented = true;
+				if (what == 'fg_url')	fg_segErr_flag = 0;
+				else					bg_segErr_flag = 0;
+
+				if (data.done.slice(0,5) == "ERROR") {
+					console.log("There was an error in segmentation!");
+					if (what == 'fg_url')	fg_segErr_flag = 1;
+					else					bg_segErr_flag = 1; 
+				}
+				else {
+					if (what == 'fg_url' && data.done == fg_url) fg_segmented = true;
+					else if (what == 'bg_url' && data.done == bg_url ) bg_segmented = true;
+				}
 				applyState(false, false, null);
 			},
 		dataType: "json", // Could omit this because jquery correctly guesses JSON anyway
@@ -162,7 +171,10 @@ function gumpifyFn() {
 			// Continue
 			if (data.hasOwnProperty("ERROR")) {
 				// If there's a custom error (not an http error), display a message to the user
-				$('#resultPane').text("Something went wrong!");
+				$('#resultPane').html($('<div />', {"id": "errorMessageDiv"}));
+				console.log(data.ERROR.slice(0,9))
+				if (data.ERROR.slice(0,9) == "No person")	$('#errorMessageDiv').text("We didn't detect any people in the foreground");
+				else										$('#errorMessageDiv').text("Something went wrong!");
 				console.log(data.ERROR);
 			}
 			else {

@@ -26,6 +26,8 @@ var bg_url = "storage/Street_256x256.JPG";
 var isTouchscreen;
 var bg_errorFlag = 0;
 var fg_errorFlag = 0;
+var bg_segErr_flag = 0;
+var fg_segErr_flag = 0;
 
 function applyState(fg_changed, bg_changed, data) {
 	/*
@@ -62,7 +64,7 @@ function applyState(fg_changed, bg_changed, data) {
 				tmpFGimg.src = data;
 			}
 			else {
-				fg_segmented = true;
+				if (!fg_segErr_flag) fg_segmented = true;
 			}
 		}
 		// Set colour of box
@@ -97,7 +99,7 @@ function applyState(fg_changed, bg_changed, data) {
 				tmpBGimg.src = data;
 			}
 			else {
-				bg_segmented = true;
+				if (!bg_segErr_flag) bg_segmented = true;
 			}
 		}
 		// Set colour of box
@@ -135,6 +137,8 @@ function applyState(fg_changed, bg_changed, data) {
 		$('#gumpifyButton').css("cursor", "not-allowed");
 		// Set text
 		if (fg_errorFlag == 1 || bg_errorFlag == 1)	$('#gumpifyButtonText').text("Please upload a jpg or png");
+		else if (fg_segErr_flag == 1)				$('#gumpifyButtonText').text("There was an error detecting objects in the photo of a person");
+		else if (bg_segErr_flag == 1) 				$('#gumpifyButtonText').text("There was an error detecting objects in your background scene");
 		else if (fg_selected && bg_selected)		$('#gumpifyButtonText').text("Just a min, we're processing your images");
 		else 										$('#gumpifyButtonText').text("Upload images to Gumpify");
 	}

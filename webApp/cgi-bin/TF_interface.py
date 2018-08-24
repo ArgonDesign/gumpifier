@@ -96,7 +96,12 @@ def sendData(data, command):
 	response = ''.join(chunks)
 
 	# Check for errors
-	if response == "ERROR":
-		raise ValueError("TF Server produced an exception")
+	if response.startswith("ERROR"):
+		if response[6:] == "No person":
+			raise ValueError("TF Server produced an exception: No person")
+		elif response[6:] == "Command not found":
+			raise ValueError("TF Server produced an exception: Command not found")
+		else:
+			raise ValueError("TF Server produced an exception: no extra information")
 
 	return response

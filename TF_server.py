@@ -163,7 +163,7 @@ class TF_Socket():
 
 		# Run the relevant command, or produce an error if an unrecognised command is received
 		if command not in switchDict:
-			self.sendResponse("ERROR", socket)
+			self.sendResponse("ERROR:Command not found", socket)
 		else:
 			switchDict[command](data, socket)
 
@@ -226,6 +226,13 @@ class TF_Socket():
 			url = os.path.join(PREFIX, data)
 			self.api.load_foreground(url, fn=lambda: self.segObs.addStatus(url=url))
 			print("Segmented foreground successfully")
+		except ValueError as err:
+		# If there's an error segmenting the foreground, the callback function is never registered,
+		# so we register our own here.
+			traceback.print_exc()
+			if err.args[0] == "Nothing to detect":
+				self.segObs.addStatus(url=url, error="ERROR:Nothing to detect")
+			print("Error segmenting foreground")
 		except:
 			traceback.print_exc()
 			print("Error segmenting foreground")
@@ -241,9 +248,16 @@ class TF_Socket():
 			url = os.path.join(PREFIX, data)
 			self.api.load_background(url, fn=lambda: self.segObs.addStatus(url=url))
 			print("Segmented foreground successfully")
+		except ValueError as err:
+		# If there's an error segmenting the foreground, the callback function is never registered,
+		# so we register our own here.
+			traceback.print_exc()
+			if err.args[0] == "Nothing to detect":
+				self.segObs.addStatus(url=url, error="ERROR:Nothing to detect")
+			print("Error segmenting background")		
 		except:
 			traceback.print_exc()
-			print("Error segmenting foreground")		
+			print("Error segmenting background")
 
 	def checkImage(self, data, socket):
 		"""
@@ -252,7 +266,7 @@ class TF_Socket():
 		that the image has finished segementing.
 		"""
 		imageURL = os.path.join(PREFIX, data)
-		callbackFunction = lambda: self.sendResponse(json.dumps({"done": data}), socket)
+		callbackFunction = lambda error: self.sendResponse(json.dumps({"done": data if not error else "ERROR"}), socket)
 		self.segObs.addFn(url=imageURL, fn=callbackFunction)
 
 	def gumpify(self, data, socket):
@@ -270,6 +284,12 @@ class TF_Socket():
 			response["background_masks"] = [os.path.relpath(path, PREFIX) for path in response["background_masks"]]
 
 			response = json.dumps(response)
+		except ValueError as err:
+			traceback.print_exc()
+			if (err.args[0] == "attempt to get argmax of an empty sequence"):
+				response = "ERROR:No person"
+			else:
+				response = "ERROR"
 		except Exception as err:
 			traceback.print_exc()
 			response = "ERROR"
@@ -350,12 +370,17 @@ class SegmentObserver():
 
 		if url in self.statusMap:
 			print("url is already present, deleting from statusMap")
+			errorStr = self.statusMap[url]
+			if errStr == "ERROR:Nothing to detect":
+				error = True
+			else:
+				error = False
 			del self.statusMap[url]
 			print("statusMap: {}".format(self.statusMap))
 			self.fnMapLock.release()
 			self.statusMapLock.release()
 			print("locks released")
-			fn()
+			fn(error)
 		else:
 			print("url not already present, registering fn")
 			print("Here's the URL: {}".format(url))
@@ -366,7 +391,7 @@ class SegmentObserver():
 			self.statusMapLock.release()
 			print("locks released")
 
-	def addStatus(self, url):
+	def addStatus(self, url, error=""):
 		"""
 		Args:
 			url: string - the url of the resource which has been segmented
@@ -394,10 +419,13 @@ class SegmentObserver():
 			self.fnMapLock.release()
 			self.statusMapLock.release()
 			print("locks released")
-			toRun()
+			if error == "ERROR:Nothing to detect":
+				toRun(True)
+			else:
+				toRun(False)
 		else:
 			print("fn not already present, registering status")
-			self.statusMap[url] = True
+			self.statusMap[url] = error
 			print(self.statusMap)
 			self.fnMapLock.release()
 			self.statusMapLock.release()

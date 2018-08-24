@@ -42,7 +42,7 @@ opacity; cursor style.
 }
 
 /* === Loading message === */
-#loadingMessage {
+#loadingMessage, #errorMessageDiv {
     text-align: center;
     font-family: "Lato", sans-serif;
     font-size: 150%;

@@ -124,7 +124,12 @@ try:
 except ConnectionAbortedError as err: # TODO: catch all in one like (ConnectionAbortedError, ValueError, ConnectionRefusedError)
 	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ValueError as err:
-	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
+	if err.args[0] == "TF Server produced an exception: No person":
+		returnJSON = json.dumps({"ERROR": "No person\n" + traceback.format_exc()})
+	elif err.args[0] == "TF Server produced an exception: Command not found":
+		returnJSON = json.dumps({"ERROR": "Command not found\n" + traceback.format_exc()})
+	else:
+		returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 except ConnectionRefusedError:
 	returnJSON = json.dumps({"ERROR": "{}".format(traceback.format_exc())})
 
