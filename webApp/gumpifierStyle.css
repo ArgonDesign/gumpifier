@@ -155,11 +155,11 @@ header {
 	height: 1.5em;
 }
 
-#footerRight:hover {
+#footerRight:hover, #footerLeft:hover {
 	cursor: pointer;
 }
 
-#privacyNoticeButton {
+#privacyNoticeButton, #blogPostButtonFooter {
 	font-family: "Lato", sans-serif;
 }
 
@@ -167,4 +167,17 @@ header {
 	background-image: url("SharedResources/Gumpifier_Image_Assets/Privacy icon.png");
 	width: 1.5em;
 	height: 1.5em;
+}
+
+/* === 'Go Back' button for privacy notice and blog post === */
+.returnFromSubScreen {
+	background-color: rgb(194, 145, 229);
+	color: black;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 20px;
+	margin: 1vw;
+	cursor: pointer;
+	font-family: "Lato", sans-serif;
+	font-size: 130%;
 }

@@ -26,7 +26,7 @@ $(document).ready(function() {
 	$.get("privacyNotice.html", function(data) {$('#content-screenP').append(data)});
 	$.get("blogPost.html", function(data) {$('#content-screenB').append(data)});
 	$('#footerRight').click(changeScreens.showScreenP);
-	$('#blogPostButton').click(changeScreens.showScreenB);
+	$('#blogPostButton, #blogPostButtonFooter').click(changeScreens.showScreenB);
 	$('.returnFromSubScreen').click(changeScreens.returnFromLetter);
 	
 	/* === Screen 1 === */

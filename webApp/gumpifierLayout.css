@@ -152,6 +152,10 @@ header {
 	text-align: center;
 }
 
+#footerLeft {
+	float: left;
+}
+
 #footerRight {
 	float: right;
 }
