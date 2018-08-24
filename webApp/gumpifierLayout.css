@@ -89,12 +89,6 @@ header {
 	flex-flow: column;
 }
 
-/* === Privacy and blog post screens === */
-.returnFromSubScreen {
-	width: fit-content;
-	width: -moz-fit-content;
-}
-
 /* === Screen 1 === */
 #screen1-row1 {
 	flex-wrap: wrap;
