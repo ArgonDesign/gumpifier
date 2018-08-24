@@ -1,6 +1,6 @@
 # Webserver
 
-In principal, any reasonable webserver can be used.  In fact, we used Python's simpleHTTPServer module for development.  We use uWSGI in an slightly unintended way: it's the main http server, not a wsgi server which is called by another http server in front of it.  This rout was chosen in case the CGI scripts are later re-written to use wsgi.  If you do not use uWSGI as packaged here, see below.
+In principal, any reasonable webserver can be used (for instance, during development, we used Python's simpleHTTPServer module).  We use uWSGI in an slightly unintended way: it's the main http server with CGI scripts enabled; not a wsgi server which is called by another http server in front of it.  This route was chosen in case the CGI scripts are later re-written to use wsgi.  If you do not use uWSGI as packaged here, see below.
 
 ## Detail on specific files
 
@@ -34,14 +34,13 @@ The following steps were used to build uwsgi and cgi_plugin.so:
 
 `make`
 
-`python uswgiconfig.py --plugins/cgi`
+`python uwsgiconfig.py --plugin plugins/cgi`
 
 The following links are helpful:
 
 * [https://uwsgi-docs.readthedocs.io/en/latest/Download.html](https://uwsgi-docs.readthedocs.io/en/latest/Download.html)
 
 * <https://uwsgi-docs.readthedocs.io/en/latest/Install.html>
-* 
 
 ## Not using uWSGI
 
