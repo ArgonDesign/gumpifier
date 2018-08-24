@@ -63,7 +63,7 @@ if fileitem.filename: # fileitem.filename is actually a path
 		# Return the file where the image is stored
 		message = savedPath
 else:
-	message = "ERROR"
+	message = "ERROR:No file uploaded"
 
 # Return stuff to client
 print("""Content-type: text/html

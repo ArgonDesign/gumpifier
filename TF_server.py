@@ -287,7 +287,7 @@ class TF_Socket():
 			response = json.dumps(response)
 		except ValueError as err:
 			traceback.print_exc()
-			if (err.args[0] == "attempt to get argmax of an empty sequence"):
+			if (err.args[0] == "No person detected"):
 				response = "ERROR:No person"
 			else:
 				response = "ERROR"

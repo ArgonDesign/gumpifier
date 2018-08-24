@@ -43,29 +43,29 @@ function uploadPictureFn(form, fg) {
 		Modifies state and calls the state tracker.
 	*/
 	// Submit the form
-	console.log(form);
 	if (fg) fg_errorFlag = 0;
 	else	bg_errorFlag = 0;
 	form.ajaxSubmit(function(data) {
+		console.log(data)
 		if (fg) fg_segmented = false;
 		else	bg_segmented = false;
 		// We can't get the path to the local file via the form because of security limitations
 		// so we download the file uploaded to the server.
 		data = data.slice(0,-1); // Remove the training \n character
-		console.log(data.slice(0,5));
-		console.log(data.slice(6));
 		if (data.slice(0,5) != "ERROR") {
 			if (fg) set_fg_true(data);
 			else	set_bg_true(data);
 		}
 		else {
-			console.log(data.slice(6));
 			if (data.slice(6) == 'Filetype') {
-				if (fg) fg_errorFlag = 1;
-				else	bg_errorFlag = 1;
+				if (fg) {fg_errorFlag = 1; applyState(true, false, null);}
+				else	{bg_errorFlag = 1; applyState(false, true, null);}
+
 			}
-			if (fg) set_fg_false();
-			else	set_bg_false();
+			else if (data.slice(6) == 'No file uploaded') {
+				if (fg) set_fg_false();
+				else	set_bg_false();	
+			}
 		}
 	});
 	// Return false to prevent normal browser submit and page navigation
