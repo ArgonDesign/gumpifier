@@ -92,6 +92,7 @@ header {
 /* === Privacy and blog post screens === */
 .returnFromSubScreen {
 	width: fit-content;
+	width: -moz-fit-content;
 }
 
 /* === Screen 1 === */
