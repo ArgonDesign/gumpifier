@@ -241,7 +241,7 @@ sizing and pointer events.
 }
 
 #instructionsText {
-	max-height: 100%;
+	max-height: calc(100% - 3em);
 	flex-grow: 1;
 
 	display: flex;
