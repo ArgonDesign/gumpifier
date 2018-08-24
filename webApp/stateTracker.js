@@ -24,6 +24,8 @@ var bg_segmented = false;
 var fg_url = "storage/Poirot_cutout_256x256.PNG";
 var bg_url = "storage/Street_256x256.JPG";
 var isTouchscreen;
+var bg_errorFlag = 0;
+var fg_errorFlag = 0;
 
 function applyState(fg_changed, bg_changed, data) {
 	/*
@@ -132,7 +134,8 @@ function applyState(fg_changed, bg_changed, data) {
 		// Set cursor style
 		$('#gumpifyButton').css("cursor", "not-allowed");
 		// Set text
-		if (fg_selected && bg_selected) $('#gumpifyButtonText').text("Just a min, we're processing your images");
-		else 							$('#gumpifyButtonText').text("Upload images to Gumpify");
+		if (fg_errorFlag == 1 || bg_errorFlag == 1)	$('#gumpifyButtonText').text("Please upload a jpg or png");
+		else if (fg_selected && bg_selected)		$('#gumpifyButtonText').text("Just a min, we're processing your images");
+		else 										$('#gumpifyButtonText').text("Upload images to Gumpify");
 	}
 }

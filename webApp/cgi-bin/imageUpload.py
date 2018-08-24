@@ -48,19 +48,20 @@ if fileitem.filename: # fileitem.filename is actually a path
 	extension = os.path.basename(fileitem.filename).split('.')[-1]
 	# Try to guard against an insertion attack by testing that the extension is correct
 	# E.g. extension might be "/../....../etc/passwd"
-	if extension.lower() not in ['bmp', 'gif', 'ico', 'jpg', 'jpeg', 'png', 'svg', 'tif', 'tiff', 'webp']: # https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
-		extension = ""
-	hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
-	savedPath = os.path.join("storage", hashName)
-	# Use technique here to ensure strict permissions: https://stackoverflow.com/a/45368120
-	with open(os.open(savedPath, os.O_CREAT | os.O_WRONLY, 0o644), 'wb') as outputFile:
-		outputFile.write(fileitem.file.read())
+	if extension.lower() not in ['jpg', 'jpeg', 'png']: # https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
+		message = "ERROR:Filetype"
+	else:
+		hashName = hashlib.md5(str(time.time()).encode("utf8") + str(random.random()).encode("utf8")).hexdigest() + "." + extension
+		savedPath = os.path.join("storage", hashName)
+		# Use technique here to ensure strict permissions: https://stackoverflow.com/a/45368120
+		with open(os.open(savedPath, os.O_CREAT | os.O_WRONLY, 0o644), 'wb') as outputFile:
+			outputFile.write(fileitem.file.read())
 
-	# Set the TF server segmenting the image.  We're not waiting for a response from this one so use threading
-	threading.Thread(target=sendData, args=(savedPath, command)).start()
+		# Set the TF server segmenting the image.  We're not waiting for a response from this one so use threading
+		threading.Thread(target=sendData, args=(savedPath, command)).start()
 
-	# Return the file where the image is stored
-	message = savedPath
+		# Return the file where the image is stored
+		message = savedPath
 else:
 	message = "ERROR"
 

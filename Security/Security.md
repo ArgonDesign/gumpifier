@@ -51,7 +51,7 @@ Results:
 
 **Option 2 - Trick the server into uploading an executable script to cgi-bin/**
 
-This is the code on the server which handles image uploading:
+This is the code on the server which handles image uploading (at the time of writing):
 
 ```python
 extension = os.path.basename(fileitem.filename).split('.')[-1]

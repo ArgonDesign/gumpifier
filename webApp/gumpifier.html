@@ -104,7 +104,7 @@ Author : Patrick Taylor
 						<div class="uploadIcon" id="backgroundUploadIcon"></div>
 						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="backgroundForm">
 							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
-							<input type="file" name="bgimage" accept="image/*" id="backgroundUploadInput">
+							<input type="file" name="bgimage" accept="image/png,image/jpeg" id="backgroundUploadInput">
 							<label for="backgroundUploadInput" class="uploadButton flex-col-center" id="backgroundUploadButton">Upload photo of a scene</label>
 						</form>
 					</div>
@@ -125,7 +125,7 @@ Author : Patrick Taylor
 						<div class="uploadIcon" id="foregroundUploadIcon"></div>
 						<form method="post" action="/cgi-bin/imageUpload.py" enctype="multipart/form-data" id="foregroundForm">
 							<!-- Inspired by: https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/ -->
-							<input type="file" name="fgimage" accept="image/*" id="foregroundUploadInput">
+							<input type="file" name="fgimage" accept="image/image/png,image/jpeg" id="foregroundUploadInput">
 							<label for="foregroundUploadInput" class="uploadButton flex-col-center" id="foregroundUploadButton">Upload photo of a person</label>
 						</form>
 					</div>
