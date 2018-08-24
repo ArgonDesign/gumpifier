@@ -82,7 +82,8 @@ function checkSegmentation(what) {
 		chooseExamplePictureFn and uploadPictureFn both return immediately with the url of an image, but their
 		segmentation is started in the background.  Segmentation must finish before the 'Gumpify' button is
 		enabled.  This function sends an AJAX request to the server for a specific image: the request only
-		returns when the image has finished segmenting.  When is does so, we call the state tracker.
+		returns when the image has finished segmenting.  When is does so, we call the state tracker.  Also deals
+		with errors from the server.
 	*/
 	console.log("Check Segmentation called on " + what);
 	// We now make another AJAX call with returns when the image has finished segmenting
@@ -315,7 +316,7 @@ function downloadButtonFn() {
 					ctx.drawImage(tmpImg, 0, 0, tmpImg.width, tmpImg.height);
 					// Add the meme-like text
 					$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "none"});
-					html2canvas(document.getElementById('overlayTextContainer'), {backgroundColor: null}).then(function(textCanvas) {
+					html2canvas(document.getElementById('overlayTextPosition'), {backgroundColor: null}).then(function(textCanvas) {
 						ctx.globalCompositeOperation = "source-over";
 						ctx.drawImage(textCanvas, 0, 0);
 						/*

@@ -263,7 +263,8 @@ class TF_Socket():
 		"""
 		Registers a callback function with the Observer pattern.  When the image given in 'data' has been segmented,
 		the callback function is run.  This function returns the url of the image to the front end client to signal 
-		that the image has finished segementing.
+		that the image has finished segementing.  If there has been an error in segmentation, the argument to the 
+		lambda will be True and an appropriate message will be returned to the client.
 		"""
 		imageURL = os.path.join(PREFIX, data)
 		callbackFunction = lambda error: self.sendResponse(json.dumps({"done": data if not error else "ERROR"}), socket)
@@ -358,7 +359,8 @@ class SegmentObserver():
 			None
 		Operation:
 			Locks both maps to ensure correct concurrent execution
-			If the URL has already been segmented: remove entry from the status map, releases locks and executes function
+			If the URL has already been segmented: finds if there has been an error in segmentation, removes
+			entry from the status map, releases locks and executes function with appropriate argument.
 			If not: registers the (url, fn) pair in the function map then releases locks
 		"""
 		print("addFn acquiring locks")
@@ -400,7 +402,8 @@ class SegmentObserver():
 		Operation:
 			Locks both maps to ensure correct concurrent execution.
 			If the URL already has a callback function registered, removes the entry from the function map, releases
-			locks and executes the callback.
+			locks, finds if there has been an error in segmentation and executes the callback with
+			appropriate argument.
 			If not: registers the (url, True) pair in the status map
 		"""
 		print("addStatus acquiring locks")
