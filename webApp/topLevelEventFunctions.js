@@ -85,9 +85,9 @@ function checkSegmentation(what) {
 		url: "cgi-bin/segCheck.py",
 		data: toSend,
 		success: function(data) {
-				console.log(data);
-				if (what == 'fg_url') fg_segmented = true;
-				else if (what == 'bg_url') bg_segmented = true;
+				console.log(data.done == bg_url);
+				if (what == 'fg_url' && data.done == fg_url) fg_segmented = true;
+				else if (what == 'bg_url' && data.done == bg_url ) bg_segmented = true;
 				applyState(false, false, null);
 			},
 		dataType: "json", // Could omit this because jquery correctly guesses JSON anyway

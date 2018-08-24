@@ -247,11 +247,11 @@ class TF_Socket():
 	def checkImage(self, data, socket):
 		"""
 		Registers a callback function with the Observer pattern.  When the image given in 'data' has been segmented,
-		the callback function is run.  This function returns 'true' to the front end client to signal that the image
-		has finished segementing.
+		the callback function is run.  This function returns the url of the image to the front end client to signal 
+		that the image has finished segementing.
 		"""
 		imageURL = os.path.join(PREFIX, data)
-		callbackFunction = lambda: self.sendResponse(json.dumps({"done": True}), socket)
+		callbackFunction = lambda: self.sendResponse(json.dumps({"done": data}), socket)
 		self.segObs.addFn(url=imageURL, fn=callbackFunction)
 
 	def gumpify(self, data, socket):

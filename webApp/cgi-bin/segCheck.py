@@ -14,7 +14,7 @@ This CGI script asks the TF server to tell it when a certain image has finished 
 CGI args:
 	JSON.  Either {'fg_url': url} or {'bg_url': url}
 CGI return:
-	JSON.  {done: true} - returned when the TF server says segmentation is finished.
+	JSON.  {done: url} - returned when the TF server says segmentation is finished.
 """
 
 import cgi, os
