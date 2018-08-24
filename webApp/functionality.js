@@ -254,7 +254,7 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	});
 
 	// Make overlay text draggable
-	overlayTextDiv.draggable({containment: $('#overlayTextContainer')});
+	overlayTextDiv.draggable({containment: '#overlayTextContainer', scroll: false});
 	overlayTextDiv.on("dragstart", function() {
 		undoManager.initUndoEvent(new textMoveUndo(overlay_pos, function() {
 			var bg = $('#first');
