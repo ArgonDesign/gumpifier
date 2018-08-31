@@ -372,7 +372,7 @@ class SegmentObserver():
 
 		if url in self.statusMap:
 			print("url is already present, deleting from statusMap")
-			errorStr = self.statusMap[url]
+			errStr = self.statusMap[url]
 			if errStr == "ERROR:Nothing to detect":
 				error = True
 			else:
