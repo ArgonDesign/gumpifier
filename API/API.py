@@ -463,6 +463,9 @@ class API:
         # Conversion to correlated colour temperature in K.
         CCT = colour.xy_to_CCT_Hernandez1999(xy)
         response["white_balance"] = CCT
+
+        if np.any(npisnan(response["white_balance"])):  # ! This may not even be correct - see above note
+            response["white_balance"] = 2856  # arbitrary
         
         return response
         
