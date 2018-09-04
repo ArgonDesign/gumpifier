@@ -227,7 +227,12 @@ class MaskRCNN():
         self.model.keras_model._make_predict_function()
         
     def load_image(self, filename):
-        return skimage.io.imread(filename)
+        im = skimage.io.imread(filename)
+
+        # Check for number of channels
+        if len(im.shape) == 2:  # Single channel image
+            im = np.dstack((im, im, im))
+        return im
 
     def predict_from_file(self, filename):
         image = self.load_image(filename)
