@@ -293,7 +293,15 @@ function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, 
 	overlayTextWidgets.append($('<div />', {"class": "BLCornerScaleDiv ui-resizable-handle ui-resizable-sw"}));
 	overlayTextWidgets.append($('<div />', {"class": "BCornerScaleDiv ui-resizable-handle ui-resizable-s"}));
 
-	// Make overlay text JQueryUI resizable (default resiable implementation does not allow capture of resize events)
+	// Add pass through to text area
+	overlayTextWidgets.click(function(e) {
+		if (!$(e.target).hasClass("ui-resizable-handle")) {
+			$("#overlayText").focus()
+		}
+	});
+	
+
+	// Make overlay text JQueryUI resizable (default resizable implementation does not allow capture of resize events)
 	overlayText.resizable({
 		alsoResize: '#overlayTextWidgets',
 		handles: {
