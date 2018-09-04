@@ -323,13 +323,22 @@ function downloadButtonFn() {
 
 					console.log(canvas.height)
 					console.log(canvas.width)
-					html2canvas(document.getElementById('overlayTextPosition'), {backgroundColor: null}).then(function(textCanvas) {
+					html2canvas($('#overlayTextDiv>.ui-wrapper')[0], {backgroundColor: null}).then(function(textCanvas) {
 						ctx.globalCompositeOperation = "source-over";
-						
+						var img = $('.backgroundImage').first()[0]
+						var x = ((pos.left) / img.clientWidth) * img.naturalWidth;
+						var y = ((pos.top) / img.clientHeight) * img.naturalHeight;
 
-						ctx.drawImage(textCanvas, 0, 0);
+						// Resizing textCanvas proportionally
+						var height = overlayTextWidgetDiv.height()
+						var width = overlayTextWidgetDiv.width()
+
+						var newWidth = (width / img.clientWidth) * img.naturalWidth; // Not working
+						var newHeight = (height / img.clientHeight) * img.naturalHeight; // Not working
+						
+						ctx.drawImage(textCanvas, x, y, newWidth, newHeight);
 						/*
-						Some browsers (e.g. Edge) don't support canvas.toBlob, which is used below to donwload stuff.
+						Some browsers (e.g. Edge) don't support canvas.toBlob, which is used below to download stuff.
 						We use a polyfill to define a custom version.  See here:
 						https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
 						*/
