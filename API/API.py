@@ -436,6 +436,9 @@ class API:
         print(avg_b, sampled_area_b_mean, fg_img_b_mean)
         response["brightness"] = (avg_b - fg_img_b_mean) / 2.55
 
+        # ! There's a possibility for this value to be NaN - I can't seem to reproduce it in the time available so I've switched to a standard brightness value
+        if np.any(npisnan(response["brightness"])):  # ! This may not even be correct - see above note
+            response["brightness"] = 7 # arbitrary
 
         # ! Get the new temperature
         sampled_area_temp = bg_img # [top_left_y:bottom_right_y, top_left_x:bottom_right_x, :3]
@@ -485,7 +488,7 @@ class API:
             "What’s normal anyways?",
             "The best thing about visiting the President is the food! ",
             "Sometimes, I guess there just aren’t enough rocks.",
-            "I didn’t know I was supposed to be looking for Him, sir. ",
+            "I didn’t know I was supposed to be looking for him, sir. ",
             "Gump, what’s your sole purpose in this Army? To do whatever you tell me to do, sir!",
             "We was always taking long walks, and we was always looking for a guy named \"Charlie\"."
         ]
