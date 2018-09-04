@@ -437,7 +437,7 @@ class API:
         response["brightness"] = (avg_b - fg_img_b_mean) / 2.55
 
         # ! There's a possibility for this value to be NaN - I can't seem to reproduce it in the time available so I've switched to a standard brightness value
-        if np.any(npisnan(response["brightness"])):  # ! This may not even be correct - see above note
+        if np.any(np.isnan(response["brightness"])):  # ! This may not even be correct - see above note
             response["brightness"] = 7 # arbitrary
 
         # ! Get the new temperature
@@ -464,7 +464,7 @@ class API:
         CCT = colour.xy_to_CCT_Hernandez1999(xy)
         response["white_balance"] = CCT
 
-        if np.any(npisnan(response["white_balance"])):  # ! This may not even be correct - see above note
+        if np.any(np.isnan(response["white_balance"])):  # ! This may not even be correct - see above note
             response["white_balance"] = 2856  # arbitrary
         
         return response
