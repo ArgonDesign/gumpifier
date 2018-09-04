@@ -316,8 +316,17 @@ function downloadButtonFn() {
 					ctx.drawImage(tmpImg, 0, 0, tmpImg.width, tmpImg.height);
 					// Add the meme-like text
 					$('#overlayTextDiv>.ui-wrapper').css({borderStyle: "none"});
+					// Completely detaching the ui resizable handles from the dom because it interferes with the canvas construction
+					// It is much nicer than switching off all the event handlers and doesn't include an overlaying element
+					var pos = $("#overlayTextWidgets").position()
+					var overlayTextWidgetDiv = $("#overlayTextWidgets").detach();
+
+					console.log(canvas.height)
+					console.log(canvas.width)
 					html2canvas(document.getElementById('overlayTextPosition'), {backgroundColor: null}).then(function(textCanvas) {
 						ctx.globalCompositeOperation = "source-over";
+						
+
 						ctx.drawImage(textCanvas, 0, 0);
 						/*
 						Some browsers (e.g. Edge) don't support canvas.toBlob, which is used below to donwload stuff.
@@ -362,10 +371,13 @@ function downloadButtonFn() {
 							link.click();
 							link.remove();
 						});
+						$('#overlayTextDiv').after(overlayTextWidgetDiv);
+
 					});
 				}
 				// Add the src to set the processing going
 				tmpImg.src = data;
+
 			}
 		},
 		dataType: "json",
@@ -374,6 +386,7 @@ function downloadButtonFn() {
 			console.log(error);
 		}
 	});
+
 }
 
 function editButtonFn() {
