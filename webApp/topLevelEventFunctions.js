@@ -264,6 +264,36 @@ function downloadButtonFn() {
 		does most of the processing of the final image.  When this returns, we must still layer on the meme text,
 		which we do mostly using an external library (html2canvas), before setting the image downloading.
 	*/
+	var modal = $("<div>", {
+		id: 'downloadModal',
+	})
+	modal.appendTo($("#containerForeground"))
+	modal.dialog({
+		open: function(event, ui) {
+        	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+		},
+		create: function(e, ui) {
+			$(this).dialog('widget')
+				.find('.ui-dialog-titlebar')
+				.removeClass('ui-corner-all')
+				.addClass('ui-corner-top');
+		},
+		closeOnEscape: false,
+		draggable: false,
+		show: "fadeIn",
+		hide: "slideUp",
+		modal: true,
+		resizable: false,
+		title: "Please wait..."
+	})
+	var containerDiv = $("<div>")
+	containerDiv.appendTo(modal)
+	$("<span style='text-align: center; font-family: \"Lato\", sans-serif; display:block; float:none;'>Generating your image...</span><br>").appendTo(containerDiv)
+	var loadingBar = $("<div>")
+	loadingBar.appendTo(containerDiv)
+	loadingBar.progressbar({
+		value: false
+	}) 
 	// Marshall the data
 	var BG_segment_URLs = new Array();
 	$('.backgroundImage').not('.mask').each(function(index) {
@@ -381,6 +411,8 @@ function downloadButtonFn() {
 							link.remove();
 						});
 						$('#overlayTextDiv').after(overlayTextWidgetDiv);
+						modal.dialog("close");
+						modal.remove();
 
 					});
 				}
