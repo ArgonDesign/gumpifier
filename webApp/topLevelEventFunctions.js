@@ -158,6 +158,8 @@ function gumpifyFn() {
 	$('header').css("height", "10vh");
 	// Provide a loading message
 	$('#resultPaneOuter').prepend($('<div />', {"id": "loadingMessage"}));
+	// Removes error messages if one appeared before
+	$("#errorMessageDiv").remove();
 	$('#loadingMessage').text("Loading...");
 	// Once the basics of screen 2 have been set it's now safe to send the AJAX request to the server and load the
 	// images
