@@ -171,6 +171,7 @@ function gumpifyFn() {
 		success: function(data) {
 			// Remove loading message
 			$('#loadingMessage').remove();
+			
 			// Continue
 			if (data.hasOwnProperty("ERROR")) {
 				// If there's a custom error (not an http error), display a message to the user
@@ -280,6 +281,7 @@ function downloadButtonFn() {
 				.removeClass('ui-corner-all')
 				.addClass('ui-corner-top');
 		},
+		close: function(event, ui) { $(this).remove(); }, 
 		closeOnEscape: false,
 		draggable: false,
 		show: "fadeIn",
@@ -365,8 +367,8 @@ function downloadButtonFn() {
 						var height = overlayTextWidgetDiv.height()
 						var width = overlayTextWidgetDiv.width()
 
-						var newWidth = (width / img.clientWidth) * img.naturalWidth; // Not working
-						var newHeight = (height / img.clientHeight) * img.naturalHeight; // Not working
+						var newWidth = (width / img.clientWidth) * img.naturalWidth;
+						var newHeight = (height / img.clientHeight) * img.naturalHeight;
 						
 						ctx.drawImage(textCanvas, x, y, newWidth, newHeight);
 						/*
@@ -414,8 +416,6 @@ function downloadButtonFn() {
 						});
 						$('#overlayTextDiv').after(overlayTextWidgetDiv);
 						modal.dialog("close");
-						modal.remove();
-
 					});
 				}
 				// Add the src to set the processing going
