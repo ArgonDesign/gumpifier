@@ -225,7 +225,7 @@ class API:
         print("makedirs", time.time() - start_time)
         fname = os.path.join(filepath, hashlib.md5(str(time.time() + random.random()).encode("utf8")).hexdigest() + ".png")
         print("hash", time.time() - start_time)
-        Image.fromarray(img.astype("uint8")).save(fname, compress_level=1)
+        Image.fromarray(img.astype("uint8")).save(fname, optimise=True, quality=85)
         print("saved", time.time() - start_time)
         return fname
 
