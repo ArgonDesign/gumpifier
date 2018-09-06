@@ -172,7 +172,7 @@ class API:
         for im in foreground_array:
             im = Image.fromarray(im)
             paste_img.paste(im, mask=im)
-        return self.save_img_get_url(np.array(paste_img), quality=True)
+        return self.save_img_get_url(np.array(paste_img))
         # Test
         return self.save_img_get_url(return_image)  # ! It kinda works? A little bit weird....
 
@@ -241,17 +241,14 @@ class API:
         print (labels)
         return foreground, background, labels
 
-    def save_img_get_url(self, img, quality=False):
+    def save_img_get_url(self, img):
         start_time = time.time()
         filepath = "webApp/storage/"
         os.makedirs(filepath, exist_ok=True)
         print("makedirs", time.time() - start_time)
         fname = os.path.join(filepath, hashlib.md5(str(time.time() + random.random()).encode("utf8")).hexdigest() + ".png")
         print("hash", time.time() - start_time)
-        if not quality:
-            Image.fromarray(img.astype("uint8")).save(fname, optimise=True, quality=85)
-        else:
-            Image.fromarray(img.astype("uint8")).save(fname, quality=95)
+        Image.fromarray(img.astype("uint8")).save(fname, quality=95)
         print("saved", time.time() - start_time)
         return fname
 
