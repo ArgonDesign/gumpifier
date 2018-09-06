@@ -43,6 +43,15 @@ function uploadPictureFn(form, fg) {
 		Modifies state and calls the state tracker.
 	*/
 	// Submit the form
+	var progressDiv = $("<div />")
+	if (fg) $("#uploadForeground").append(progressDiv)
+	else    $("#uploadBackground").append(progressDiv)
+	progressDiv.append("<br><span style='text-align: center; font-family: \"Lato\", sans-serif; display:block; float:none;'>Uploading your image...</span><br>")
+	var loadingbar = $("<div />")
+	progressDiv.append(loadingbar)
+	loadingbar.progressbar({
+		value: false
+	}) 
 	if (fg) fg_errorFlag = 0;
 	else	bg_errorFlag = 0;
 	form.ajaxSubmit(function(data) {
@@ -67,6 +76,7 @@ function uploadPictureFn(form, fg) {
 				else	set_bg_false();	
 			}
 		}
+		setTimeout(function() { progressDiv.remove(); }, 750);
 	});
 	// Return false to prevent normal browser submit and page navigation
 	return false;
