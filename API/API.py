@@ -19,6 +19,8 @@ from scipy.ndimage.morphology import binary_erosion
 import colour
 from collections import OrderedDict
 from operator import itemgetter
+from io import BytesIO
+import base64
 # TODO: Do some clever processing to see what images are actually in front and which are behind?
 class API:
     def __init__(self):
@@ -72,21 +74,26 @@ class API:
         print(self.background_map[background].get_all_data()[2])
         fn()
 
-    def create_image(self, cutout, foreground, background, position, scale, bg_image):
+    def create_image(self, cutout, foreground, background, position, scale, colour_correction, bg_image):
         """Creates and returns a complete image from the data provided by the frontend UI
         
         Args:
-            cutout (image_url -> str): A url to the cutout of the person
+            # //cutout (image_url -> str): A url to the cutout of the person
+            cutout (base64 encoded image): The modified canvas image
             foreground (list of image_urls -> str list): A list of the things that have been placed in the foreground
             background (List of image_urls -> str list): A list of the things that have been placed in the background
             position (tuple of floats): A tuple of floats containing the position of the person relative to the background image
             scale (tuple of floats): A tuple of floats containing the x y stretch of the person relative to the dimensions of the background image
+            colour_correction (dictionary of floats): A dictionary containing the corrected brightness and temperature
             bg_image (image_url -> str): A url to the background - used as a key
         Returns:
             (image_url -> str): A url to the final image
         """
         print(cutout, foreground, background, position, scale)
-        cutout_array = self.nn.load_image(cutout)
+        modified_cutout_str = cutout.replace('data:image/png;base64,', '').replace(" ", "+")
+
+        cutout_array = np.array(Image.open(BytesIO(base64.b64decode(modified_cutout_str))))
+        print("cutout_shape:", cutout_array.shape)
         foreground_array = list(map(self.nn.load_image, foreground))
         if foreground_array: # Only print if foreground_array has elements!
             print("fg shape:", foreground_array[0].shape)
@@ -96,6 +103,7 @@ class API:
         bg_image_array[:, :, 3] = 255
         # ! Goal: Create a new image from the parameters
         # TODO: Resize the image
+        # TODO: Colour correction
         # TODO: Position and place the person
         # TODO: Add shadows
         # TODO: Place foreground
@@ -104,9 +112,24 @@ class API:
         cutout_img = Image.fromarray(cutout_array)
         bg_image_size = bg_image_array.shape[:2][::-1]
         new_dims = int(bg_image_size[0] * scale[0]), int(bg_image_size[1] * scale[1])
-        cutout_img = cutout_img.resize(new_dims)
+        print("New size:", new_dims)
+        cutout_img = cutout_img.resize(new_dims, Image.ANTIALIAS)
         cutout_array = np.array(cutout_img)
 
+        # # * Colour correct the person - based on the JS code
+
+        # # ** white balance adjustment
+        # r_adjust = int(255 / colour_correction["white_balance"]["r"])
+        # g_adjust = int(255 / colour_correction["white_balance"]["g"])
+        # b_adjust = int(255 / colour_correction["white_balance"]["b"])
+        # cutout_array[:, :, :3] *= np.array([r_adjust, g_adjust, b_adjust], dtype="uint8")
+
+
+        # # ** Brightness adjustment
+        # adjust = int(255 * (colour_correction["brightness"] / 100));
+        # cutout_array[:, :, :3] += np.uint8(adjust)
+
+        # print("--------------", "\r\n", cutout_array, "--------------", "\r\n")
         # # * Position and place the person
         top_left_x, top_left_y = int(bg_image_size[0] * position[0]), int(bg_image_size[1] * position[1])
         bottom_right_x, bottom_right_y = int(top_left_x + new_dims[0]), int(top_left_y + new_dims[1])
@@ -149,7 +172,7 @@ class API:
         for im in foreground_array:
             im = Image.fromarray(im)
             paste_img.paste(im, mask=im)
-        return self.save_img_get_url(np.array(paste_img))
+        return self.save_img_get_url(np.array(paste_img), quality=True)
         # Test
         return self.save_img_get_url(return_image)  # ! It kinda works? A little bit weird....
 
@@ -218,14 +241,17 @@ class API:
         print (labels)
         return foreground, background, labels
 
-    def save_img_get_url(self, img):
+    def save_img_get_url(self, img, quality=False):
         start_time = time.time()
         filepath = "webApp/storage/"
         os.makedirs(filepath, exist_ok=True)
         print("makedirs", time.time() - start_time)
         fname = os.path.join(filepath, hashlib.md5(str(time.time() + random.random()).encode("utf8")).hexdigest() + ".png")
         print("hash", time.time() - start_time)
-        Image.fromarray(img.astype("uint8")).save(fname, optimise=True, quality=85)
+        if not quality:
+            Image.fromarray(img.astype("uint8")).save(fname, optimise=True, quality=85)
+        else:
+            Image.fromarray(img.astype("uint8")).save(fname, quality=95)
         print("saved", time.time() - start_time)
         return fname
 

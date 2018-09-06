@@ -311,14 +311,14 @@ function downloadButtonFn() {
 
 	var toSend = {
 		"BG_segment_URLs": BG_segment_URLs,
-		"FG_cutout_URL": FG_cutout_URL,
+		"FG_cutout_URL": document.getElementById('foregroundImage').toDataURL("image/png"), // Gives the canvas data instead
 		"layer" : layer,
 		"position": position,
 		"scale" : scale,
 		"original_BG_URL": original_BG_URL,
 		"colour_correction": {
-			"brightness": colourState.brightness,
-			"white_balance": colourState.whiteBalance
+			"brightness": parseFloat($('#brightnessSlider').val()),
+			"white_balance": colorTemperatureToRgb($('#whiteBalanceSlider').val())
 		}
 	};
 

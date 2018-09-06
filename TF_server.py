@@ -304,19 +304,22 @@ class TF_Socket():
 		"""
 		data = json.loads(data)
 		# Marshall data
-		cutout = os.path.join(PREFIX, data['FG_cutout_URL'])
+		cutout = data['FG_cutout_URL'] # Changed to pass the cutout image directly
 		layer = data['layer']
 		foreground = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][layer:]]
 		background = [os.path.join(PREFIX, postfix) for postfix in data['BG_segment_URLs'][:layer]]
 		position = data['position']
 		scale = data['scale']
 		original_BG_URL = os.path.join(PREFIX, data['original_BG_URL'])
+		colour_correction = data['colour_correction']
 
-		print(cutout, foreground, background, position, scale, original_BG_URL)
+		print(cutout, foreground, background, position, scale, colour_correction, original_BG_URL)
+		print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+		print("COLOUR CORRECTION:" ,  str(colour_correction))
 
 		# Get response
 		try:
-			response = self.api.create_image(cutout, foreground, background, position, scale, original_BG_URL)
+			response = self.api.create_image(cutout, foreground, background, position, scale, colour_correction, original_BG_URL)
 			response = os.path.relpath(response, PREFIX)
 		except Exception as err:
 			traceback.print_exc()
