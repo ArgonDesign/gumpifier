@@ -165,6 +165,9 @@ function gumpifyFn() {
 	$('.vCenterPane').css({"justify-content": 'flex-start'});
 	// Hide the header sub text and change height of header
 	$('#headerSubText').hide()
+	// Hide the canvas commands and download button until things have loaded
+	$("#canvasCommandsOuter").hide()
+	$("#downloadButton").hide()
 	$('header').css("height", "10vh");
 	// Provide a loading message
 	$('#resultPaneOuter').prepend($('<div />', {"id": "loadingMessage"}));
@@ -192,7 +195,7 @@ function gumpifyFn() {
 				console.log(data.ERROR);
 			}
 			else {
-				// If AJAX suceeded:
+				// If AJAX succeeded:
 				// Set some global state representing certain parts of the response
 				$('#vCenterPaneLeftTitle').text("Your Gumpified Image");
 				fg_img_pos = data.position;
@@ -204,7 +207,7 @@ function gumpifyFn() {
 				colourState.initialize(data.colour_correction.brightness, data.colour_correction.white_balance);
 				$('#brightnessSlider').val(data.colour_correction.brightness);
 				$('#whiteBalanceSlider').val(data.colour_correction.white_balance);
-				// Load images and construct screen 2
+				// Load images and construct screen 2. Also shows the hidden buttons
 				loadImageSegments(data.BG_segment_URLs, data.FG_cutout_URL, data.layer, data.BG_mask_URLs, data.quotation);
 
 				// === Set and display instructions text
@@ -230,6 +233,8 @@ function gumpifyFn() {
 				if (totalObjects == 1)	$('#singularOrPlural').text("object");
 				else					$('#singularOrPlural').text("objects");
 				$('#numberOfObjects').text(totalObjects);
+
+				
 
 				// === Set and display purple header instructions text
 				// var foundList = $('#headerTextSub');

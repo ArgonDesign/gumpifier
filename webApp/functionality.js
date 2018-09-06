@@ -94,17 +94,17 @@ High level functions called early on or throughout running
 function loadImageSegments(BG_segment_URLs, FG_cutout_URL, layer, BG_mask_URLs, quotation) {
 	/*
 	Args:
-		BG_segment_URLs: string Array - the URLs for the background segements images
+		BG_segment_URLs: string Array - the URLs for the background segments images
 		FG_cutout_URL: string - the URL for the foreground image
-		BG_mask_URLs: string Array - the URLs for the background segement mask images
+		BG_mask_URLs: string Array - the URLs for the background segment mask images
 		quotation: string - the text for the meme textarea
 	Precondition:
 		BG_segment_URLs.length = BG_mask_URLs.length + 1
 	Returns:
 		None
 	Operation:
-		- Inserts the nested div structure for each background images and asssociated mask
-		- Adds an onload function and id "first" to the very background image.  The background images are scalled using
+		- Inserts the nested div structure for each background images and associated mask
+		- Adds an onload function and id "first" to the very background image.  The background images are scaled using
 		  css and the resulting size of the very background one is used a reference for other things.
 		- Inserts the nested div structure for the foreground image and its 'widget box' (the div for the dashed 
 		  outline and scaling handles). 
@@ -402,7 +402,7 @@ function initWhenImagesLoaded() {
 	Returns:
 		None
 	Operation:
-		- If both the foreground and very background iamge havn't loaded, return.
+		- If both the foreground and very background image haven't loaded, return.
 		- Make the foreground image resizable.
 		- Set the initial position of the overlayText
 	*/
@@ -470,6 +470,10 @@ function initWhenImagesLoaded() {
 
 	// Show the overlay text
 	$('#instructions').css("display", "flex");
+
+	// Show the canvas commands and download button
+	$("#canvasCommandsOuter").show()
+	$("#downloadButton").show()
 }
 
 /*==============================
