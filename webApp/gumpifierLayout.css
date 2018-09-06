@@ -145,6 +145,7 @@ header {
 /* === Footer === */
 #footer {
 	text-align: center;
+	padding-left: 20px;
 }
 
 #footerLeft {
@@ -153,6 +154,7 @@ header {
 
 #footerRight {
 	float: right;
+	padding-right: 20px;
 }
 
 #privacyIcon {
