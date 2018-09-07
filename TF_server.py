@@ -94,8 +94,8 @@ class TF_Socket():
 			# Make sure we receive at least 5 bytes to get the length
 			chunks = []
 			bytes_recd = 0
-			while bytes_recd < 5:
-				chunk = clientsocket.recv(5 - bytes_recd)
+			while bytes_recd < 6:
+				chunk = clientsocket.recv(6 - bytes_recd)
 				if chunk == '':
 					break
 				chunks.append(chunk.decode())
@@ -103,8 +103,8 @@ class TF_Socket():
 
 			# Calculate the length we still need to receive and initialse a new chunks array
 			combined = ''.join(chunks)
-			length = int(combined[:5])
-			chunks = [combined[5:]]
+			length = int(combined[:6])
+			chunks = [combined[6:]]
 			length -= len(chunks[0])
 
 			# Receive the rest of the message
@@ -148,6 +148,7 @@ class TF_Socket():
 		Returns:
 			None
 		"""
+		print(data, command)
 		print("Received command: {}".format(command))
 
 		switchDict = {
@@ -197,7 +198,7 @@ class TF_Socket():
 		"""
 		Sends response to socket, with a 5 byte length field at the start, then destroys the socket
 		"""
-		toSend = "{:0>5}".format(len(response)) + response
+		toSend = "{:0>6}".format(len(response)) + response
 		print("Sending this: {}".format(toSend))
 		totalsent = 0
 		while totalsent < len(toSend):

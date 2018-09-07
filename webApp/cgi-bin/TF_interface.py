@@ -42,9 +42,8 @@ def sendData(data, command):
 	"""
 
 	# === Marshall the overall string to send
-	length = "{:0>5}".format(len(command) + len(data)) # Left align the length by padding zeros to 5 characters long
+	length = "{:0>6}".format(len(command) + len(data)) # Left align the length by padding zeros to 5 characters long
 	toSend = length + command + data
-
 	# === Set up the socket === #
 	# https://docs.python.org/2/howto/sockets.html
 
@@ -69,8 +68,8 @@ def sendData(data, command):
 	# === Reveive response data === #
 	chunks = []
 	bytes_recd = 0
-	while bytes_recd < 5:
-		chunk = s.recv(5 - bytes_recd)
+	while bytes_recd < 6:
+		chunk = s.recv(6 - bytes_recd)
 		if chunk == '':
 			raise ConnectionAbortedError("Failed to receive length data")
 		chunks.append(chunk.decode())
@@ -78,8 +77,8 @@ def sendData(data, command):
 
 	# Calculate the length we still need to receive and initialse a new chunks array
 	combined = ''.join(chunks)
-	length = int(combined[:5])
-	chunks = [combined[5:]]
+	length = int(combined[:6])
+	chunks = [combined[6:]]
 	length -= len(chunks[0])
 
 	# Receive the rest of the message
