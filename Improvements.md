@@ -12,6 +12,7 @@ Please add more!
 * Add an AI that chooses the best position to put the person into
 * Add an AI that improves upon the auto colour selection
 * Improve the segmentation!
+* Add shadows
 
 ## Rest of the project
 

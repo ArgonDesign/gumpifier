@@ -90,20 +90,46 @@ class Prediction():
             'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
 
     def _apply_mask(self, image, mask):
+        """Gets a select part of an image, rendering the rest 0 / invisible if 4 channel
+        
+        Args:
+            image (image_array -> np.array): The image array
+            mask (binary_array -> np.array): The mask
+        
+        Returns:
+            image_array -> np.array: the image array where only the masked values are their original, the rest changed to 0
+        """
+
         new_im = np.full(image.shape, 0)
         idx = (mask==1)
         new_im[idx] = image[idx]
         return new_im
 
     def get_human_masks(self):
+        """Gets all the masks of human objects
+        
+        Returns:
+            np.array: Array of human masks
+        """
+
         human_ids = (self.class_ids==1)
         return self.masks[:, :, human_ids]
 
     def get_human_boxes(self):
+        """Gets all the bounding boxes of human objects
+        
+        Returns:
+            np.array: Array of human bounding boxes
+        """
+
         human_ids = (self.class_ids==1)
         return self.boxes[human_ids]
 
     def get_size_comparable_masks(self):
+        """
+        Intention was to use certain objects for scaling to a known value. NOT USED
+        """
+
         """ Figure out how you're going to get this working
             Are you going to compare the avg human height to the average object height
             And then scale?
@@ -112,13 +138,34 @@ class Prediction():
         pass  
         
     def get_all_humans_image(self):
+        """Creates an image of just the people
+        
+        Returns:
+            image_array -> np.array: Image array of just the people
+        """
+
         human_masks = self.get_human_masks()
         return self.get_image_from_mask(human_masks)
 
     def get_all_data(self):
+        """Returns all the known static data
+        
+        Returns:
+            tuple of stuff: Tuple of stuff
+        """
+
         return self.image, self.masks, self.class_ids, self.boxes, self.scores
 
     def get_primary_human(self):
+        """Selects the biggest person
+        
+        Raises:
+            ValueError: if there are no people in the image, throw an error
+        
+        Returns:
+            Mask: Mask of the biggest person
+        """
+
         masks = self.get_human_masks()
         if (masks.size == 0):
             raise ValueError("No person detected")
@@ -129,10 +176,25 @@ class Prediction():
         return masks[:, :, [argmax]], boxes[argmax]
 
     def get_image_from_mask(self, masks):
+        """Using a list of masks, get the resulting image
+        
+        Args:
+            masks (np.array of masks): An array of masks
+        
+        Returns:
+            image_array -> np.array: The new image
+        """
+
         merged_indices = np.any(masks, axis=2)
         return self._apply_mask(self.image, merged_indices).astype('uint8')
 
     def get_primary_human_image(self):
+        """Gets the image of the primary person. 4 channel with alpha
+        
+        Returns:
+            image_array -> np.array: the image of the primary person with an alpha channel
+        """
+
         mask, (top_left_y, top_left_x, bottom_right_y, bottom_right_x) = self.get_primary_human()
         full_img = self.get_image_from_mask(mask)
         cut_down_img = full_img[top_left_y:bottom_right_y + 1, top_left_x:bottom_right_x + 1, :]
@@ -142,13 +204,18 @@ class Prediction():
 
         return with_alpha
 
+        """This was an idea I had to refine the edges and to fill in everything in the middle. Didn't work to a sufficient level
+        
+        """
+
         refined_boundary = np.array(Image.fromarray(with_alpha).filter(ImageFilter.FIND_EDGES))
         Image.fromarray(refined_boundary).save("test.png")
         print("COUNT", np.count_nonzero(refined_boundary[:, :, 3]), "SIZE", refined_boundary.shape)
         # ! GOAL: Find out whether a given point is inside the refined boundary
-        # TODO: Take a point, and extend it right
-        # TODO: count the number of intersections
-        # TODO: if odd, it's inside the shape, otherwise it's outside
+        # * (TODOs are done)
+        # DONE: Take a point, and extend it right
+        # DONE: count the number of intersections
+        # DONE: if odd, it's inside the shape, otherwise it's outside
 
         # * Take a point
         for y in range(with_alpha.shape[0]):
@@ -173,10 +240,26 @@ class Prediction():
         return with_alpha
 
     def make_image_transparent(self, img):
+        """Adds a transparency layer, and make the entire image transparent
+        
+        Args:
+            img (image_array -> np.array): Image of the thing to add transparency layer
+        
+        Returns:
+            image_array -> np.array: Image array with a transparency layer, with everything made transparent
+        """
+
         return np.concatenate((img, np.full((img.shape[0], img.shape[1], 1), 0)), axis=2).astype('uint8')
 
 
     def place_behind_random_object(self, person):
+        """Original idea was to have the person placed behind some objects - if one was chosen as the scaler, put the person behind it.
+        NOT USED
+        
+        Args:
+            person (image_array -> np.array): The cutout
+        """
+
         person_image_shape = person.shape
         self_image_shape = self.image.shape
         object_to_be_behind = [2, 3, 4, 9, 11, 14, 15, 16, 17, 18, 19, 20, 23, 57, 58, 59, 60, 61, 64]
@@ -224,9 +307,18 @@ class MaskRCNN():
         K.clear_session()
         self.model = modellib.MaskRCNN(mode="inference", model_dir="Logs", config=config)
         self.model.load_weights(COCO_MODEL_PATH, by_name=True)
-        self.model.keras_model._make_predict_function()
+        self.model.keras_model._make_predict_function()  # Allows for setting the model up before first use
         
     def load_image(self, filename):
+        """Load the image as an np array    
+        
+        Args:
+            filename (str): The location of the file
+        
+        Returns:
+            image_array: The loaded image
+        """
+
         im = skimage.io.imread(filename)
 
         # Check for number of channels
@@ -235,10 +327,31 @@ class MaskRCNN():
         return im
 
     def predict_from_file(self, filename):
+        """Segment the image
+        
+        Args:
+            filename (str): Filename
+        
+        Returns:
+            Prediction instance: A wrapper for the returned predictions
+        """
+
         image = self.load_image(filename)
         return self.predict_from_array(image)
 
     def predict_from_array(self, image):
+        """Segment the image
+        
+        Args:
+            image (image_array -> np.array): the image array
+        
+        Raises:
+            ValueError: If there is absolutely nothing in the image, throw an error
+        
+        Returns:
+            Prediction instance: A wrapper for the returned predictions
+        """
+
         image = image[:, :, :3]
         results = self.model.detect([image])
         r = results[0]

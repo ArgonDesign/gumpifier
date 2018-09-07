@@ -5,7 +5,7 @@
 # (c) Copyright 2018 Argon Design Ltd. All rights reserved.
 #
 # Module : Gumpifier
-# Author : Argon Design
+# Author : Mohammed Daudali
 # Desc: The API for segmenting the images and retrieving the segmentation data
 # ******************************************************************************
 from MaskRCNN import MaskRCNN
@@ -21,7 +21,6 @@ from collections import OrderedDict
 from operator import itemgetter
 from io import BytesIO
 import base64
-# TODO: Do some clever processing to see what images are actually in front and which are behind?
 class API:
     def __init__(self):
         self.nn = MaskRCNN()
@@ -30,6 +29,9 @@ class API:
         self.objects_to_be_behind = [] # [2, 3, 4, 9, 11, 15, 16, 17, 18, 19, 20, 23, 57, 58, 59, 60, 61, 64]  # ! This is a personal choice and needs to be reconsidered in more depth
 
     def clear_dict(self):
+        """Clears the dictionary based on what images are left - the cleanup is properly done in TF server
+        """
+
         print(os.getcwd())
         files_remaining = set(os.path.join("webApp/storage/", x) for x in os.listdir("webApp/storage"))
         new_keys_fg = set(self.foreground_map.keys()) & files_remaining
@@ -115,7 +117,8 @@ class API:
         print("New size:", new_dims)
         cutout_img = cutout_img.resize(new_dims, Image.ANTIALIAS)
         cutout_array = np.array(cutout_img)
-
+        
+        # ! This is now done by directly converting the image from the canvas to a png and uploading it. 
         # # * Colour correct the person - based on the JS code
 
         # # ** white balance adjustment
@@ -135,7 +138,8 @@ class API:
         bottom_right_x, bottom_right_y = int(top_left_x + new_dims[0]), int(top_left_y + new_dims[1])
         # bg_image[top_left_y:bottom_right_y+1, top_left_x:bottom_right_x+1] = cutout_array
 
-        # * Add shadows
+        # * Add shadows 
+        # ! Ignored
         bg_image_person_img = np.zeros(bg_image_array.shape)
 
         # ! Only add the part of the image that's visible
@@ -210,10 +214,28 @@ class API:
         return response
 
     def get_cutout(self, fg_pred):
+        """Gets the cutout of the person
+        
+        Args:
+            fg_pred (image_url -> str): The image url of the foreground, used as a key
+        
+        Returns:
+            image_url: Cutout of the person
+        """
+
         img = fg_pred.get_primary_human_image()
         return self.save_img_get_url(img)
 
     def get_segments_and_labels(self, bg_pred):
+        """Gets the segments and labels from the AI, sorted, for display in the front end
+        
+        Args:
+            bg_pred (image_url -> str): The image url of the background, used as a key
+        
+        Returns:
+            foreground, background, labels: Returns the segments and labels with confidence scores
+        """
+
         start_time = time.time()
         image, masks, classes, _, scores = bg_pred.get_all_data()
         image = bg_pred.make_image_transparent(image)
@@ -242,6 +264,15 @@ class API:
         return foreground, background, labels
 
     def save_img_get_url(self, img):
+        """Saves the image and returns the location
+        
+        Args:
+            img (image_array -> np.array): The image data
+        
+        Returns:
+            image_url -> str: The location of the saved image
+        """
+
         start_time = time.time()
         filepath = "webApp/storage/"
         os.makedirs(filepath, exist_ok=True)
@@ -253,8 +284,16 @@ class API:
         return fname
 
     def get_optimal_position(self, fg_pred, bg_pred):
-        # ! This is a big one 
-        # ! We will eventually need a GAN to determine if this is a realistic looking image
+        """Estimates a position for the person
+        
+        Args:
+            fg_pred (image_url -> str): The image url of the foreground, used as a key
+            bg_pred (image_url -> str): The image url of the background, used as a ke
+        
+        Returns:
+            tuple of floats: A floats containing the position as a percentage of the image dimensions, as mentioned in the spec
+        """
+
         # * Return as a tuple of fpns between 0 and 1
         
         # TODO: Choosing a random object
@@ -355,7 +394,15 @@ class API:
         return (left_x / image_width, upper_y / image_height), scale
 
     def get_optimal_scale(self, object_id):
-        # ! This is a big one
+        """Returns a scaling param for the person based on the object it's being sized against. This is manual
+        
+        Args:
+            object_id (int): the object ID given by MS coco
+        
+        Returns:
+            Float: A float containing the multiplier of how much to scale the person by
+        """
+
         # * Return as a multiple of the background image size
 
         # TODO: Find the average size of a bunch of objects
@@ -391,6 +438,18 @@ class API:
         return height_multiplier[object_id]
 
     def get_random_object(self, bg_pred):
+        """Gets the object to scale against, weighted based on the relative sizes of the objects
+        
+        Args:
+            bg_pred (image_url -> str): The image url of the background, used as a key
+        
+        Raises:
+            ValueError: If everything is too small, thrown an error
+        
+        Returns:
+            int: The object ID given by MS coco
+        """
+
         # ! Return the required bb, mask and stuff 
         # ! This is so you can limit which objects to actually use
 
@@ -418,6 +477,15 @@ class API:
         return random_object
 
     def get_mask_fill(self, bg_pred): 
+        """Fill in the mask with white for use in the front end
+        
+        Args:
+            bg_pred (image_url -> str): the image url of the background, used as a key
+        
+        Returns:
+            List of image_urls: The list of white images that mask the object
+        """
+
         image, masks, classes = bg_pred.get_all_data()[:3]
         image = bg_pred.make_image_transparent(image)
         image[:, :, 3] = 255
@@ -433,6 +501,7 @@ class API:
 
     def get_mask_outline_from_fill(self, bg_pred):
         """
+        NOT USED
         This function starts off by recomputing the values from get_mask_fill to form a mask.
         An erode is then performed, before the two are subtracted, forming an outline.
         """
@@ -459,6 +528,15 @@ class API:
         return mask_outline
 
     def get_mask_outline(self, bg_pred):
+        """Same as fill, but gets the outline. NOT USED
+        
+        Args:
+            bg_pred (image_url -> str): the image url of the background, used as a key
+        
+        Returns:
+            List of image_urls: The list of white images that mask the object
+        """
+
         image, masks, classes = bg_pred.get_all_data()[:3]
         image = bg_pred.make_image_transparent(image)
         image[:, :, 3] = 255
@@ -488,6 +566,18 @@ class API:
         return mask_outline
 
     def get_colour_correction(self, bg_pred, fg_img, position, scale):
+        """Computes some mean colour values and brightness of the background image to estimate what the foreground should be like
+        
+        Args:
+            bg_pred (image_url -> str): The image url of the background, used as a key
+            fg_img (image_url -> str): The image url of the foreground, used as a key
+            position (tuple of floats): The position of the person
+            scale (float): the height multiplier
+        
+        Returns:
+            dictionary with int and float: Returns a dictionary containing a float for the brightness modifier and int for the white_balance
+        """
+
         fg_img = self.nn.load_image(fg_img)
         bg_img = bg_pred.get_all_data()[0]
         mask = np.full(fg_img.shape[:2], 255)
@@ -552,6 +642,12 @@ class API:
         return response
         
     def get_random_forrest_gump_quotation(self):
+        """Selects a random quote
+        
+        Returns:
+            str: The quote
+        """
+
         quotes = [
             "Life is like a box of chocolates, you never know what you're going to get.",
             "My mama says that stupid is as stupid does.",
