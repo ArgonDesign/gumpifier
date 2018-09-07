@@ -468,12 +468,13 @@ function initWhenImagesLoaded() {
 	// Set the initial position of the meme text
 	overlay_pos[1] = 27 / $('#first').height();
 
+	// Show the canvas commands and download button
+	$("#canvasCommands").css("visibility", "visible")
+	$("#downloadButton").show()
+
 	// Show the overlay text
 	$('#instructions').css("display", "flex");
 
-	// Show the canvas commands and download button
-	$("#canvasCommandsOuter").show()
-	$("#downloadButton").show()
 }
 
 /*==============================

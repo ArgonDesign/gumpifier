@@ -166,7 +166,7 @@ function gumpifyFn() {
 	// Hide the header sub text and change height of header
 	$('#headerSubText').hide()
 	// Hide the canvas commands and download button until things have loaded
-	$("#canvasCommandsOuter").hide()
+	$("#canvasCommands").css("visibility", "hidden") // To keep things from jumping around
 	$("#downloadButton").hide()
 	$('header').css("height", "10vh");
 	// Provide a loading message
@@ -338,7 +338,7 @@ function downloadButtonFn() {
 	};
 
 	console.log(toSend);
-
+	var canvasPromise = html2canvas($('#overlayTextDiv>.ui-wrapper')[0], {backgroundColor: null})
 	// Send the data to the server
 	$.ajax({
 		type: "POST",
@@ -372,7 +372,7 @@ function downloadButtonFn() {
 
 					console.log(canvas.height)
 					console.log(canvas.width)
-					html2canvas($('#overlayTextDiv>.ui-wrapper')[0], {backgroundColor: null}).then(function(textCanvas) {
+					$.when(canvasPromise).then(function(textCanvas) {
 						ctx.globalCompositeOperation = "source-over";
 						var img = $('.backgroundImage').first()[0]
 						var x = ((pos.left) / img.clientWidth) * img.naturalWidth;
