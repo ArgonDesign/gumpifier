@@ -275,6 +275,8 @@ class API:
         if bg_pred.class_ids[random_object] in self.objects_to_be_behind:
             scale_compared_object *= 0.9
 
+        image_height, image_width = bg_pred.get_all_data()[0].shape[:2]
+
 
         object_height = bottom_right_y - top_left_y
         new_person_height = object_height * scale_compared_object
@@ -282,14 +284,71 @@ class API:
         mask, person_bb = fg_pred.get_primary_human()
         person_width = person_bb[3] - person_bb[1]
         person_height = person_bb[2] - person_bb[0] 
-        person_scale = new_person_height / person_height
+        person_scale = new_person_height / person_height + 0.15 * (image_height - c_y - new_person_height) / image_height # Slight factor for depth into the image
 
         new_person_width = person_width * person_scale
 
-        left_x = c_x - new_person_width // 2
-        upper_y = c_y - new_person_height
 
-        image_height, image_width = bg_pred.get_all_data()[0].shape[:2]
+        if bg_pred.class_ids[random_object] == 1: # If it's people, do something different
+            # Could do something smarter here and see what objects surround it. 
+            # Time constraints mean I'm just making it go next to the person
+            bb = bb.tolist()
+            # * Find the centre of the person selected
+            centre_y = (bottom_right_y + top_left_y) // 2
+            # * going right
+            sorted_bbs = sorted(bg_pred.boxes.tolist(), key=lambda x: x[1])
+            cur_index = sorted_bbs.index(bb) + 1
+            prev_bb = bb
+            found = False
+            while cur_index < len(sorted_bbs):
+                # Check that the centre line matches
+                if not (sorted_bbs[cur_index][0] < centre_y and sorted_bbs[cur_index][2] > centre_y):
+                    cur_index += 1
+                # End of previous to start of next
+                print(cur_index)
+                print(sorted_bbs[cur_index], prev_bb)
+                if sorted_bbs[cur_index][1] - prev_bb[3] > new_person_width * 0.9:
+                    # We've found a gap!
+                    found = True
+                    break
+                else:
+                    prev_bb = sorted_bbs[cur_index]
+                    cur_index += 1
+            
+            if found:
+                # Position them between the two people
+                left_x = prev_bb[3] + 10
+            elif image_width - sorted_bbs[-1][3] > new_person_width * 0.9: # There's no gap between people but is there a gap at the end?
+                print(sorted_bbs[-1])
+                left_x = sorted_bbs[-1][3] + 10
+
+            else:
+                # * go left
+                # * sort by right most, in reverse order
+                sorted_bbs = sorted(bg_pred.boxes.tolist(), key=lambda x: x[3], reverse=True)
+                cur_index = sorted_bbs.index(bb) + 1
+                prev_bb = bb
+                found = False
+                while cur_index < len(sorted_bbs):
+                    if not (sorted_bbs[cur_index][0] < centre_y and sorted_bbs[cur_index][2] > centre_y):
+                        cur_index += 1
+                    # Start of previous to end of next
+                    if sorted_bbs[cur_index][3] - prev_bb[1] > new_person_width * 0.9:
+                        # We've found a gap!
+                        found = True
+                        break
+                    else:
+                        prev_bb = sorted_bbs[cur_index]
+                        cur_index += 1
+                if found:
+                    # Position them between the two people
+                    left_x = sorted_bbs[cur_index][1] - new_person_width + 10
+                else: # There's not much choice
+                    left_x = 10
+        else:
+            left_x = c_x - new_person_width // 2
+        upper_y = c_y - new_person_height + (100 * image_height/1440) # 100 worked well on a 1440px height image, so scale it based on that.
+            # It is just to shift the person down to look more realistic. The value is arbitrary
         
         scale = (new_person_width / image_width, new_person_height / image_height)
 
@@ -308,7 +367,7 @@ class API:
         print(object_id)
         # height_multiplier = [0] * 81
         height_multiplier = [
-            0.0, 1.0, 1.5, 1.4, 
+            0.0, 1.1, 1.5, 1.4, 
             1.5, 0.2, 0.6, 0.9, 
             0.6, 0.5, 0.6, 1.5, 
             0.6, 1.8, 1.7, 0.0, 
@@ -344,7 +403,7 @@ class API:
             top_left_y, top_left_x, bottom_right_y, bottom_right_x = bb
             object_height = bottom_right_y - top_left_y
             new_person_height = object_height * scale
-            softmax.append(new_person_height / (im_h * 0.1))
+            softmax.append(new_person_height / (im_h * 0.3))
         
         if all(x < 1 for x in softmax):
             raise ValueError("Everything is too small!")
@@ -493,29 +552,3 @@ class API:
         return response
         
     def get_random_forrest_gump_quotation(self):
-        quotes = [
-            "Life is like a box of chocolates, you never know what you're going to get.",
-            "My mama says that stupid is as stupid does.",
-            "My mama always said, \"dyin' was a part of life\". I sure wish it wasn't.",
-            "My mama says they were magic shoes. They could take me anywhere.",
-            "Run! Forrest! Run!",
-            "I may not be a smart man, but I know what love is.",
-            "I'm pretty tired... I think I'll go home now.",
-            "Hello. My name's Forrest, Forrest Gump. You want a chocolate?",
-            "That's all I have to say about that.",
-            "Get down! Shut up!",
-            "Some people don't think miracles happen, well, they do.",
-            "From that day on, if I was going somewhere, I was running!",
-            "I'm sorry I ruined your New Year's Eve party, Lieutenant Dan.",
-            "Hey! Don't call him stupid! You shut up! Don't you ever call him stupid!",
-            "Anyway, like I was sayin', shrimp is the fruit of the sea.",
-            "Momma always had a way of explaining things so I could understand them.",
-            "Momma always said you can tell a lot about a person by their shoes, where they're going, where they've been.",
-            "What’s normal anyways?",
-            "The best thing about visiting the President is the food! ",
-            "Sometimes, I guess there just aren’t enough rocks.",
-            "I didn’t know I was supposed to be looking for him, sir. ",
-            "Gump, what’s your sole purpose in this Army? To do whatever you tell me to do, sir!",
-            "We was always taking long walks, and we was always looking for a guy named \"Charlie\"."
-        ]
-        return np.random.choice(quotes, 1)[0]
