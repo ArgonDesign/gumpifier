@@ -43,9 +43,16 @@ function uploadPictureFn(form, fg) {
 		Modifies state and calls the state tracker.
 	*/
 	// Submit the form
-	var progressDiv = $("<div />")
-	if (fg) $("#uploadForeground").append(progressDiv)
-	else    $("#uploadBackground").append(progressDiv)
+	if (fg) {
+		$("#prgsfg").remove();
+		var progressDiv = $("<div />", {id: "prgsfg"})
+		$("#uploadForeground").append(progressDiv)
+	}
+	else {
+		$("#prgsbg").remove();
+		var progressDiv = $("<div />", {id: "prgsbg"})
+		$("#uploadBackground").append(progressDiv)
+	}
 	progressDiv.append("<br><span style='text-align: center; font-family: \"Lato\", sans-serif; display:block; float:none;'>Uploading your image...</span><br>")
 	var loadingbar = $("<div />")
 	progressDiv.append(loadingbar)
