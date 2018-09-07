@@ -552,3 +552,29 @@ class API:
         return response
         
     def get_random_forrest_gump_quotation(self):
+        quotes = [
+            "Life is like a box of chocolates, you never know what you're going to get.",
+            "My mama says that stupid is as stupid does.",
+            "My mama always said, \"dyin' was a part of life\". I sure wish it wasn't.",
+            "My mama says they were magic shoes. They could take me anywhere.",
+            "Run! Forrest! Run!",
+            "I may not be a smart man, but I know what love is.",
+            "I'm pretty tired... I think I'll go home now.",
+            "Hello. My name's Forrest, Forrest Gump. You want a chocolate?",
+            "That's all I have to say about that.",
+            "Get down! Shut up!",
+            "Some people don't think miracles happen, well, they do.",
+            "From that day on, if I was going somewhere, I was running!",
+            "I'm sorry I ruined your New Year's Eve party, Lieutenant Dan.",
+            "Hey! Don't call him stupid! You shut up! Don't you ever call him stupid!",
+            "Anyway, like I was sayin', shrimp is the fruit of the sea.",
+            "Momma always had a way of explaining things so I could understand them.",
+            "Momma always said you can tell a lot about a person by their shoes, where they're going, where they've been.",
+            "What’s normal anyways?",
+            "The best thing about visiting the President is the food! ",
+            "Sometimes, I guess there just aren’t enough rocks.",
+            "I didn’t know I was supposed to be looking for him, sir. ",
+            "Gump, what’s your sole purpose in this Army? To do whatever you tell me to do, sir!",
+            "We was always taking long walks, and we was always looking for a guy named \"Charlie\"."
+        ]
+        return np.random.choice(quotes, 1)[0]
