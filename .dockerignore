@@ -1,0 +1,21 @@
+# ******************************************************************************
+# Argon Design Ltd. Project P8010 Spock
+# (c) Copyright 2018 Argon Design Ltd. All rights reserved.
+#
+# Module : gumpifier
+# Author : Steve Barlow
+#
+# DESCRIPTION:
+# Files/directories not to copy into docker image
+# *******************************************************************************
+
+webApp/cgi-bin/__pycache__
+webApp/storage/*
+!webApp/storage/.gitkeep
+API/__pycache__
+API/Mask_RCNN/dist
+API/Mask_RCNN/build
+API/Mask_RCNN/mask_rcnn.egg-info
+Logs
+portConfig.txt
+venv

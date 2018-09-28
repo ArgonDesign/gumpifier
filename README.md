@@ -11,7 +11,7 @@ The Gumpifier is a collaborative project between Argon Design and Dovetailed whi
 
 3. `source venv/bin/activate`
 
-4. `python3 -m pip install --upgrade pip`
+4. `python -m pip install --upgrade pip`
 
 5. `pip install -r requirements.txt`
 
@@ -21,7 +21,11 @@ The Gumpifier is a collaborative project between Argon Design and Dovetailed whi
 
 7. `cd API/Mask_RCNN/`
 
-8. `python3 setup.py install`
+8.  `pip install -r requirements.txt`
+
+9. `python setup.py install`
+
+10. `cd ../..`
 
 ### Set the Tensorflow server running
 
