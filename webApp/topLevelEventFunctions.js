@@ -112,6 +112,7 @@ function checkSegmentation(what) {
 		type: "POST",
 		url: "cgi-bin/segCheck.py",
 		data: toSend,
+        timeout: 60000, // !!! SJB increased timeout
 		success: function(data) {
 				if (what == 'fg_url')	fg_segErr_flag = 0;
 				else					bg_segErr_flag = 0;

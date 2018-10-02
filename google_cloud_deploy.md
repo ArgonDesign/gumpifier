@@ -13,6 +13,7 @@ Useful websites:
 * [4] https://cloud.google.com/logging/docs/reference/tools/gcloud-logging
 * [5] https://cloud.google.com/sdk/gcloud/reference/ (reference)
 * [6] https://kubernetes-v1-4.github.io/docs/user-guide/kubectl/kubectl/ (reference - old but easier to read)
+* [7] https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/
 
 Google Cloud console https://console.cloud.google.com. 
 
@@ -45,10 +46,10 @@ $ gcloud docker -- push gcr.io/argon-design/gumpifier:V<n>
 ```bash
 $ gcloud config set compute/zone europe-west1-b
 $ gcloud config set project argon-design
-$ gcloud container clusters create gumpifier-cluster --num-nodes=1
+$ gcloud container clusters create gumpifier-cluster --num-nodes=1 --machine-type=n1-standard-32
 ```
 
-You can see the cluster on the Cloud Console at https://console.cloud.google.com/kubernetes/. The cluster `europe-west1-b` is in Belgium. We prefer trustworthy Europe to the US or Brexity Blighty...
+You can see the cluster on the Cloud Console at https://console.cloud.google.com/kubernetes/. The data centre `europe-west1-b` is in Belgium. We prefer trustworthy Europe to the US or Brexity Blighty...
 
 ### 3. Reserve an External IP Address
 
@@ -56,7 +57,7 @@ You can see the cluster on the Cloud Console at https://console.cloud.google.com
 $ gcloud compute addresses create gumpifier-ip --region europe-west1
 ```
 
-Note the address returned in the command output. We will refer to it as **\<AFIDDLE-IP\>**.
+Note the address returned in the command output. We will refer to it as **\<GUMPIFIER-IP\>**.
 
 To get info on the IP address subsequently:
 
@@ -83,8 +84,19 @@ Go to the DNS records for the domain where you want to install **Gumpifier** (in
 Logs
 ----
 
-Not sorted out yet...
+The **stdout** output from TF_server.py and uWSGI is logged on Google Logging under projects/argon-design/logs/gumpifier-web. On the Console, the logs are under `Logging > Logs`. Then select `GKE Container, gumpifier-cluster`. Or directly at:
 
+https://console.cloud.google.com/logs/viewer?resource=container%2Fcluster_name%2Fgumpifier-cluster
+
+
+Attaching to a Running Container
+--------------------------------
+
+```bash
+$ kubectl get pod
+# Note name of pod... e.g. gumpifier-web-66f545459-ffjmz
+$ kubectl exec -it <name> -- /bin/bash
+```
 
 Updating
 --------
@@ -94,4 +106,30 @@ The pods can be automatically updated (in a rolling fashion if the cluster has m
 ```bash
 $ gcloud docker -- push gcr.io/argon-design/gumpifier:V<n+1>
 $ kubectl set image deployment/gumpifier-web gumpifier-web=gcr.io/argon-design/gumpifier:V<n+1>
+```
+
+To see what tag versions are already uploaded, use `gcloud beta container images list-tags gcr.io/argon-design/gumpifier`.
+
+
+Deleting Everything on GCP
+--------------------------
+
+Delete the service and wait for the Cloud Load Balancer to be deallocated. Then delete the container cluster and the reserved external IP address.
+
+```bash
+# Delete the service:
+$ kubectl delete service gumpifier-web
+
+# Wait for load balancer to be deleted by polling until <GUMPIFIER-IP> is no longer mentioned in:
+$ gcloud compute forwarding-rules list
+
+# Delete the container cluster:
+$ gcloud container clusters delete gumpifier-cluster
+
+# Delete images
+# No way of doing this using gcloud without finding all their digest hashes
+# Best to do from web console https://console.cloud.google.com/gcr/images/argon-design
+
+# Delete reserved external IP address:
+$ gcloud compute addresses delete gumpifier-ip --region europe-west1
 ```
