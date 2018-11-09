@@ -53,7 +53,11 @@ build:
 		pip install git+https://github.com/waleedka/coco.git#subdirectory=PythonAPI; \
 		cd API/Mask_RCNN/; \
 		pip install -r requirements.txt; \
-		python setup.py install"
+		python setup.py install; \
+		cd ../../GumpifierBlog; \
+		python generate.py; \
+		cd output; \
+		cp -r blogPost.html blogPost.css images ../../webApp"
 
 clean:
 	rm -rf webApp/cgi-bin/__pycache__ \
@@ -65,7 +69,11 @@ clean:
 		API/Mask_RCNN/mask_rcnn.egg-info \
 		Logs \
 		portConfig.txt \
-		venv
+		venv \
+		GumpifierBlog/output/blogPost.html \
+		webApp/blogPost.html \
+		webApp/blogPost.css \
+		webApp/images
 
 dockerbuild:
 	docker build --no-cache -t gumpifier .

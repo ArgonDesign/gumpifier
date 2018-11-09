@@ -1,0 +1,12 @@
+{
+	"order_of_posts":
+		[
+			["./md/Introduction.md", "Introduction"],
+			["TOC", null],
+			["./md/Hai-Dao.md", "Hai-Dao -- Dovetailed -- User Experience"],
+			["./md/Patrick.md", "Patrick -- Argon Design -- Colour Correction"],
+			["./md/Mohammed.md", "Mohammed -- Argon Design -- Segmentation"]
+		],
+
+	"urlPrefix": "images"
+}

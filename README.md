@@ -27,6 +27,15 @@ The Gumpifier is a collaborative project between Argon Design and Dovetailed whi
 
 10. `cd ../..`
 
+11. Build the blog post and copy it to webApp:
+    ```bash
+    cd GumpifierBlog
+    python generate.py
+	cd output
+	cp -r blogPost.html blogPost.css images ../../webApp
+    cd ../..
+    ```
+
 ### Set the Tensorflow server running
 
 1. `python TF_server.py`

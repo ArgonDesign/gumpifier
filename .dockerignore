@@ -19,3 +19,7 @@ API/Mask_RCNN/mask_rcnn.egg-info
 Logs
 portConfig.txt
 venv
+/GumpifierBlog/output/blogPost.html
+/webApp/blogPost.html
+/webApp/blogPost.css
+/webApp/images

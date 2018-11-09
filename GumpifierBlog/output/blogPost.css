@@ -1,0 +1,74 @@
+/*****************************************************************************
+Argon Design Ltd. Project P8010 Spock
+(c) Copyright 2018 Argon Design Ltd. All rights reserved.
+
+Module: Gumpifier
+Author : Patrick Taylor
+*******************************************************************************/
+
+/* Note the CSS here will apply across the website.  Make sure to specify the blog post classes and ids well by
+using something like '#blogPost>.....' */
+
+#blogPost {
+	overflow: auto;
+}
+
+#blogPost #articleSizing {
+	max-width: 90ex;
+	margin-right: auto;
+	margin-left: auto;
+	font-size: 110%
+}
+
+#blogPost h1,h2,h3 {
+	font-family: "Roboto", sans-serif;
+	font-weight: 100;
+}
+
+#blogPost p,ol,ul {
+	font-family: "Playfair Display", sans-serif;
+	letter-spacing: 0.02em;
+}
+
+#blogPost .pictureGrid {
+	width: 100%;
+	float: left;
+	padding: 2%;
+}
+
+/*768*/
+@media only screen and (min-width: 768px) {
+	#blogPost .pictureGrid {
+		width: 50%;
+		float: left;
+		padding: 2%;
+	}
+}
+
+#blogPost .floatClear {
+	clear: left;
+}
+
+#blogPost .pictureGrid img {
+	width: 100%;
+}
+
+#blogPost .fullWidth {
+	width: 100%;
+}
+
+#blogPost .fullWidth img {
+	width: 100%;
+}
+
+/* Header image */
+#blogPost #headerImage {
+	width: 100vw;
+	height: 50vmin;
+	margin-left: -28px;
+
+	background-image: url("./images/Images/IMG_3147.jpg");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;	
+}

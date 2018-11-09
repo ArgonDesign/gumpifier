@@ -41,7 +41,11 @@ RUN bash -c "python3 -m venv venv; \
         pip install git+https://github.com/waleedka/coco.git#subdirectory=PythonAPI; \
         cd API/Mask_RCNN/; \
         pip install -r requirements.txt; \
-        python setup.py install"
+        python setup.py install; \
+		cd ../../GumpifierBlog; \
+		python generate.py; \
+		cd output; \
+		cp -r blogPost.html blogPost.css images ../../webApp"
 
 LABEL maintainer="Steve Barlow <steve.barlow@argondesign.com>"
 
