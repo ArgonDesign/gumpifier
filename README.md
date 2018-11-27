@@ -1,6 +1,18 @@
 # The Gumpifier
 The Gumpifier is a collaborative project between Argon Design and Dovetailed which allows the automatic insertion of a picture of a person into a background scene.  It uses convolutional neural networks to segment images into 'person' and a list of other objects before using this information to do the composition.
 
+## Cloning the repository
+
+The gumpifier repository contains a large file (weights for the neural
+network), which doesn't play very well with native git. As such, we
+use [Git LFS](https://git-lfs.github.com/) to store it.
+
+To clone the repository, you'll need Git LFS installed in advance. On
+a Debian derivative, you can install it with `apt-get install
+git-lfs`. Once this is installed, the usual command should work:
+
+    git clone https://github.com/ArgonDesign/gumpifier.git
+
 ## Running as a web app
 
 ### First time: Setup the Python virtual environment and MaskRCNN Dataset
