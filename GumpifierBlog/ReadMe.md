@@ -14,15 +14,16 @@ To compile the source content into an html file, run `python3 generate.py`, whic
 ### ./md/
 
 * `config.json`.  There are two things which can be changed here.
-  * Modify the first array named 'order_of_posts' to adjust the ordering of our respective parts and the table of contents.
-  * Change the 'urlPrefix' to adjust the references to images.  Currently images are copied from their location in `md/` to the same location within `output/images/`.  'urlPrefix' is curently set as 'images', referring to the `output/images/` folder.  I suspect this may well need to be changed to something involving a either 'www.gumpifier.com' or a relative path specifying where the blog post data is stored on the server.
+  * Modify the first array named 'order_of_posts' to adjust the ordering of our respective parts and the table of contents.  The display name in the table of contents can also be set here.  The boolean value dictates whether the entry appears in the table of contents.
+  * Change the 'urlPrefix' to adjust the html references to images.  Currently images are copied from their location in `md/` to the same location within `output/images/`.  'urlPrefix' is curently set as 'images', referring to the `output/images/` folder.  I suspect this may well need to be changed to something involving a either 'www.gumpifier.com' or a relative path specifying where the blog post data is stored on the server.
 * `template.html`.  A stub piece of html containing links to Google Fonts used, MathJax for some basic TeX rendering, and the divs which contain the blog post once `generate.py` is run.
 * `*.md`.  The source files for the blog posts.  These should be broadly editable as per normal, although I have taken a couple of liberties:
-  * There is the occasional occurrence of HTML.  Notably in ordered and unordered lists.
+  * There is the occasional occurrence of HTML.  Notably in ordered and unordered lists and tables.
   * Above certain images there is a slightly cryptic line which starts with 'DIRECTIVES'.  The remaining content on these lines specifies how the images should be displayed.
 
 * Folders contain images related to the project.
 
 ### ./output/
 
-The content of this folder is what should be uploaded to the Gumpifier server - it is the material necessary for the blog post.  The exception is  `inherited.css`: this allows you to open `blogPost.html` locally and get the same sort of look in terms of sizing as on the server - this file does not need to be uploaded.
+The content of this folder is what should be uploaded to the Gumpifier server - it is the material necessary for the blog post.
+

@@ -177,12 +177,11 @@ def generateTOC(order):
 	for postInfo in order:
 		postPath = postInfo[0]
 		postTitle = postInfo[1]
-		if postPath == "TOC":
+		display = postInfo[2]
+		if display == False:
 			continue
 		else:
-			with open(postPath, "r") as post:
-				# postTitle = post.readline()[2:]
-				toReturn.append("<p><h3><a href=#{}>{}</a></h3><p>\n".format(postTitle, postTitle))
+			toReturn.append("<p><h3><a href=#{}>{}</a></h3><p>\n".format(postTitle, postTitle))
 
 	return "".join(toReturn)
 

@@ -1,15 +1,15 @@
-# Artificial Intelligence: Ask Stupid Questions, Get Stupid Answers -- Patrick
+# Patrick -- Argon Design -- Colour Correction
 
 ## Introduction
 
-“*The Gumpifier will allow the user to input an image of themselves, along with a photo of a background scene, and it will automatically insert this image into the scene in a realistic manner*”.  Over my few weeks of interning at Argon Design, I had become well practised at explaining this brief to colleagues and relatives alike.  Our remit posed an interesting problem: it was naturally and intentionally open-ended; it was defined only in high level natural language terms; there was no obvious starting point or success criteria.  Our only constraints were that we must use Machine Learning (ML)/Artificial Intelligence (AI).
+*&ldquo;The Gumpifier will allow the user to input an image of themselves, along with a photo of a background scene, and it will automatically insert this image into the scene in a realistic manner&rdquo;*.  Over my few weeks of interning at Argon Design, I had become well practised at explaining this brief to colleagues and relatives alike.  Our remit posed an interesting problem: it was naturally and intentionally open-ended; it was defined only in high level natural language terms; there was no obvious starting point or success criteria.  Our only constraints were that we must use Machine Learning (ML)/Artificial Intelligence (AI).
 
 Our first port of call, having completed some crash courses in standard ML techniques and libraries, was to brainstorm areas which we thought feasible given our time constraints and resources.  We came up with the following:
 
 DIRECTIVES: fullWidth
 ![Diagram1](./Patrick_images/Diagram1.png)
 
-*Figure 1: The blue boxes indicate slightly 'easier' areas.  The green boxes show areas which we anticipated would cause us more problems, and the orange boxes indicate topics we thought could be very difficult.  The orange line around some of blue boxes hints that, although it is trivial to apply matrix transformations to an image, knowing which transformations to apply could be tricky, and may have to draw on themes from the orange boxes.*
+*Figure 1: The blue boxes indicate slightly 'easier' areas.  The green boxes show areas which we anticipated would cause us more problems, and the orange boxes indicate topics we thought could be very difficult.  The orange line around some of the blue boxes hints that, although it is trivial to apply matrix transformations to an image, knowing which transformations to apply could be tricky, and may have to draw on themes from the orange boxes.*
 
 The most prominent aspects of the figure related to the positioning of the foreground image.  This included translation, scale, rotation as well as segmentation (automatically cutting out the picture of the person in the foreground from the background against which they were taken).  In another section of this post Mohammed, the other Argon intern, describes how he went about tackling these areas, however my task related to the top right blue box: colour correction.
 
@@ -20,11 +20,10 @@ The term 'colour correction' seems to be wide-ranging and encompass many areas. 
 <ol>
     <li> It seemed sensible to work with images in a colour space which has some physical meaning.  Practically, this meant working in HSL or Hue-Saturation-Value (HSV).
     </li>
-    <li>Tensorflow had some very tempting built in functions with names like adjust_hue() and rgb_to_hsv().</li>
+    <li>Tensorflow had some very tempting built in functions with names like <code>adjust_hue()</code> and <code>rgb_to_hsv()</code>.</li>
 </ol>
 
-
-Thus, I began, naÏvely, to construct a convolutional neural network (CNN) which attempted to predict the correct shift in hue to apply to the foreground to make it match the background.
+Thus, I began, naively, to construct a convolutional neural network (CNN) which attempted to predict the correct shift in hue to apply to the foreground to make it match the background.
 
 Unfortunately, it did not.  In fact, the predictions consistently collapsed to a mean value, taking no account of the contents of the inputs.
 
@@ -85,10 +84,11 @@ We hope in vain.
 Consider, for a moment, the following example.  We have a picture of someone with skis, and are trying to insert them into a picture of a snow-covered ski slope.  This throws up a whole tranche of questions and problems:
 
 <ul>
-<li>A naïve approach would slam the luminance of the foreground up to a high value because of the brightness of the white snow behind.  But what if the skier is wearing black clothing?  This would be an inappropriate correction.</li>
+<li>A naive approach would slam the luminance of the foreground up to a high value because of the brightness of the white snow behind.  But what if the skier is wearing black clothing?  This would be an inappropriate correction.</li>
 <li>How do we know if the skier is wearing black clothing?  He may be wearing grey, or even white clothes, but the photo is horribly underexposed.  To better gauge the overall exposure of the foreground, we would need its surroundings: impossible from our modified dataset as we already use the surroundings as the background image!</li>
 <li>What if the skier is wearing black trousers and a white top?  What is the most appropriate luminance shift to apply?  Should we apply a single value across the whole foreground or multiple values?</li>
 </ul>
+
 
 
 These are questions which a human may find difficult to answer, given the same dataset, so it seems unreasonable to expect a neural net to learn effectively.

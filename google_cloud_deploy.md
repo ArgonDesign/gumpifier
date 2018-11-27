@@ -103,12 +103,15 @@ Updating
 
 The pods can be automatically updated (in a rolling fashion if the cluster has more than one node) to a new Docker image.
 
+Tag and upload a new V<n+1> image as per step 1. To see what tag versions are already uploaded, set your credentials as per step 1 and then use `gcloud beta container images list-tags gcr.io/argon-design/gumpifier`.
+
+Then to switch to the new image:
+
 ```bash
-$ gcloud docker -- push gcr.io/argon-design/gumpifier:V<n+1>
 $ kubectl set image deployment/gumpifier-web gumpifier-web=gcr.io/argon-design/gumpifier:V<n+1>
 ```
 
-To see what tag versions are already uploaded, use `gcloud beta container images list-tags gcr.io/argon-design/gumpifier`.
+Finally, delete the previous tagged image to avoid it taking up space in the cloud. The best way to do this is from the web console https://console.cloud.google.com/gcr/images/argon-design.
 
 
 Deleting Everything on GCP

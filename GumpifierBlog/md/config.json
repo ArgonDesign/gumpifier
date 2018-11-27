@@ -1,11 +1,11 @@
 {
 	"order_of_posts":
 		[
-			["./md/Introduction.md", "Introduction"],
-			["TOC", null],
-			["./md/Hai-Dao.md", "Hai-Dao -- Dovetailed -- User Experience"],
-			["./md/Patrick.md", "Patrick -- Argon Design -- Colour Correction"],
-			["./md/Mohammed.md", "Mohammed -- Argon Design -- Segmentation"]
+			["./md/Introduction.md", "Introduction", false],
+			["TOC", null, false],
+			["./md/Hai-Dao.md", "Hai-Dao -- Dovetailed -- User Experience", true],
+			["./md/Patrick.md", "Patrick -- Argon Design -- Colour Correction", true],
+			["./md/Mohammed.md", "Mohammed -- Argon Design -- Segmentation", true]
 		],
 
 	"urlPrefix": "images"

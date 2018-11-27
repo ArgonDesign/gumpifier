@@ -9,6 +9,10 @@ Author : Patrick Taylor
 /* Note the CSS here will apply across the website.  Make sure to specify the blog post classes and ids well by
 using something like '#blogPost>.....' */
 
+#blogPost * {
+	box-sizing: border-box;
+}
+
 #blogPost {
 	overflow: auto;
 }
@@ -23,6 +27,10 @@ using something like '#blogPost>.....' */
 #blogPost h1,h2,h3 {
 	font-family: "Roboto", sans-serif;
 	font-weight: 100;
+}
+
+#blogPost h1 {
+	text-align: center;
 }
 
 #blogPost p,ol,ul {
@@ -61,11 +69,19 @@ using something like '#blogPost>.....' */
 	width: 100%;
 }
 
+#blogPost table {
+	margin: 0 auto;
+}
+
+#blogPost table td {
+	padding-left: 20px;
+}
+
 /* Header image */
 #blogPost #headerImage {
+	margin: 0 auto;
 	width: 100vw;
 	height: 50vmin;
-	margin-left: -28px;
 
 	background-image: url("./images/Images/IMG_3147.jpg");
 	background-repeat: no-repeat;
