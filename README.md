@@ -14,7 +14,7 @@ git-lfs`. Once this is installed, the usual command should work:
     git clone https://github.com/ArgonDesign/gumpifier.git
     
 Note that Git LFS doesn't echo anything to the screen while it is
-downloading the file, so the clone might appear to hange just after
+downloading the file, so the clone might appear to hang just after
 the "Resolving deltas" line. It should complete eventually (after
 downloading about 250 Mb of data).
 
