@@ -18,3 +18,5 @@ Please add more!
 
 * Change to Flask?
 * When uploading images, if the user changes images whilst the previous one is uploading then cancel the upload to prevent a chain of uploads for no reason
+* Change UI to offer some standard images too so it is easy to try Gumpifier without having to upload your own pictures
+* Add a control to switch the Gump quote on/off as erasing the text to remove it is cumbersome and not obvious

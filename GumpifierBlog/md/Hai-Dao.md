@@ -6,7 +6,7 @@ The goal of the joint project was to use the strengths of Argon Design's softwar
 
 ## Process
 
-After a joint brainstorm, we at Dovetailed began to research similar AI experiments and tools: Google’s [library of fun AI experiments](https://experiments.withgoogle.com/collection/ai) was a great source of inspiration and fun around the office.  Argon Design provided a proof of concept which gave an idea of how the Gumpifier would function, however, the user interface (UI) of the Gumpifier was far from decided.  Our goal with the Gumpifier was to maintain a simple and playful UI that used familiar patterns and gestures.  The Gumpifier is a fun tool that shouldn’t require a steep learning curve or loads of text to use. 
+After a joint brainstorm, we at Dovetailed began to research similar AI experiments and tools: Google's [library of fun AI experiments](https://experiments.withgoogle.com/collection/ai) was a great source of inspiration and fun around the office.  Argon Design provided a proof of concept which gave an idea of how the Gumpifier would function, however, the user interface (UI) of the Gumpifier was far from decided.  Our goal with the Gumpifier was to maintain a simple and playful UI that used familiar patterns and gestures.  The Gumpifier is a fun tool that shouldn't require a steep learning curve or loads of text to use. 
 
 We went through four iterations of the Gumpifier, using internal feedback for the initial designs and testing with real users for the final two iterations. 
 
